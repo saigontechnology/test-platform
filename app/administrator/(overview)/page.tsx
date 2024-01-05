@@ -1,7 +1,6 @@
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import Loading from './loading';
-// import { Suspense } from 'react';
 
 export default async function Page() {
   return (
