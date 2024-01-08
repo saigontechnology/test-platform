@@ -1,5 +1,7 @@
-import '@/app/ui/global.css';
-import { inter } from '@/app/ui/fonts';
+import '@/app/styles/global.css';
+import { inter } from '@/app/styles/fonts';
+import { ThemeProvider } from '@mui/material';
+import themeCustom from './styles/theme';
 
 export default function RootLayout({
   children,
@@ -8,7 +10,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>{children}</body>
+      <body className={`${inter.className} antialiased`}>
+        <ThemeProvider theme={themeCustom}>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

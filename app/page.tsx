@@ -1,7 +1,7 @@
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import styles from '@/app/ui/home.module.css';
+import styles from '@/app/styles/home.module.css';
 import Link from 'next/link';
-import { lusitana } from './ui/fonts';
+import { lusitana } from './styles/fonts';
 
 export default function Page() {
   return (

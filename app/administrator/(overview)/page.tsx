@@ -1,4 +1,4 @@
-import { lusitana } from '@/app/ui/fonts';
+import { lusitana } from '@/app/styles/fonts';
 import { Suspense } from 'react';
 import Loading from './loading';
 
