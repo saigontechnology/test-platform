@@ -1,8 +1,8 @@
 {
   "private": true,
   "prisma": {
-    "seed": "ts-node --esm seed.js",
-    "migrate:dev": "migrate dev --name init"
+    "seed": "ts-node --esm scripts/seed.js",
+    "migrate:dev": "npx prisma migrate dev --name init --schema=./scripts/prisma/schema.prisma"
   },
   "scripts": {
     "build": "next build",
