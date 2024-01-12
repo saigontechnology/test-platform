@@ -1,6 +1,6 @@
 'use client';
 
-import NavLinks from '@/app/components/NavLinks';
+import NavLinks from '@/app/components/atoms/NavLinks';
 import { PowerIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 

@@ -1,24 +1,60 @@
-import { lusitana } from '@/app/styles/fonts';
-import Container from '@mui/material/Container';
+'use client';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import CustomTable from '@/app/components/CustomTable';
+import CustomTable from '@/app/components/molecules/CustomTable';
+import Divider from '@mui/material/Divider';
+import CustomModal, {
+  CustomModalHandler,
+} from '@/app/components/molecules/CustomModal';
+import * as React from 'react';
+import CustomRadioGroup from '@/app/components/atoms/CustomRadioGroup';
+import CustomSingleSelect from '@/app/components/atoms/CustomSingleSelect';
+import Grid from '@mui/material/Grid';
 
-export default async function Page() {
+export default function Page() {
+  const modalRef = React.useRef<CustomModalHandler>(null);
+
   return (
-    <Container>
-      <Box className="mb-3 flex items-center justify-between">
+    <Box>
+      <Box className="flex items-center justify-between">
         <Typography component="h1" className={`text-xl md:text-2xl`}>
           Questions
         </Typography>
-        <Button variant="contained">
+        <Button variant="contained" onClick={() => modalRef.current?.open()}>
           <Typography>Create New Question</Typography>
         </Button>
       </Box>
+      <Divider className="my-10" />
       <Box>
         <CustomTable />
       </Box>
-    </Container>
+      <CustomModal ref={modalRef} title="Create New Question">
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <CustomSingleSelect />
+          </Grid>
+          <Grid item xs={12}>
+            <CustomRadioGroup />
+          </Grid>
+        </Grid>
+        <Box className="mt-[20px] text-right">
+          <Button
+            onClick={() => modalRef.current?.close()}
+            variant="outlined"
+            className="hover:border-[#33b27f]"
+            sx={{
+              backgroundColor: '#FFFFFF !important',
+              color: '#000000',
+              borderColor: '#33b27f',
+              marginRight: '10px',
+            }}
+          >
+            Cancel
+          </Button>
+          <Button variant="contained">Save</Button>
+        </Box>
+      </CustomModal>
+    </Box>
   );
 }
