@@ -1,12 +1,24 @@
-import { lusitana } from '@/app/ui/fonts';
-// import { Suspense } from 'react';
+import { lusitana } from '@/app/styles/fonts';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import CustomTable from '@/app/components/CustomTable';
 
 export default async function Page() {
   return (
-    <main>
-      <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Questions Page
-      </h1>
-    </main>
+    <Container>
+      <Box className="mb-3 flex items-center justify-between">
+        <Typography component="h1" className={`text-xl md:text-2xl`}>
+          Questions
+        </Typography>
+        <Button variant="contained">
+          <Typography>Create New Question</Typography>
+        </Button>
+      </Box>
+      <Box>
+        <CustomTable />
+      </Box>
+    </Container>
   );
 }
