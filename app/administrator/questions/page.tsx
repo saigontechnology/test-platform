@@ -1,9 +1,11 @@
-import { lusitana } from '@/app/styles/fonts';
+// import { lusitana } from '@/app/styles/fonts';
+import Link from 'next/link';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import CustomTable from '@/app/components/CustomTable';
+import clsx from 'clsx';
 
 export default async function Page() {
   return (
@@ -13,7 +15,12 @@ export default async function Page() {
           Questions
         </Typography>
         <Button variant="contained">
-          <Typography>Create New Question</Typography>
+          <Link
+            key={'Create New Question'}
+            href={'/administrator/questions/create'}
+          >
+            <p className="hidden md:block">{'Create New Question'}</p>
+          </Link>
         </Button>
       </Box>
       <Box>

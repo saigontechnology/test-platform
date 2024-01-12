@@ -10,7 +10,7 @@ const themeCustom = createTheme({
       },
       styleOverrides: {
         root: ({ theme }) => ({
-          fontFamily: lusitana.className,
+          // fontFamily: lusitana.className,
           borderRadius: 12,
           boxShadow: 'none',
           color: '#FFFFFF',
@@ -33,7 +33,7 @@ const themeCustom = createTheme({
     },
   },
   typography: {
-    fontFamily: lusitana.className,
+    // fontFamily: lusitana.className,
   },
 });
 export default themeCustom;
