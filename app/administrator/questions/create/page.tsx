@@ -3,18 +3,16 @@
 
 import {
   Box,
-  Checkbox,
+  Button,
   FormControl,
   Input,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { useState, useEffect, ReactElement, useRef } from 'react';
-import clsx from 'clsx';
+import { useState, useRef } from 'react';
+import RenderQuestionType from './(components)/questionType';
 
-interface IAnswer {
+export interface IAnswer {
   id: number;
   answer: string;
   isCorrect: boolean;
@@ -40,123 +38,13 @@ export default function CreateQuestion() {
     event: React.MouseEvent<HTMLElement>,
     selectedType: string | undefined,
   ) => {
-    console.log('question type: ', selectedType);
+    event.preventDefault();
     setQuestionType((prevType) => {
       if (prevType != selectedType) {
         return selectedType;
       }
     });
   };
-
-  useEffect(() => {
-    console.log('quetion type updated: ', questionType);
-  }, [questionType, setQuestionType]);
-
-  const RenderQuestionTypeZone = (): ReactElement => {
-    const [checkbox, toggleCheckBox] = useState<boolean>(true);
-    const [answers, setAnswers] = useState<IAnswer[]>([
-      { id: 1, answer: '', isCorrect: false },
-      { id: 2, answer: '', isCorrect: false },
-      { id: 3, answer: '', isCorrect: false },
-      { id: 4, answer: '', isCorrect: false },
-    ]);
-
-    const handleAnswerChanges = (
-      event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-      const modifiedAnswers = answers.map((answ: IAnswer) => {
-        if (answ.id === +event.target.id.split('-')[1]) {
-          return {
-            ...answ,
-            answer: event.target.value,
-          };
-        }
-        return answ;
-      });
-      setAnswers(modifiedAnswers);
-    };
-
-    const handleSelectCorrect = (target: IAnswer) => {
-      const updatedAnswers = answers.map((answ: IAnswer) => {
-        if (answ.id === target.id) {
-          return {
-            ...answ,
-            isCorrect: !answ.isCorrect,
-          };
-        } else if (questionType === 'single') {
-          return { ...answ, isCorrect: false };
-        }
-        return answ;
-      });
-      console.log('handleSelectCorrect: ', target, updatedAnswers);
-      setAnswers(updatedAnswers);
-    };
-
-    return (
-      <>
-        {answers.map((answ: IAnswer, index: number) => {
-          return (
-            <FormControl
-              key={`answer-${answ.id}`}
-              variant="standard"
-              className="my-2.5 inline-flex w-2/5 flex-row items-center"
-            >
-              <input
-                id="default-checkbox"
-                type="checkbox"
-                checked={answ.isCorrect}
-                className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-                onChange={(evt: any) => handleSelectCorrect(answ)}
-              />
-              <Input
-                id={`answer-${answ.id}`}
-                value={answ.answer}
-                aria-describedby="component-helper-text"
-                className="mx-2 my-2"
-                placeholder={`Answer ${index + 1}`}
-                onChange={handleAnswerChanges}
-              />
-            </FormControl>
-          );
-        })}
-      </>
-    );
-  };
-
-  //#region : Render select type question
-  const RenderQuestionType = (): ReactElement => {
-    const questionTypes = ['single', 'multiple'];
-    return (
-      <FormControl>
-        <Typography className="ml-2">Question Type</Typography>
-        <ToggleButtonGroup
-          value={questionType}
-          exclusive
-          onChange={handleQuestionType}
-          aria-label="text alignment"
-          className="mx-2 my-2"
-        >
-          {questionTypes.map((type: string, indx: number) => {
-            return (
-              <ToggleButton
-                key={`${type + indx}`}
-                value={type}
-                aria-label="left aligned"
-                className={clsx({
-                  'active !bg-sky-100 !font-extrabold !text-blue-600':
-                    questionType === type,
-                })}
-              >
-                <Typography>{`${type} choice`}</Typography>
-              </ToggleButton>
-            );
-          })}
-        </ToggleButtonGroup>
-        {RenderQuestionTypeZone()}
-      </FormControl>
-    );
-  };
-  //#endregion
 
   //#region : Create question form
   return (
@@ -182,7 +70,11 @@ export default function CreateQuestion() {
           onChange={handleQuestionContent}
         />
       </FormControl>
-      {RenderQuestionType()}
+      <RenderQuestionType questionType={questionType} handleChangeQuestionType={handleQuestionType} />
+      <Box className="footer action-buttons inline-flex gap-4 justify-end">
+        <Button variant="contained">Add</Button>
+        <Button variant="outlined">Cancel</Button>
+      </Box>
     </Box>
   );
   //#endregion
