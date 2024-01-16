@@ -1,29 +1,11 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Post,
-  Body,
-  Put,
-  Delete,
-  Query,
-} from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-import { Question as QuestionModel, Prisma } from '@prisma/client';
+import { Controller, Get } from '@nestjs/common';
+// import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly prismaService: PrismaService) {}
-
-  @Get('question/:id')
-  async getPostById(@Param('id') id: string): Promise<QuestionModel> {
-    return this.prismaService.question.findUnique({
-      where: { id: Number(id) },
-    });
-  }
-
-  @Get('questions')
-  async getPosts(): Promise<QuestionModel[]> {
-    return await this.prismaService.question.findMany();
-  }
+  // constructor(private readonly appService: AppService) {}
+  // @Get()
+  // getHello(): string {
+  //   return this.appService.getHello();
+  // }
 }
