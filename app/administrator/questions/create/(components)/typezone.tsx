@@ -7,13 +7,14 @@ import {
 import clsx from 'clsx';
 
 interface ITypeZone {
-  questionType: string | undefined;
+  questionType: string | undefined,
+  handleAnswers: (answers: IAnswer[]) => void
 }
 
 const initialAnswer = { id: 0, answer: '', isCorrect: false }
 
 export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
-  const { questionType } = props;
+  const { questionType, handleAnswers } = props;
   const [answers, setAnswers] = useState<IAnswer[]>([
     initialAnswer
   ]);
@@ -23,6 +24,13 @@ export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
     const resetAnswersSelected = answers.map(answ => ({...answ, isCorrect: false }))
     setAnswers(resetAnswersSelected);
   }, [questionType]);
+
+  const updateStateAnswers = (updatedAnswers: IAnswer[]) => {
+    setAnswers((prev) => {
+      handleAnswers(updatedAnswers);
+      return updatedAnswers
+    });
+  }
 
   const handleAnswerChanges = (event: React.ChangeEvent<HTMLInputElement>) => {
     const modifiedAnswers = answers.map((answ: IAnswer) => {
@@ -34,14 +42,14 @@ export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
       }
       return answ;
     });
-    setAnswers(modifiedAnswers);
+    updateStateAnswers(modifiedAnswers);
   };
 
-  const handleModifyAnswer = () => {
+  const handleAddAnswer = () => {
     const modifiedAnswers = [...answers];
     modifiedAnswers[modifiedAnswers.length - 1].id = modifiedAnswers.length;
     modifiedAnswers.push(initialAnswer);
-    setAnswers(modifiedAnswers);
+    updateStateAnswers(modifiedAnswers);
   }
 
   const renderAnswer = (answ: IAnswer, index: number): ReactElement => {
@@ -49,7 +57,7 @@ export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
       <FormControl
         key={`answer-${answ.id}`}
         variant="standard"
-        className="my-2.5 inline-flex w-2/5 flex-row items-center"
+        className="my-2 mx-2 inline-flex w-2/5 flex-row items-center"
       >
         { answ.id ? <input
           id="default-checkbox"
@@ -71,7 +79,7 @@ export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
             className={clsx("w-6", {'cursor-pointer': answ.answer.length != 0})} 
             onClick={(evt: React.MouseEvent) => {
               evt.preventDefault();
-              answ.answer.length != 0 && handleModifyAnswer()
+              answ.answer.length != 0 && handleAddAnswer()
             }}
           /> 
           : null 
@@ -92,7 +100,7 @@ export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
       }
       return answ;
     });
-    setAnswers(updatedAnswers);
+    updateStateAnswers(updatedAnswers);
   };
 
   return (
