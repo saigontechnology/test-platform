@@ -1,9 +1,8 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { IAnswer } from '../page';
 import { FormControl, Input } from '@mui/material';
-import {
-  PlusCircleIcon
-} from '@heroicons/react/24/outline';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import clsx from 'clsx';
 
 interface ITypeZone {
@@ -44,6 +43,12 @@ export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
     });
     updateStateAnswers(modifiedAnswers);
   };
+  
+  const handleRemoveAnswer = (answer: IAnswer) => {
+    const minusAnswers = [...answers];
+    minusAnswers.splice(minusAnswers.indexOf(answer), 1);
+    updateStateAnswers(minusAnswers);
+  }
 
   const handleAddAnswer = () => {
     const modifiedAnswers = [...answers];
@@ -75,14 +80,20 @@ export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
           onChange={handleAnswerChanges}
         />
         { !answ.id ? 
-          <PlusCircleIcon 
+          <PlaylistAddIcon 
             className={clsx("w-6", {'cursor-pointer': answ.answer.length != 0})} 
             onClick={(evt: React.MouseEvent) => {
               evt.preventDefault();
               answ.answer.length != 0 && handleAddAnswer()
             }}
           /> 
-          : null 
+          : <DeleteForeverIcon 
+            className={clsx("w-6 cursor-pointer")} 
+            onClick={(evt: React.MouseEvent) => {
+              evt.preventDefault();
+              handleRemoveAnswer(answ)
+            }} 
+          />
         }
       </FormControl>
     )
@@ -107,7 +118,7 @@ export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
     <>
       {questionType != undefined
         ? answers.map((answ: IAnswer, index: number) => {
-            return renderAnswer(answ, index);
+            return index < 4 ? renderAnswer(answ, index) : null;
           })
         : null}
     </>

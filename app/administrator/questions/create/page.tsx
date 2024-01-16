@@ -5,13 +5,15 @@ import {
   Box,
   Button,
   FormControl,
+  IconButton,
   Input,
-  TextField,
   Typography,
 } from '@mui/material';
 import { useState, useRef } from 'react';
 import RenderQuestionType from './(components)/questionType';
 import CustomTextArea from '@/app/components/atoms/CustomTextArea';
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
+import ClearIcon from '@mui/icons-material/Clear';
 export interface IAnswer {
   id: number;
   answer: string;
@@ -54,7 +56,7 @@ export default function CreateQuestion() {
     <Box component="form" noValidate autoComplete="off" className="grid">
       <Typography className="text-2xl my-4 mb-10 mx-2" >Create a new question</Typography>
       <FormControl variant="standard" className="w-2/5 pb-7">
-        <Typography className="ml-2">Title</Typography>
+        <Typography className="ml-2 font-semibold">Title</Typography>
         <Input
           id="question-title-input"
           className="mx-2 my-2 ring-offset-0"
@@ -62,7 +64,7 @@ export default function CreateQuestion() {
         />
       </FormControl>
       <FormControl variant="standard" className="w-2/5 pb-7">
-        <Typography className="ml-2">Content</Typography>
+        <Typography className="ml-2 font-semibold">Content</Typography>
         <CustomTextArea 
           className="mx-2 my-2 w-full" 
           minRows={4} 
@@ -74,9 +76,9 @@ export default function CreateQuestion() {
         handleChangeQuestionType={handleQuestionType}
         handleAnswers={(answers: IAnswer[]) => questionObj.current.answers = answers}
       />
-      <Box className="footer action-buttons inline-flex gap-4 justify-end">
-        <Button variant="contained" onClick={handleAddQuestion}>Add</Button>
-        <Button variant="outlined">Cancel</Button>
+      <Box className="footer action-buttons inline-flex gap-2 justify-end">
+        <Button variant="contained" startIcon={<LibraryAddIcon/>} onClick={handleAddQuestion}>Create</Button>
+        <Button variant="outlined" startIcon={<ClearIcon/>} >Cancel</Button>
       </Box>
     </Box>
   );

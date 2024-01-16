@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 import styles from '@/app/styles/home.module.css';
 import Link from 'next/link';
 // import { lusitana } from './styles/fonts';
@@ -18,7 +18,7 @@ export default function Page() {
             href="/administrator"
             className="flex items-center gap-5 self-start rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-400 md:text-base"
           >
-            <span>Log in</span> <ArrowRightIcon className="w-5 md:w-6" />
+            <span>Log in</span> <DoubleArrowIcon className="w-5 md:w-6" />
           </Link>
         </div>
       </div>

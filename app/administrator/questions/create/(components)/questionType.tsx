@@ -23,7 +23,7 @@ export default function RenderQuestionType(props: IQuestionType): ReactElement {
   const questionTypes = ['single', 'multiple'];
   return (
     <FormControl>
-      <Typography className="ml-2">Type and Answers</Typography>
+      <Typography className="ml-2 font-semibold">Type and Answers</Typography>
       <ToggleButtonGroup
         value={questionType}
         exclusive
