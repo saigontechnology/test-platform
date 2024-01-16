@@ -1,15 +1,14 @@
 'use client';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import CustomTable from '@/app/components/molecules/CustomTable';
-import Divider from '@mui/material/Divider';
+import CustomRadioGroup from '@/app/components/atoms/CustomRadioGroup';
+import CustomSingleSelect from '@/app/components/atoms/CustomSingleSelect';
 import CustomModal, {
   CustomModalHandler,
 } from '@/app/components/molecules/CustomModal';
-import * as React from 'react';
-import CustomRadioGroup from '@/app/components/atoms/CustomRadioGroup';
-import CustomSingleSelect from '@/app/components/atoms/CustomSingleSelect';
+import CustomTable from '@/app/components/molecules/CustomTable';
+import { CategoriesOptions } from '@/app/constants/questions';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import { useRouter } from 'next/navigation';
 
@@ -23,11 +22,11 @@ export default function Page() {
         <Typography component="h1" className={`text-xl md:text-2xl`}>
           Questions
         </Typography>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           onClick={(evt: React.MouseEvent) => {
             evt.preventDefault();
-            router.push('/administrator/questions/create')
+            router.push('/administrator/questions/create');
             // modalRef.current?.open()
           }}
         >
@@ -41,7 +40,7 @@ export default function Page() {
       <CustomModal ref={modalRef} title="Create New Question">
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <CustomSingleSelect />
+            <CustomSingleSelect label="Category" options={CategoriesOptions} />
           </Grid>
           <Grid item xs={12}>
             <CustomRadioGroup />
