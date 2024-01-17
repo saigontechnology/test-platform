@@ -16,3 +16,7 @@ input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+input:focus, input:focus-visible, input:focus-within {
+  --tw-ring-shadow: 0 0 #000 !important;
+}

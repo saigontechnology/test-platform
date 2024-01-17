@@ -24,7 +24,7 @@ const config: Config = {
         '100%': {
           transform: 'translateX(100%)',
         },
-      },
+      }
     },
   },
   plugins: [require('@tailwindcss/forms')],

@@ -11,8 +11,10 @@ import * as React from 'react';
 import CustomRadioGroup from '@/app/components/atoms/CustomRadioGroup';
 import CustomSingleSelect from '@/app/components/atoms/CustomSingleSelect';
 import Grid from '@mui/material/Grid';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
+  const router = useRouter();
   const modalRef = React.useRef<CustomModalHandler>(null);
 
   return (
@@ -21,7 +23,14 @@ export default function Page() {
         <Typography component="h1" className={`text-xl md:text-2xl`}>
           Questions
         </Typography>
-        <Button variant="contained" onClick={() => modalRef.current?.open()}>
+        <Button 
+          variant="contained" 
+          onClick={(evt: React.MouseEvent) => {
+            evt.preventDefault();
+            router.push('/administrator/questions/create')
+            // modalRef.current?.open()
+          }}
+        >
           <Typography>Create New Question</Typography>
         </Button>
       </Box>

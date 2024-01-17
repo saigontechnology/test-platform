@@ -3,186 +3,98 @@
 
 import {
   Box,
-  Checkbox,
+  Button,
   FormControl,
   Input,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { useState, useEffect, ReactElement, useRef } from 'react';
-import clsx from 'clsx';
-
-interface IAnswer {
+import React, { useState, useRef } from 'react';
+import RenderQuestionType from './(components)/questionType';
+import CustomTextArea from '@/app/components/atoms/CustomTextArea';
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
+import ClearIcon from '@mui/icons-material/Clear';
+import { useRouter } from 'next/navigation';
+export interface IAnswer {
   id: number;
   answer: string;
   isCorrect: boolean;
 }
 
+interface IQuestion {
+  type: string
+  title: string,
+  content: string,
+  answers: IAnswer[]
+}
+
 export default function CreateQuestion() {
-  const [questionType, setQuestionType] = useState<string | undefined>(
-    'single',
-  );
-  const cb = useRef<any>();
-
-  const handleQuestionTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event?.target.value);
-  };
-
-  const handleQuestionContent = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    console.log(event?.target.value);
-  };
+  const router = useRouter();
+  const [questionType, setQuestionType] = useState<string>('single');
+  const questionObj = useRef<IQuestion>({
+    type: questionType,
+    title: '',
+    content: '',
+    answers: []
+  })
 
   const handleQuestionType = (
     event: React.MouseEvent<HTMLElement>,
-    selectedType: string | undefined,
+    selectedType: string,
   ) => {
-    console.log('question type: ', selectedType);
-    setQuestionType((prevType) => {
-      if (prevType != selectedType) {
-        return selectedType;
-      }
-    });
-  };
-
-  useEffect(() => {
-    console.log('quetion type updated: ', questionType);
-  }, [questionType, setQuestionType]);
-
-  const RenderQuestionTypeZone = (): ReactElement => {
-    const [checkbox, toggleCheckBox] = useState<boolean>(true);
-    const [answers, setAnswers] = useState<IAnswer[]>([
-      { id: 1, answer: '', isCorrect: false },
-      { id: 2, answer: '', isCorrect: false },
-      { id: 3, answer: '', isCorrect: false },
-      { id: 4, answer: '', isCorrect: false },
-    ]);
-
-    const handleAnswerChanges = (
-      event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-      const modifiedAnswers = answers.map((answ: IAnswer) => {
-        if (answ.id === +event.target.id.split('-')[1]) {
-          return {
-            ...answ,
-            answer: event.target.value,
-          };
-        }
-        return answ;
-      });
-      setAnswers(modifiedAnswers);
-    };
-
-    const handleSelectCorrect = (target: IAnswer) => {
-      const updatedAnswers = answers.map((answ: IAnswer) => {
-        if (answ.id === target.id) {
-          return {
-            ...answ,
-            isCorrect: !answ.isCorrect,
-          };
-        } else if (questionType === 'single') {
-          return { ...answ, isCorrect: false };
-        }
-        return answ;
-      });
-      console.log('handleSelectCorrect: ', target, updatedAnswers);
-      setAnswers(updatedAnswers);
-    };
-
-    return (
-      <>
-        {answers.map((answ: IAnswer, index: number) => {
-          return (
-            <FormControl
-              key={`answer-${answ.id}`}
-              variant="standard"
-              className="my-2.5 inline-flex w-2/5 flex-row items-center"
-            >
-              <input
-                id="default-checkbox"
-                type="checkbox"
-                checked={answ.isCorrect}
-                className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-                onChange={(evt: any) => handleSelectCorrect(answ)}
-              />
-              <Input
-                id={`answer-${answ.id}`}
-                value={answ.answer}
-                aria-describedby="component-helper-text"
-                className="mx-2 my-2"
-                placeholder={`Answer ${index + 1}`}
-                onChange={handleAnswerChanges}
-              />
-            </FormControl>
-          );
-        })}
-      </>
+    event.preventDefault();
+    setQuestionType((prevType) => 
+      prevType != selectedType ? selectedType : prevType
     );
   };
 
-  //#region : Render select type question
-  const RenderQuestionType = (): ReactElement => {
-    const questionTypes = ['single', 'multiple'];
-    return (
-      <FormControl>
-        <Typography className="ml-2">Question Type</Typography>
-        <ToggleButtonGroup
-          value={questionType}
-          exclusive
-          onChange={handleQuestionType}
-          aria-label="text alignment"
-          className="mx-2 my-2"
-        >
-          {questionTypes.map((type: string, indx: number) => {
-            return (
-              <ToggleButton
-                key={`${type + indx}`}
-                value={type}
-                aria-label="left aligned"
-                className={clsx({
-                  'active !bg-sky-100 !font-extrabold !text-blue-600':
-                    questionType === type,
-                })}
-              >
-                <Typography>{`${type} choice`}</Typography>
-              </ToggleButton>
-            );
-          })}
-        </ToggleButtonGroup>
-        {RenderQuestionTypeZone()}
-      </FormControl>
-    );
-  };
-  //#endregion
+  const handleAddQuestion = (evt: React.MouseEvent<HTMLElement>) => {
+    evt.preventDefault();
+    console.log('add question: ', {...questionObj.current, type: questionType})
+  }
+
+  const handleRedirect = (route: string) => {
+    router.push(route)
+  }
 
   //#region : Create question form
   return (
     <Box component="form" noValidate autoComplete="off" className="grid">
+      <Typography className="text-2xl my-4 mb-10 mx-2" >Create a new question</Typography>
       <FormControl variant="standard" className="w-2/5 pb-7">
-        <Typography className="ml-2">Question Title</Typography>
+        <Typography className="ml-2 font-semibold">Title</Typography>
         <Input
-          id="component-helper"
-          defaultValue=""
-          aria-describedby="component-helper-text"
-          className="mx-2 my-2"
-          onChange={handleQuestionTitle}
+          id="question-title-input"
+          className="mx-2 my-2 ring-offset-0"
+          onChange={(event: React.ChangeEvent<any>) => questionObj.current.title = event?.target.value}
         />
       </FormControl>
       <FormControl variant="standard" className="w-2/5 pb-7">
-        <Typography className="ml-2">Question Content</Typography>
-        <TextField
-          id="outlined-multiline-static"
-          multiline
-          rows={5}
-          fullWidth
-          className="mx-2 my-2 w-full"
-          onChange={handleQuestionContent}
+        <Typography className="ml-2 font-semibold">Content</Typography>
+        <CustomTextArea 
+          className="mx-2 my-2 w-full" 
+          minRows={4} 
+          handleTextChange={(event: React.ChangeEvent<any>) => questionObj.current.content = event?.target.value}
         />
       </FormControl>
-      {RenderQuestionType()}
+      <RenderQuestionType 
+        questionType={questionType} 
+        handleChangeQuestionType={handleQuestionType}
+        handleAnswers={(answers: IAnswer[]) => questionObj.current.answers = answers}
+      />
+      <Box className="footer action-buttons inline-flex gap-2 justify-end">
+        <Button 
+          variant="contained" 
+          startIcon={<LibraryAddIcon/>} 
+          onClick={handleAddQuestion}>
+            Create
+        </Button>
+        <Button 
+          variant="outlined" 
+          startIcon={<ClearIcon/>} 
+          onClick={(evt: React.MouseEvent) => handleRedirect('/administrator/questions')}>
+            Cancel
+        </Button>
+      </Box>
     </Box>
   );
   //#endregion

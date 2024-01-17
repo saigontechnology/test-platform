@@ -1,6 +1,6 @@
 'use client';
 import { createTheme } from '@mui/material/styles';
-import { lusitana } from '@/app/styles/fonts';
+// import { lusitana } from '@/app/styles/fonts';
 
 const themeCustom = createTheme({
   components: {
@@ -10,7 +10,7 @@ const themeCustom = createTheme({
       },
       styleOverrides: {
         root: ({ theme }) => ({
-          fontFamily: lusitana.style.fontFamily,
+          // fontFamily: lusitana.style.fontFamily,
           borderRadius: 12,
           boxShadow: 'none',
           color: '#FFFFFF',
@@ -33,7 +33,7 @@ const themeCustom = createTheme({
     },
   },
   typography: {
-    fontFamily: lusitana.style.fontFamily,
+    // fontFamily: lusitana.style.fontFamily,
   },
 });
 export default themeCustom;
