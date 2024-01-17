@@ -51,4 +51,10 @@ export class QuestionsController {
   async remove(@Param('id', ParseIntPipe) id: number) {
     return await this.questionService.remove(id);
   }
+
+  @Post("import")
+  @ApiCreatedResponse({ type: QuestionEntity })
+  async import(@Body() importData: any) {
+    return await this.questionService.import(importData);
+  }
 }

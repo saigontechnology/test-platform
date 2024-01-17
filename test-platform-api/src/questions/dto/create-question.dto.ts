@@ -12,12 +12,16 @@ export class CreateQuestionDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ required: true })
-  sentence: string;
+  question: string;
+
+  @IsString()
+  @ApiProperty({ required: false })
+  description: string;
 
   @IsArray()
   @IsNotEmpty()
   @ApiProperty({ required: true })
-  answer: string[];
+  answer: number[];
 
   @IsString()
   @IsNotEmpty()

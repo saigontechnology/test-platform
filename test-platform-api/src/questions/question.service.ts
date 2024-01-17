@@ -30,4 +30,21 @@ export class QuestionsService {
     await this.prisma.question.delete({ where: { id } });
     return;
   }
+
+  async import(importData: any) {
+    const questions = [];
+    for (const category of importData.categories) {
+      for (const question of category.questions) {
+        questions.push({
+          category: category.category,
+          question: question.question,
+          description: question.description,
+          answer: [question.answer],
+          options: question.options.map((item: any) => item.value),
+        });
+      }
+    }
+    await this.prisma.question.createMany({ data: questions });
+    return;
+  }
 }

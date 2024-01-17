@@ -4,19 +4,16 @@ import {
   IsArray,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 
-export class UpdateQuestionDto {
-  @IsString()
-  @ApiProperty()
-  question: string;
-
+export class ImportQuestionsDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
-  description: string;
+  @ApiProperty({ required: true })
+  sentence: string;
 
   @IsArray()
   @IsNotEmpty()
@@ -32,4 +29,25 @@ export class UpdateQuestionDto {
   @ApiProperty({ required: true, enum: QuestionType })
   @IsEnum(QuestionType)
   type: QuestionType;
+}
+export class Category {
+  @IsString()
+  @ApiProperty({ required: true })
+  category: string;
+
+  questions
+}
+
+export class Question {
+  @IsString()
+  @ApiProperty({required: true})
+  question: string
+  
+  @IsNumber()
+  @ApiProperty({required: true})
+  answer: number;
+  
+  @IsNumber()
+  @ApiProperty({required: true})
+  description: number;
 }
