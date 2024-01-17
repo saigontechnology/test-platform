@@ -81,7 +81,9 @@ export default function RenderQuestionTypeZone(props: ITypeZone): ReactElement {
         />
         { !answ.id ? 
           <PlaylistAddIcon 
-            className={clsx("w-6", {'cursor-pointer': answ.answer.length != 0})} 
+            className={clsx("w-6", {
+              'cursor-pointer ': answ.answer.length != 0
+            })} 
             onClick={(evt: React.MouseEvent) => {
               evt.preventDefault();
               answ.answer.length != 0 && handleAddAnswer()

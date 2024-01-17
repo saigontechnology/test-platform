@@ -5,15 +5,15 @@ import {
   Box,
   Button,
   FormControl,
-  IconButton,
   Input,
   Typography,
 } from '@mui/material';
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import RenderQuestionType from './(components)/questionType';
 import CustomTextArea from '@/app/components/atoms/CustomTextArea';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import ClearIcon from '@mui/icons-material/Clear';
+import { useRouter } from 'next/navigation';
 export interface IAnswer {
   id: number;
   answer: string;
@@ -28,6 +28,7 @@ interface IQuestion {
 }
 
 export default function CreateQuestion() {
+  const router = useRouter();
   const [questionType, setQuestionType] = useState<string>('single');
   const questionObj = useRef<IQuestion>({
     type: questionType,
@@ -49,6 +50,10 @@ export default function CreateQuestion() {
   const handleAddQuestion = (evt: React.MouseEvent<HTMLElement>) => {
     evt.preventDefault();
     console.log('add question: ', {...questionObj.current, type: questionType})
+  }
+
+  const handleRedirect = (route: string) => {
+    router.push(route)
   }
 
   //#region : Create question form
@@ -77,8 +82,18 @@ export default function CreateQuestion() {
         handleAnswers={(answers: IAnswer[]) => questionObj.current.answers = answers}
       />
       <Box className="footer action-buttons inline-flex gap-2 justify-end">
-        <Button variant="contained" startIcon={<LibraryAddIcon/>} onClick={handleAddQuestion}>Create</Button>
-        <Button variant="outlined" startIcon={<ClearIcon/>} >Cancel</Button>
+        <Button 
+          variant="contained" 
+          startIcon={<LibraryAddIcon/>} 
+          onClick={handleAddQuestion}>
+            Create
+        </Button>
+        <Button 
+          variant="outlined" 
+          startIcon={<ClearIcon/>} 
+          onClick={(evt: React.MouseEvent) => handleRedirect('/administrator/questions')}>
+            Cancel
+        </Button>
       </Box>
     </Box>
   );

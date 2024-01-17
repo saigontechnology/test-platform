@@ -52,9 +52,8 @@ const links: IMainLink[] = [
 ];
 
 export default function NavLinks() {
-  
-  const pathname = usePathname();
 
+  const pathname = usePathname();
   const handleRenderLink = (link: IMainLink, isShowSublinks?: boolean) => {
     const LinkIcon = link.icon;
     return (
