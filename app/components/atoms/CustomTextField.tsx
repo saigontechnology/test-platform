@@ -4,5 +4,5 @@ import TextField from '@mui/material/TextField';
 interface ICustomTextField extends StandardTextFieldProps {}
 
 export default function CustomTextField(props: ICustomTextField) {
-  return <TextField id="standard-basic" variant="standard" {...props} />;
+  return <TextField variant="standard" {...props} />;
 }

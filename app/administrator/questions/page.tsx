@@ -50,13 +50,7 @@ export default function Page() {
           <Button
             onClick={() => modalRef.current?.close()}
             variant="outlined"
-            className="hover:border-[#33b27f]"
-            sx={{
-              backgroundColor: '#FFFFFF !important',
-              color: '#000000',
-              borderColor: '#33b27f',
-              marginRight: '10px',
-            }}
+            className="mr-[10px]"
           >
             Cancel
           </Button>

@@ -8,7 +8,7 @@ import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
-export default async function Page() {
+export default function Page() {
   return (
     <Box>
       <Box className="mb-3 flex items-center justify-between">
@@ -26,16 +26,7 @@ export default async function Page() {
         </Grid>
       </Grid>
       <Box className="mt-[20px] text-right">
-        <Button
-          variant="outlined"
-          className="hover:border-[#33b27f]"
-          sx={{
-            backgroundColor: '#FFFFFF !important',
-            color: '#000000',
-            borderColor: '#33b27f',
-            marginRight: '10px',
-          }}
-        >
+        <Button variant="outlined" className="mr-[10px]">
           Cancel
         </Button>
         <Button variant="contained">Save</Button>
