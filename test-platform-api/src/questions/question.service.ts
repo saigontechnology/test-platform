@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { ImportQuestionsDto, OptionItem } from './dto/import-questions.dto';
 
 @Injectable()
 export class QuestionsService {
@@ -31,7 +32,7 @@ export class QuestionsService {
     return;
   }
 
-  async import(importData: any) {
+  async import(importData: ImportQuestionsDto) {
     const questions = [];
     for (const category of importData.categories) {
       for (const question of category.questions) {
@@ -40,7 +41,7 @@ export class QuestionsService {
           question: question.question,
           description: question.description,
           answer: [question.answer],
-          options: question.options.map((item: any) => item.value),
+          options: question.options.map((item: OptionItem) => item.value),
         });
       }
     }

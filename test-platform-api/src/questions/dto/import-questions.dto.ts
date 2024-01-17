@@ -1,53 +1,58 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { QuestionType } from '@prisma/client';
 import {
   IsArray,
-  IsEnum,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
-
-export class ImportQuestionsDto {
+import { Type } from 'class-transformer';
+export class OptionItem {
+  @IsString()
+  @ApiProperty({ required: true })
+  value: string;
+}
+export class QuestionItem {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ required: true })
-  sentence: string;
+  question: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({ required: true })
+  answer: number;
+
+  @IsString()
+  @ApiProperty({ required: true })
+  description: string;
 
   @IsArray()
   @IsNotEmpty()
-  @ApiProperty({ required: true })
-  answer: number[];
-
+  @ValidateNested({ each: true })
+  @Type(() => OptionItem)
+  @ApiProperty({ required: true, isArray: true, type: OptionItem })
+  options: OptionItem[];
+}
+export class CategoryItem {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ required: true })
   category: string;
 
-  @IsOptional()
-  @ApiProperty({ required: true, enum: QuestionType })
-  @IsEnum(QuestionType)
-  type: QuestionType;
-}
-export class Category {
-  @IsString()
-  @ApiProperty({ required: true })
-  category: string;
-
-  questions
+  @IsArray()
+  @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => QuestionItem)
+  @ApiProperty({ required: true, isArray: true, type: QuestionItem })
+  questions: QuestionItem[];
 }
 
-export class Question {
-  @IsString()
-  @ApiProperty({required: true})
-  question: string
-  
-  @IsNumber()
-  @ApiProperty({required: true})
-  answer: number;
-  
-  @IsNumber()
-  @ApiProperty({required: true})
-  description: number;
+export class ImportQuestionsDto {
+  @IsArray()
+  @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => CategoryItem)
+  @ApiProperty({ required: true, isArray: true, type: CategoryItem })
+  categories: CategoryItem[];
 }
