@@ -23,7 +23,6 @@ export default function PlatformBreadCrumbs (props: IPlatformBreadCrumbs) {
                         </Typography>
                     )
                 }
-                console.log('link.href: ', link);
                 return (
                     <Link
                         key={`breadcrumbs-${link.name}`}
