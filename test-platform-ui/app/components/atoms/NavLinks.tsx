@@ -50,7 +50,7 @@ const links: IMainLink[] = [
   },
   {
     name: 'Assessments',
-    href: ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_CREATE,
+    href: ROUTE_KEY.ADMINISTRATION_ASSESSMENTS,
     icon: PendingActionsIcon,
   },
 ];
