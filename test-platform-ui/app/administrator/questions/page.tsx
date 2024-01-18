@@ -6,11 +6,13 @@ import CustomModal, {
 } from '@/app/components/molecules/CustomModal';
 import CustomTable from '@/app/components/molecules/CustomTable';
 import { CategoriesOptions } from '@/app/constants/questions';
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import { useRouter } from 'next/navigation';
+import React from 'react';
 
 export default function Page() {
   const router = useRouter();
