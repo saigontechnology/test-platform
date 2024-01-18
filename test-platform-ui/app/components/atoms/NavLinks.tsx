@@ -17,13 +17,13 @@ import { OverridableComponent } from '@mui/material/OverridableComponent';
 interface ILink {
   name: string;
   href: string;
-  icon: OverridableComponent<SvgIconTypeMap<{}, "svg">> & {
+  icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>> & {
     muiName: string;
-  }
+  };
 }
 
 interface IMainLink extends ILink {
-  sublinks?: ILink[]
+  sublinks?: ILink[];
 }
 
 // Map of links to display in the side navigation.
@@ -34,25 +34,27 @@ const links: IMainLink[] = [
     name: 'Questions',
     href: '/administrator/questions',
     icon: QuizIcon,
-    sublinks: [{
-      name: 'Create',
-      href: '/administrator/questions/create',
-      icon: ExtensionIcon,
-    },{
-      name: 'Archived',
-      href: '/administrator/questions/archived',
-      icon: ArchiveIcon,
-    }]
+    sublinks: [
+      {
+        name: 'Create',
+        href: '/administrator/questions/create',
+        icon: ExtensionIcon,
+      },
+      {
+        name: 'Archived',
+        href: '/administrator/questions/archived',
+        icon: ArchiveIcon,
+      },
+    ],
   },
   {
-    name: 'Assessment',
+    name: 'Assessments',
     href: '/administrator/assessments',
     icon: PendingActionsIcon,
   },
 ];
 
 export default function NavLinks() {
-
   const pathname = usePathname();
   const handleRenderLink = (link: IMainLink, isShowSublinks?: boolean) => {
     const LinkIcon = link.icon;
@@ -68,35 +70,47 @@ export default function NavLinks() {
         )}
       >
         <LinkIcon className="w-6" />
-        <p className="hidden md:block w-2/3">{link.name}</p>
-        {link.sublinks?.length && <Box>
-          {isShowSublinks ?  <ExpandLessIcon className="w-5" /> : <ExpandMoreIcon className="w-5" />}
-        </Box>}
+        <p className="hidden w-2/3 md:block">{link.name}</p>
+        {link.sublinks?.length && (
+          <Box>
+            {isShowSublinks ? (
+              <ExpandLessIcon className="w-5" />
+            ) : (
+              <ExpandMoreIcon className="w-5" />
+            )}
+          </Box>
+        )}
       </Link>
-    )
-  }
+    );
+  };
 
   const handleRenderSublinks = (sublinks: ILink[]) => {
     return (
       <List>
         {sublinks.map((sub: ILink, indx: number) => {
-          return <ListItem key={sub.name + indx + ''} className="py-px">{handleRenderLink(sub)}</ListItem>
+          return (
+            <ListItem key={sub.name + indx + ''} className="py-px">
+              {handleRenderLink(sub)}
+            </ListItem>
+          );
         })}
       </List>
-    )
+    );
   };
 
   return (
     <Box>
       {links.map((link: IMainLink) => {
-          const isShowSubs = pathname.includes(link.href);
-          const mainLink = handleRenderLink(link, isShowSubs);
-          return (
-            <>
-              {mainLink}
-              {link.sublinks?.length && isShowSubs ? handleRenderSublinks(link.sublinks) : null}
-            </>
-          )
+        const isShowSubs = pathname.includes(link.href);
+        const mainLink = handleRenderLink(link, isShowSubs);
+        return (
+          <>
+            {mainLink}
+            {link.sublinks?.length && isShowSubs
+              ? handleRenderSublinks(link.sublinks)
+              : null}
+          </>
+        );
       })}
     </Box>
   );

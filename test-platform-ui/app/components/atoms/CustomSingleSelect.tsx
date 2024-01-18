@@ -1,40 +1,20 @@
-import * as React from 'react';
+import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-enum Category {
-  React,
-  Typescript,
-  Javascript,
-  Golang,
-  ReactNative,
+import * as React from 'react';
+
+interface IOption {
+  label: string;
+  value: string | number;
+}
+interface ICustomSingleSelect {
+  label: string;
+  options: IOption[];
 }
 
-const CategoriesOptions = [
-  {
-    label: 'React',
-    value: Category.React,
-  },
-  {
-    label: 'React Native',
-    value: Category.ReactNative,
-  },
-  {
-    label: 'Typescript',
-    value: Category.React,
-  },
-  {
-    label: 'Javascript',
-    value: Category.Javascript,
-  },
-  {
-    label: 'Golang',
-    value: Category.Golang,
-  },
-];
-
-export default function CustomSingleSelect() {
+export default function CustomSingleSelect(props: ICustomSingleSelect) {
+  const { label, options } = props;
   const [age, setAge] = React.useState('');
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -43,20 +23,20 @@ export default function CustomSingleSelect() {
 
   return (
     <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-      <InputLabel id="demo-select-small-label">Category</InputLabel>
+      <InputLabel id="demo-select-small-label">{label}</InputLabel>
       <Select
         labelId="demo-select-small-label"
         id="demo-select-small"
         value={age}
-        label="Category"
+        label={label}
         onChange={handleChange}
       >
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
-        {CategoriesOptions.map((category, index) => (
-          <MenuItem key={`category-${index}`} value={category.value}>
-            {category.label}
+        {options.map((option, index) => (
+          <MenuItem key={`option-${index}`} value={option.value}>
+            {option.label}
           </MenuItem>
         ))}
       </Select>

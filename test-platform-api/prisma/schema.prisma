@@ -3,16 +3,18 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Question {
   id        Int          @id @default(autoincrement())
   createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  updatedAt DateTime?    @updatedAt
   sentence  String
-  answer    String?
+  category  String
+  answer    String[]
+  options   String[]
   type      QuestionType @default(SINGLE_CHOICE)
 }
 
