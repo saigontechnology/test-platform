@@ -13,6 +13,7 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
+import { ROUTE_KEY } from '@/app/constants/routePaths';
 
 interface ILink {
   name: string;
@@ -29,27 +30,27 @@ interface IMainLink extends ILink {
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links: IMainLink[] = [
-  { name: 'Dashboard', href: '/administrator', icon: DashboardIcon },
+  { name: 'Dashboard', href: ROUTE_KEY.ADMINISTRATION, icon: DashboardIcon },
   {
     name: 'Questions',
-    href: '/administrator/questions',
+    href: ROUTE_KEY.ADMINISTRATION_QUESTIONS,
     icon: QuizIcon,
     sublinks: [
       {
         name: 'Create',
-        href: '/administrator/questions/create',
+        href: ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE,
         icon: ExtensionIcon,
       },
       {
         name: 'Archived',
-        href: '/administrator/questions/archived',
+        href: ROUTE_KEY.ADMINISTRATION_QUESTIONS_ARCHIVE,
         icon: ArchiveIcon,
       },
     ],
   },
   {
     name: 'Assessments',
-    href: '/administrator/assessments',
+    href: ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_CREATE,
     icon: PendingActionsIcon,
   },
 ];

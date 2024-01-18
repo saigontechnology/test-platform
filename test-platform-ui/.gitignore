@@ -2,6 +2,7 @@
 
 # dependencies
 /test-platform-api/node_modules
+/test-platform-ui/node_modules
 /node_modules
 /.pnp
 .pnp.js
@@ -10,6 +11,7 @@
 /coverage
 
 # next.js
+/test-platform-ui/*.next/
 /.next/
 /out/
 
