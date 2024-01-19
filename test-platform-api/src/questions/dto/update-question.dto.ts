@@ -10,14 +10,18 @@ import {
 
 export class UpdateQuestionDto {
   @IsString()
+  @ApiProperty()
+  question: string;
+
+  @IsString()
   @IsNotEmpty()
-  @ApiProperty({ required: true })
-  sentence: string;
+  @ApiProperty()
+  description: string;
 
   @IsArray()
   @IsNotEmpty()
   @ApiProperty({ required: true })
-  answer: string[];
+  answer: number[];
 
   @IsString()
   @IsNotEmpty()

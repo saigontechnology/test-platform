@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { ImportQuestionsDto, OptionItem } from './dto/import-questions.dto';
 
 @Injectable()
 export class QuestionsService {
@@ -28,6 +29,23 @@ export class QuestionsService {
 
   async remove(id: number) {
     await this.prisma.question.delete({ where: { id } });
+    return;
+  }
+
+  async import(importData: ImportQuestionsDto) {
+    const questions = [];
+    for (const category of importData.categories) {
+      for (const question of category.questions) {
+        questions.push({
+          category: category.category,
+          question: question.question,
+          description: question.description,
+          answer: [question.answer],
+          options: question.options.map((item: OptionItem) => item.value),
+        });
+      }
+    }
+    await this.prisma.question.createMany({ data: questions });
     return;
   }
 }

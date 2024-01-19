@@ -6,13 +6,16 @@ export class QuestionEntity implements Question {
   id: number;
 
   @ApiProperty()
-  sentence: string;
+  question: string;
+
+  @ApiProperty()
+  description: string;
 
   @ApiProperty()
   category: string;
 
   @ApiProperty()
-  answer: string[];
+  answer: number[];
 
   @ApiProperty()
   options: string[];
@@ -22,6 +25,7 @@ export class QuestionEntity implements Question {
 
   @ApiProperty()
   createdAt: Date;
+
   @ApiProperty()
   updatedAt: Date;
 }

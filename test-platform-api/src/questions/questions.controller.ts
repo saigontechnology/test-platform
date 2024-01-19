@@ -7,12 +7,14 @@ import {
   Delete,
   ParseIntPipe,
   Put,
+  ValidationPipe,
 } from '@nestjs/common';
 import { QuestionsService } from './question.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { QuestionEntity } from './entities/question.entity';
+import { ImportQuestionsDto } from './dto/import-questions.dto';
 
 @Controller('questions')
 @ApiTags('questions')
@@ -47,8 +49,14 @@ export class QuestionsController {
   }
 
   @Delete(':id')
-  @ApiOkResponse({ type: QuestionEntity })
+  @ApiOkResponse()
   async remove(@Param('id', ParseIntPipe) id: number) {
     return await this.questionService.remove(id);
+  }
+
+  @Post('import')
+  @ApiCreatedResponse()
+  async import(@Body(new ValidationPipe()) importData: ImportQuestionsDto) {
+    return await this.questionService.import(importData);
   }
 }
