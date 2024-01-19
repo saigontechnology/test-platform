@@ -87,7 +87,7 @@ const themeCustom = createTheme({
       },
       styleOverrides: {
         root: ({ theme, ownerState }) => ({
-          fontFamily: lusitana.style.fontFamily,
+          // fontFamily: lusitana.style.fontFamily,
           borderRadius: 12,
           boxShadow: 'none',
           maxHeight: 48,
@@ -117,7 +117,7 @@ const themeCustom = createTheme({
     },
   },
   typography: {
-    fontFamily: lusitana.style.fontFamily,
+    // fontFamily: lusitana.style.fontFamily,
     h1: {
       fontSize: '64px',
       lineHeight: '72px',

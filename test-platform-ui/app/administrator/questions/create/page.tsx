@@ -4,6 +4,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   FormControl,
   Input,
   Typography,
@@ -81,7 +82,7 @@ export default function CreateQuestion() {
         handleChangeQuestionType={handleQuestionType}
         handleAnswers={(answers: IAnswer[]) => questionObj.current.answers = answers}
       />
-      <Box className="footer action-buttons inline-flex gap-2 justify-end">
+      <ButtonGroup className="footer action-buttons inline-flex gap-2 justify-end">
         <Button 
           variant="contained" 
           startIcon={<LibraryAddIcon/>} 
@@ -94,7 +95,7 @@ export default function CreateQuestion() {
           onClick={(evt: React.MouseEvent) => handleRedirect('/administrator/questions')}>
             Cancel
         </Button>
-      </Box>
+      </ButtonGroup>
     </Box>
   );
   //#endregion
