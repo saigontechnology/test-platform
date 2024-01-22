@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { TextareaAutosize } from '@mui/base/TextareaAutosize';
-import { styled } from '@mui/system';
 import { TextareaAutosizeProps } from '@mui/material/TextareaAutosize';
+import { styled } from '@mui/system';
+import { useController, useFormContext } from 'react-hook-form';
 
 // Notes: Reference link https://codesandbox.io/p/sandbox/material-ui-textareaautosize-l2l2v?file=%2Fsrc%2Findex.tsx
 //#region : Styling
@@ -39,7 +39,9 @@ const Textarea = styled(TextareaAutosize)(
   color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
   background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
   border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-  box-shadow: 0px 2px 2px ${theme.palette.mode === 'dark' ? grey[900] : grey[50]};
+  box-shadow: 0px 2px 2px ${
+    theme.palette.mode === 'dark' ? grey[900] : grey[50]
+  };
 
   &:hover {
     border-color: ${blue[400]};
@@ -47,7 +49,9 @@ const Textarea = styled(TextareaAutosize)(
 
   &:focus {
     border-color: ${blue[400]};
-    box-shadow: 0 0 0 3px ${theme.palette.mode === 'dark' ? blue[600] : blue[200]};
+    box-shadow: 0 0 0 3px ${
+      theme.palette.mode === 'dark' ? blue[600] : blue[200]
+    };
   }
 
   // firefox
@@ -59,12 +63,20 @@ const Textarea = styled(TextareaAutosize)(
 //#endregion
 
 interface ICustomTextArea extends TextareaAutosizeProps {
-  handleTextChange: (evt: any) => void;
+  name: string;
 }
 
 export default function CustomTextArea(props: ICustomTextArea) {
-  const { handleTextChange } = props;
-  return (
-    <Textarea aria-label="minimum height" {...props} onChange={handleTextChange} />
-  );
+  const { name } = props;
+  const { control } = useFormContext();
+
+  const {
+    field: { ref, onChange, ...inputProps },
+    fieldState: { invalid, error },
+  } = useController({
+    name,
+    control,
+  });
+
+  return <Textarea {...inputProps} {...props} aria-label="minimum height" />;
 }
