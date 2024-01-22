@@ -8,15 +8,34 @@ datasource db {
 }
 
 model Question {
-  id          Int          @id @default(autoincrement())
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime?    @updatedAt
-  question    String
-  category    String
-  description String
-  answer      Int[]
-  options     String[]
-  type        QuestionType @default(SINGLE_CHOICE)
+  id                        Int                         @id @default(autoincrement())
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime?                   @updatedAt
+  question                  String
+  category                  String
+  description               String
+  answer                    Int[]
+  options                   String[]
+  type                      QuestionType                @default(SINGLE_CHOICE)
+  assessmentQuestionMapping AssessmentQuestionMapping[]
+}
+
+model Assessment {
+  id                        Int                         @id @default(autoincrement())
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime?                   @updatedAt
+  name                      String
+  level                     String
+  assessmentQuestionMapping AssessmentQuestionMapping[]
+}
+
+model AssessmentQuestionMapping {
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  question     Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId   Int
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  assessmentId Int
 }
 
 enum QuestionType {
