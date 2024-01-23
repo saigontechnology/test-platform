@@ -11,7 +11,7 @@ export default function CustomTextField(props: ICustomTextField) {
   const { control } = useFormContext();
 
   const {
-    field: { ref, onChange, ...inputProps },
+    field: { ref, ...inputProps },
     fieldState: { invalid, error },
   } = useController({
     name,

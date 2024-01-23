@@ -19,19 +19,37 @@ import React from 'react';
 
 //#region : Temporary definition Questions list's columns:
 export const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', disableColumnMenu: true, sortable: false, width: 30},
-  { field: 'title', headerName: 'Title', flex: 0.6, renderCell: (params) => multipleLinesTypo(params.row.title)},
-  { field: 'content', headerName: 'Question Content', flex: 0.8, renderCell: (params) => multipleLinesTypo(params.row.content)},
+  {
+    field: 'id',
+    headerName: 'ID',
+    disableColumnMenu: true,
+    sortable: false,
+    width: 30,
+  },
+  {
+    field: 'title',
+    headerName: 'Title',
+    flex: 0.6,
+    renderCell: (params) => multipleLinesTypo(params.row.title),
+  },
+  {
+    field: 'content',
+    headerName: 'Question Content',
+    flex: 0.8,
+    renderCell: (params) => multipleLinesTypo(params.row.content),
+  },
   {
     field: 'categories',
     headerName: 'Categories',
-    flex: .5,
+    flex: 0.5,
     renderCell: (params) => {
-        return <Box className="grid gap-1">
-            {params.row.catgories.map((cate: any, indx: number) => {
-            return (<Chip key={`cate-${indx}`} label={cate} />)
-            })}
+      return (
+        <Box className="grid gap-1">
+          {params.row.catgories.map((cate: any, indx: number) => {
+            return <Chip key={`cate-${indx}`} label={cate} />;
+          })}
         </Box>
+      );
     },
   },
   {
@@ -39,17 +57,22 @@ export const columns: GridColDef[] = [
     headerName: 'Answers',
     sortable: false,
     flex: 1,
-    disableColumnMenu: true, 
+    disableColumnMenu: true,
     renderCell: (params) => {
-        return <Box className="grid gap-1">
-            {params.row.answers.map((answ: any, indx: number) => {
+      return (
+        <Box className="grid gap-1">
+          {params.row.answers.map((answ: any, indx: number) => {
             return (
-                <Chip key={`answer-${indx}`} label={answ} 
-                    variant="outlined" 
-                    onDelete={() => console.log('handle delete: ', params)} 
-                />)
-            })}
+              <Chip
+                key={`answer-${indx}`}
+                label={answ}
+                variant="outlined"
+                onDelete={() => console.log('handle delete: ', params)}
+              />
+            );
+          })}
         </Box>
+      );
     },
     valueGetter: (params: GridValueGetterParams) =>
       `${params.row.firstName || ''} ${params.row.lastName || ''}`,
@@ -58,27 +81,29 @@ export const columns: GridColDef[] = [
     field: 'actions',
     headerName: 'Actions',
     sortable: false,
-    flex: .3,
+    flex: 0.3,
     disableColumnMenu: true,
     renderCell: (params) => {
       return (
         <Box className="grid gap-1">
-          <Button 
+          <Button
             className="w-10 [&>span]:m-0"
-            title='Edit'
-            variant="contained" 
-            startIcon={<ModeEdit/>} 
-            onClick={() => console.log('handle edit question: ', params.row)} />
-          <Button 
+            title="Edit"
+            variant="contained"
+            startIcon={<ModeEdit />}
+            onClick={() => console.log('handle edit question: ', params.row)}
+          />
+          <Button
             className="w-10 [&>span]:m-0"
-            title='Archive'
-            variant="outlined" 
-            startIcon={<Inventory/>} 
-            onClick={() => console.log('handle archive question: ', params.row)} />
+            title="Archive"
+            variant="outlined"
+            startIcon={<Inventory />}
+            onClick={() => console.log('handle archive question: ', params.row)}
+          />
         </Box>
-      )
-    }
-  }
+      );
+    },
+  },
 ];
 //#endregion
 
@@ -93,23 +118,24 @@ export default function Page() {
           Questions
         </Typography>
         <Button
-          className='text-xl'
+          className="text-xl"
           variant="contained"
           onClick={(evt: React.MouseEvent) => {
             evt.preventDefault();
             router.push('/administrator/questions/create');
             // modalRef.current?.open()
           }}
-          startIcon={<AddBox className="!text-2xl"/>}
+          startIcon={<AddBox className="!text-2xl" />}
         >
           Create New Question
         </Button>
       </Box>
       <Divider className="my-10" />
       <Box>
-        <DataTable rows={questionRows} columns={columns}/>
+        <DataTable rows={questionRows} columns={columns} />
       </Box>
-      <CustomModal ref={modalRef} title="Create New Question">
+      {/* Pending Modal */}
+      {/* <CustomModal ref={modalRef} title="Create New Question">
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <CustomSingleSelect label="Category" options={CategoriesOptions} />
@@ -128,7 +154,7 @@ export default function Page() {
           </Button>
           <Button variant="contained">Save</Button>
         </Box>
-      </CustomModal>
+      </CustomModal> */}
     </Box>
   );
 }

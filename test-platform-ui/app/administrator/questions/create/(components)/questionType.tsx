@@ -10,8 +10,9 @@ import clsx from 'clsx';
 import { IAnswer } from '../page';
 
 interface IQuestionType {
-  questionType: string,
-  handleAnswers: (answers: IAnswer[]) => void,
+  className?: string;
+  questionType: string;
+  handleAnswers: (answers: IAnswer[]) => void;
   handleChangeQuestionType: (
     event: React.MouseEvent<HTMLElement>,
     selectedType: string,
@@ -19,10 +20,11 @@ interface IQuestionType {
 }
 
 export default function RenderQuestionType(props: IQuestionType): ReactElement {
-  const { questionType, handleAnswers, handleChangeQuestionType } = props;
+  const { questionType, className, handleAnswers, handleChangeQuestionType } =
+    props;
   const questionTypes = ['single', 'multiple'];
   return (
-    <FormControl>
+    <FormControl className={className}>
       <Typography className="ml-2 font-semibold">Type and Answers</Typography>
       <ToggleButtonGroup
         value={questionType}
@@ -41,14 +43,19 @@ export default function RenderQuestionType(props: IQuestionType): ReactElement {
                 'active !bg-sky-100 !font-extrabold !text-blue-600':
                   questionType === type,
               })}
-              size='small'
+              size="small"
             >
-              <Typography className='text-sm'>{`${type} choice`}</Typography>
+              <Typography className="text-sm">{`${type} choice`}</Typography>
             </ToggleButton>
           );
         })}
       </ToggleButtonGroup>
-      <RenderQuestionTypeZone questionType={questionType} handleAnswers={(answers) => handleAnswers(answers.filter(answ => answ.id != 0))} />
+      <RenderQuestionTypeZone
+        questionType={questionType}
+        handleAnswers={(answers) =>
+          handleAnswers(answers.filter((answ) => answ.id != 0))
+        }
+      />
     </FormControl>
   );
 }
