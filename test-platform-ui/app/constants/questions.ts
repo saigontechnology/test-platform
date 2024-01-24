@@ -107,5 +107,5 @@ export const questionRows = [
 export interface ICreateQuestion {
   title: string;
   content: string;
-  type: string;
+  // type: string;
 }

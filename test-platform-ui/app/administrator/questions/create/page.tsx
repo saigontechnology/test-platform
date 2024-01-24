@@ -19,6 +19,8 @@ import { useRouter } from 'next/navigation';
 import React, { useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import RenderQuestionType from './(components)/questionType';
+import { DevTool } from '@hookform/devtools';
+import ApiHook, { Methods } from '@/app/lib/ApiHook';
 
 export interface IAnswer {
   id: number;
@@ -36,21 +38,16 @@ interface IQuestion {
 export default function CreateQuestion() {
   const router = useRouter();
   const [questionType, setQuestionType] = useState<string>('single');
-  const questionObj = useRef<IQuestion>({
-    type: questionType,
-    title: '',
-    content: '',
-    answers: [],
-  });
+  const answerArray = useRef<IAnswer[]>([]);
 
   const form = useForm<ICreateQuestion>({
     defaultValues: {
       title: '',
       content: '',
-      type: '',
     },
     resolver: yupResolver(createQuestionSchema),
   });
+  const { control } = form;
 
   const handleQuestionType = (
     event: React.MouseEvent<HTMLElement>,
@@ -62,12 +59,16 @@ export default function CreateQuestion() {
     );
   };
 
-  const handleAddQuestion = () => {
-    const formData = form.getValues();
-    console.log('add question: ', {
-      ...formData,
-      type: questionType,
-    });
+  const handleAddQuestion = (questionData: ICreateQuestion) => {
+    const formData = {
+        ...questionData,
+        type: questionType,
+        answers: answerArray.current,
+      },
+      { data, loading, error } = ApiHook(Methods.POST, '/', {
+        data: formData,
+      });
+    console.log('add question: ', formData, data, error);
   };
 
   const handleRedirect = (route: string) => {
@@ -77,52 +78,64 @@ export default function CreateQuestion() {
   //#region : Create question form
   return (
     <FormProvider {...form}>
-      <Box component="form" noValidate autoComplete="off" className="grid">
-        <Typography className="mx-2 my-4 mb-10 text-2xl">
-          Create a new question
-        </Typography>
-        <FormControl variant="standard" className="w-2/5 pb-7">
-          <Typography className="ml-2 font-semibold">Title</Typography>
-          <CustomTextField
-            name="title"
-            id="question-title-input"
-            className="mx-2 my-2 ring-offset-0"
-          />
-        </FormControl>
-        <FormControl variant="standard" className="w-2/5 pb-7">
-          <Typography className="ml-2 font-semibold">Content</Typography>
-          <CustomTextArea
-            className="mx-2 my-2 w-full"
-            minRows={4}
-            name="content"
-          />
-        </FormControl>
+      <Typography className="mx-2 my-4 mb-10 text-2xl">
+        Create a new question
+      </Typography>
+      <Box
+        component="form"
+        noValidate
+        autoComplete="off"
+        className="flex flex-row"
+        onSubmit={form.handleSubmit(handleAddQuestion)}
+      >
+        <Box className="grid basis-1/2">
+          <FormControl variant="standard" className="!w-4/5 pb-7">
+            <Typography className="ml-2 font-semibold">Title</Typography>
+            <CustomTextField
+              name="title"
+              id="question-title-input"
+              className="mx-2 my-2 ring-offset-0"
+            />
+          </FormControl>
+          <FormControl variant="standard" className="!w-4/5 pb-7">
+            <Typography className="ml-2 font-semibold">Content</Typography>
+            <CustomTextArea
+              className="mx-2 my-2 w-full"
+              minRows={4}
+              name="content"
+              isResizeAble={true}
+              isMultipleLine
+            />
+          </FormControl>
+        </Box>
         <RenderQuestionType
+          className="basis-1/2"
           questionType={questionType}
           handleChangeQuestionType={handleQuestionType}
           handleAnswers={(answers: IAnswer[]) =>
-            (questionObj.current.answers = answers)
+            (answerArray.current = answers)
           }
         />
-        <ButtonGroup className="footer action-buttons inline-flex justify-end gap-2">
-          <Button
-            variant="contained"
-            startIcon={<LibraryAddIcon />}
-            onClick={form.handleSubmit(handleAddQuestion)}
-          >
-            Create
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<ClearIcon />}
-            onClick={(evt: React.MouseEvent) =>
-              handleRedirect('/administrator/questions')
-            }
-          >
-            Cancel
-          </Button>
-        </ButtonGroup>
       </Box>
+      <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
+        <Button
+          variant="contained"
+          startIcon={<LibraryAddIcon />}
+          onClick={form.handleSubmit(handleAddQuestion)}
+        >
+          Create
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<ClearIcon />}
+          onClick={(evt: React.MouseEvent) =>
+            handleRedirect('/administrator/questions')
+          }
+        >
+          Cancel
+        </Button>
+      </ButtonGroup>
+      <DevTool control={control} />
     </FormProvider>
   );
   //#endregion

@@ -1,7 +1,8 @@
 import { TextareaAutosize } from '@mui/base/TextareaAutosize';
+import { StandardTextFieldProps, TextField, Theme } from '@mui/material';
 import { TextareaAutosizeProps } from '@mui/material/TextareaAutosize';
 import { styled } from '@mui/system';
-import { useController, useFormContext } from 'react-hook-form';
+import { FieldError, useController, useFormContext } from 'react-hook-form';
 
 // Notes: Reference link https://codesandbox.io/p/sandbox/material-ui-textareaautosize-l2l2v?file=%2Fsrc%2Findex.tsx
 //#region : Styling
@@ -62,21 +63,49 @@ const Textarea = styled(TextareaAutosize)(
 );
 //#endregion
 
-interface ICustomTextArea extends TextareaAutosizeProps {
+interface ICustomTextArea extends StandardTextFieldProps {
   name: string;
+  isResizeAble?: boolean;
+  isMultipleLine?: boolean;
 }
 
 export default function CustomTextArea(props: ICustomTextArea) {
-  const { name } = props;
+  const { name, isResizeAble, isMultipleLine } = props;
   const { control } = useFormContext();
 
   const {
-    field: { ref, onChange, ...inputProps },
+    field: { ref, ...inputProps },
     fieldState: { invalid, error },
   } = useController({
     name,
     control,
   });
 
-  return <Textarea {...inputProps} {...props} aria-label="minimum height" />;
+  return (
+    <TextField
+      {...inputProps}
+      {...props}
+      id="standard-basic"
+      placeholder="Standard"
+      multiline={isMultipleLine}
+      minRows={2}
+      maxRows={7}
+      error={invalid}
+      helperText={invalid ? (error as FieldError)?.message : ''}
+      InputProps={
+        isResizeAble
+          ? {
+              inputComponent: Textarea,
+              inputProps: {
+                style: {
+                  resize: 'vertical',
+                  maxHeight: 200,
+                  overflow: 'auto',
+                },
+              },
+            }
+          : undefined
+      }
+    />
+  );
 }
