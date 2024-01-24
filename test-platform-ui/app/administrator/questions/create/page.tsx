@@ -61,14 +61,14 @@ export default function CreateQuestion() {
 
   const handleAddQuestion = (questionData: ICreateQuestion) => {
     const formData = {
-        ...questionData,
-        type: questionType,
-        answers: answerArray.current,
-      },
-      { data, loading, error } = ApiHook(Methods.POST, '/', {
-        data: formData,
-      });
-    console.log('add question: ', formData, data, error);
+      ...questionData,
+      type: questionType,
+      answers: answerArray.current,
+    };
+    const response = ApiHook(Methods.POST, '/questions', {
+      data: formData,
+    });
+    console.log('add question: ', formData, response);
   };
 
   const handleRedirect = (route: string) => {

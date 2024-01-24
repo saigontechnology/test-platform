@@ -6,16 +6,16 @@ import CustomModal, {
   CustomModalHandler,
 } from '@/app/components/molecules/CustomModal';
 import DataTable, { multipleLinesTypo } from '@/app/components/molecules/Grid';
-import { CategoriesOptions, questionRows } from '@/app/constants/questions';
+import { questionRows } from '@/app/constants/questions';
 import { Chip, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
 import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
 import { ModeEdit, Inventory, AddBox } from '@mui/icons-material';
-import React from 'react';
+import React, { useEffect } from 'react';
+import ApiHook, { Methods } from '@/app/lib/ApiHook';
 
 //#region : Temporary definition Questions list's columns:
 export const columns: GridColDef[] = [
@@ -110,6 +110,15 @@ export const columns: GridColDef[] = [
 export default function Page() {
   const router = useRouter();
   const modalRef = React.useRef<CustomModalHandler>(null);
+
+  const getQuestionsList = async () => {
+    const response = await ApiHook(Methods.GET, '/questions');
+    console.log('getQuestionsList: ', response);
+  };
+
+  useEffect(() => {
+    getQuestionsList();
+  }, []);
 
   return (
     <Box>

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from 'axios';
 import { toast } from 'react-toastify';
+import axiosRetry from 'axios-retry';
 
 export enum Methods {
   GET = 'GET',
@@ -10,7 +10,8 @@ export enum Methods {
 }
 
 const axiosInstance = axios.create({
-  baseURL: '/', // Add any other global configurations here.
+  // Add any other global configurations here.
+  baseURL: 'https://test-platform-api.onrender.com',
 });
 
 //  Axios Error Handling:
@@ -23,6 +24,13 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+axiosRetry(axiosInstance, {
+  retries: 3,
+  // retryCondition: (error) => {
+  //   return error.response.status === 429
+  // },
+});
 
 // Notification Toast:
 function notification(
@@ -145,33 +153,26 @@ const AxiosMethods = {
   },
 };
 
-const ApiHook = <T>(
+const ApiHook = async <T>(
   method: Methods,
   url: string,
   configs?: AxiosRequestConfig,
 ) => {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  let data = null,
+    error = null;
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const _axios = AxiosMethods[method];
-      const response: AxiosResponse<T> = await _axios(url, configs);
-      setData(response.data);
-    } catch (error) {
-      setError('Error getting the data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  return { data, loading, error };
+  try {
+    const _axios = AxiosMethods[method];
+    const response: AxiosResponse<T> = await _axios(url, configs);
+    data = response.data;
+  } catch (_error) {
+    // ✅ TypeScript knows err is Error
+    error =
+      _error instanceof AxiosError
+        ? { errorCode: _error.code, message: _error.message }
+        : _error;
+  }
+  return { data, error };
 };
 
 export default ApiHook;
