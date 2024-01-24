@@ -6,9 +6,11 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - name: Deploy
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
+        # Only run this step if the branch is main
+        if: github.ref == 'refs/heads/main'
+        env:
+          deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          curl "$deploy_url"
