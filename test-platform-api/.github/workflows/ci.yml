@@ -8,10 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Test
-        run: |
-          npm install
-
       - name: Deploy
         env:
           deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
