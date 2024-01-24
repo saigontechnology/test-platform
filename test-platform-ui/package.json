@@ -1,5 +1,6 @@
 {
   "private": true,
+  "version": "0.0.1",
   "prisma": {
     "seed": "ts-node --esm scripts/seed.js",
     "migrate:dev": "npx prisma migrate dev --name init --schema=./scripts/prisma/schema.prisma"
