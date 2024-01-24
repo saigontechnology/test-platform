@@ -18,6 +18,7 @@ model Question {
   options                   String[]
   type                      QuestionType                @default(SINGLE_CHOICE)
   assessmentQuestionMapping AssessmentQuestionMapping[]
+  ExamAnswer                ExamAnswer[]
 }
 
 model Assessment {
@@ -27,6 +28,7 @@ model Assessment {
   name                      String
   level                     String
   assessmentQuestionMapping AssessmentQuestionMapping[]
+  Examination               Examination[]
 }
 
 model AssessmentQuestionMapping {
@@ -36,6 +38,34 @@ model AssessmentQuestionMapping {
   questionId   Int
   assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   assessmentId Int
+}
+
+model Examination {
+  id               Int               @id @default(autoincrement())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime?         @updatedAt
+  email            String
+  assessmentId     Int
+  assessment       Assessment        @relation(fields: [assessmentId], references: [id])
+  submittedAnswers ExamAnswer[]
+  score            Decimal?
+  status           ExaminationStatus @default(IN_PROGRESS)
+}
+
+model ExamAnswer {
+  questionId    Int
+  selections    Int[]
+  examinationId Int
+  examination   Examination? @relation(fields: [examinationId], references: [id], onDelete: Cascade)
+  question      Question?    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([questionId, examinationId])
+}
+
+enum ExaminationStatus {
+  IN_PROGRESS
+  COMPLETED
+  EVALUATED
 }
 
 enum QuestionType {
