@@ -1,12 +1,9 @@
 'use client';
 
-import CustomRadioGroup from '@/app/components/atoms/CustomRadioGroup';
-import CustomSingleSelect from '@/app/components/atoms/CustomSingleSelect';
 import CustomModal, {
   CustomModalHandler,
 } from '@/app/components/molecules/CustomModal';
 import DataTable, { multipleLinesTypo } from '@/app/components/molecules/Grid';
-import { questionRows } from '@/app/constants/questions';
 import { Chip, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -14,8 +11,21 @@ import Divider from '@mui/material/Divider';
 import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
 import { ModeEdit, Inventory, AddBox } from '@mui/icons-material';
-import React, { useEffect } from 'react';
-import ApiHook, { Methods } from '@/app/lib/ApiHook';
+import React, { useEffect, useState } from 'react';
+import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
+import { IResponseQuestion } from '@/app/lib/apis/Interfaces';
+import clsx from 'clsx';
+
+interface IQuestion {
+  id: number;
+  title: string;
+  content: string;
+  categories: string[];
+  answers: number[];
+  options: string[];
+}
+
+let externalRoute = null;
 
 //#region : Temporary definition Questions list's columns:
 export const columns: GridColDef[] = [
@@ -45,7 +55,7 @@ export const columns: GridColDef[] = [
     renderCell: (params) => {
       return (
         <Box className="grid gap-1">
-          {params.row.catgories.map((cate: any, indx: number) => {
+          {params.row.categories?.map((cate: any, indx: number) => {
             return <Chip key={`cate-${indx}`} label={cate} />;
           })}
         </Box>
@@ -61,13 +71,16 @@ export const columns: GridColDef[] = [
     renderCell: (params) => {
       return (
         <Box className="grid gap-1">
-          {params.row.answers.map((answ: any, indx: number) => {
+          {params.row.options?.map((answ: any, indx: number) => {
             return (
               <Chip
+                className={clsx('w-fit max-w-sm', {
+                  'bg-blue-500 text-white': params.row.answers?.includes(indx),
+                })}
                 key={`answer-${indx}`}
                 label={answ}
                 variant="outlined"
-                onDelete={() => console.log('handle delete: ', params)}
+                // onDelete={() => console.log('handle delete: ', params)}
               />
             );
           })}
@@ -91,7 +104,11 @@ export const columns: GridColDef[] = [
             title="Edit"
             variant="contained"
             startIcon={<ModeEdit />}
-            onClick={() => console.log('handle edit question: ', params.row)}
+            onClick={() =>
+              externalRoute.push(
+                `/administrator/questions/edit/${params.row.id}`,
+              )
+            }
           />
           <Button
             className="w-10 [&>span]:m-0"
@@ -108,12 +125,26 @@ export const columns: GridColDef[] = [
 //#endregion
 
 export default function Page() {
-  const router = useRouter();
+  const [questionList, setQuestionList] = useState<IQuestion[]>([]);
+  const router = (externalRoute = useRouter());
   const modalRef = React.useRef<CustomModalHandler>(null);
 
   const getQuestionsList = async () => {
-    const response = await ApiHook(Methods.GET, '/questions');
-    console.log('getQuestionsList: ', response);
+    const _questions = await ApiHook(Methods.GET, '/questions');
+    const _questionList: IQuestion[] = (
+      _questions.data as Array<IResponseQuestion>
+    ).map((q: IResponseQuestion) => {
+      return {
+        id: q.id,
+        title: q.question,
+        content: q.description,
+        categories: new Array().concat(q.category),
+        answers: q.answer,
+        options: q.options,
+        type: q.type,
+      };
+    });
+    setQuestionList(_questionList);
   };
 
   useEffect(() => {
@@ -140,9 +171,7 @@ export default function Page() {
         </Button>
       </Box>
       <Divider className="my-10" />
-      <Box>
-        <DataTable rows={questionRows} columns={columns} />
-      </Box>
+      <DataTable rows={questionList} columns={columns} />
       {/* Pending Modal */}
       {/* <CustomModal ref={modalRef} title="Create New Question">
         <Grid container spacing={3}>

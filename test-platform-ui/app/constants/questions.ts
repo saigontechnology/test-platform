@@ -35,7 +35,7 @@ export const questionRows = [
     title: 'Interview question',
     content:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    catgories: ['React JS'],
+    categories: ['React JS'],
     answers: ['Answer No.01', 'Answer No.02', 'Answer No.03', 'Answer No.04'],
   },
   {
@@ -43,7 +43,7 @@ export const questionRows = [
     title: 'Interview question',
     content:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    catgories: ['React JS'],
+    categories: ['React JS'],
     answers: ['Answer No.01', 'Answer No.02', 'Answer No.03', 'Answer No.04'],
   },
   {
@@ -51,7 +51,7 @@ export const questionRows = [
     title: 'Interview question',
     content:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    catgories: ['React JS'],
+    categories: ['React JS'],
     answers: ['Answer No.01', 'Answer No.02', 'Answer No.03', 'Answer No.04'],
   },
   {
@@ -59,7 +59,7 @@ export const questionRows = [
     title: 'Interview question',
     content:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    catgories: ['React JS'],
+    categories: ['React JS'],
     answers: ['Answer No.01', 'Answer No.02', 'Answer No.03', 'Answer No.04'],
   },
   {
@@ -67,7 +67,7 @@ export const questionRows = [
     title: 'Interview question',
     content:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    catgories: ['React JS'],
+    categories: ['React JS'],
     answers: ['Answer No.01', 'Answer No.02', 'Answer No.03', 'Answer No.04'],
   },
   {
@@ -75,7 +75,7 @@ export const questionRows = [
     title: 'Interview question',
     content:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    catgories: ['React JS'],
+    categories: ['React JS'],
     answers: ['Answer No.01', 'Answer No.02', 'Answer No.03', 'Answer No.04'],
   },
   {
@@ -83,7 +83,7 @@ export const questionRows = [
     title: 'Interview question',
     content:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    catgories: ['React JS'],
+    categories: ['React JS'],
     answers: ['Answer No.01', 'Answer No.02', 'Answer No.03', 'Answer No.04'],
   },
   {
@@ -91,7 +91,7 @@ export const questionRows = [
     title: 'Interview question',
     content:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    catgories: ['React JS'],
+    categories: ['React JS'],
     answers: ['Answer No.01', 'Answer No.02', 'Answer No.03', 'Answer No.04'],
   },
   {
@@ -99,12 +99,12 @@ export const questionRows = [
     title: 'Interview question',
     content:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    catgories: ['React JS'],
+    categories: ['React JS'],
     answers: ['Answer No.01', 'Answer No.02', 'Answer No.03', 'Answer No.04'],
   },
 ];
 
-export interface ICreateQuestion {
+export interface IAddQuestion {
   title: string;
   content: string;
   // type: string;

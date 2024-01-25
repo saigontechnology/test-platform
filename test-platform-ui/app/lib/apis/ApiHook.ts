@@ -1,6 +1,10 @@
 import axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from 'axios';
 import { toast } from 'react-toastify';
-import axiosRetry from 'axios-retry';
+
+interface RetryConfig extends AxiosRequestConfig {
+  retry: number;
+  retryDelay: number;
+}
 
 export enum Methods {
   GET = 'GET',
@@ -10,27 +14,37 @@ export enum Methods {
 }
 
 const axiosInstance = axios.create({
-  // Add any other global configurations here.
-  baseURL: 'https://test-platform-api.onrender.com',
+  baseURL: 'http://localhost:8080',
+  // baseURL: 'https://test-platform-api.onrender.com',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
+
+const globalConfig: RetryConfig = {
+  retry: 3,
+  retryDelay: 1000,
+};
 
 //  Axios Error Handling:
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    if (axios.isCancel(error)) {
-      window.console.log('Request canceled', error.message);
+  (error) => {
+    const { config } = error;
+
+    if (!config || !config.retry) {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
+    config.retry -= 1;
+    const delayRetryRequest = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        console.log('retry the request', config.url);
+        resolve();
+      }, config.retryDelay || 1000);
+    });
+    return delayRetryRequest.then(() => axiosInstance(config));
   },
 );
-
-axiosRetry(axiosInstance, {
-  retries: 3,
-  // retryCondition: (error) => {
-  //   return error.response.status === 429
-  // },
-});
 
 // Notification Toast:
 function notification(
@@ -129,6 +143,8 @@ const AxiosMethods = {
     }
   },
 
+  // PATCH
+
   /**
    * Sends a DELETE request to the specified URL using axiosInstance.
    * @template TResponse The expected response type.
@@ -158,13 +174,13 @@ const ApiHook = async <T>(
   url: string,
   configs?: AxiosRequestConfig,
 ) => {
-  let data = null,
+  let data: T = null as T,
     error = null;
 
   try {
     const _axios = AxiosMethods[method];
     const response: AxiosResponse<T> = await _axios(url, configs);
-    data = response.data;
+    data = response as T;
   } catch (_error) {
     // ✅ TypeScript knows err is Error
     error =
