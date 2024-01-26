@@ -1,6 +1,10 @@
-import { useState, useEffect } from 'react';
 import axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from 'axios';
 import { toast } from 'react-toastify';
+
+interface RetryConfig extends AxiosRequestConfig {
+  retry: number;
+  retryDelay: number;
+}
 
 export enum Methods {
   GET = 'GET',
@@ -10,17 +14,35 @@ export enum Methods {
 }
 
 const axiosInstance = axios.create({
-  baseURL: '/', // Add any other global configurations here.
+  baseURL: 'http://localhost:8080',
+  // baseURL: 'https://test-platform-api.onrender.com',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
+
+const globalConfig: RetryConfig = {
+  retry: 3,
+  retryDelay: 1000,
+};
 
 //  Axios Error Handling:
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
-    if (axios.isCancel(error)) {
-      window.console.log('Request canceled', error.message);
+  (error) => {
+    const { config } = error;
+
+    if (!config || !config.retry) {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
+    config.retry -= 1;
+    const delayRetryRequest = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        console.log('retry the request', config.url);
+        resolve();
+      }, config.retryDelay || 1000);
+    });
+    return delayRetryRequest.then(() => axiosInstance(config));
   },
 );
 
@@ -121,6 +143,8 @@ const AxiosMethods = {
     }
   },
 
+  // PATCH
+
   /**
    * Sends a DELETE request to the specified URL using axiosInstance.
    * @template TResponse The expected response type.
@@ -145,33 +169,26 @@ const AxiosMethods = {
   },
 };
 
-const ApiHook = <T>(
+const ApiHook = async <T>(
   method: Methods,
   url: string,
   configs?: AxiosRequestConfig,
 ) => {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  let data: T = null as T,
+    error = null;
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const _axios = AxiosMethods[method];
-      const response: AxiosResponse<T> = await _axios(url, configs);
-      setData(response.data);
-    } catch (error) {
-      setError('Error getting the data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  return { data, loading, error };
+  try {
+    const _axios = AxiosMethods[method];
+    const response: AxiosResponse<T> = await _axios(url, configs);
+    data = response as T;
+  } catch (_error) {
+    // ✅ TypeScript knows err is Error
+    error =
+      _error instanceof AxiosError
+        ? { errorCode: _error.code, message: _error.message }
+        : _error;
+  }
+  return { data, error };
 };
 
 export default ApiHook;

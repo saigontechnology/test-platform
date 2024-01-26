@@ -10,6 +10,7 @@ import clsx from 'clsx';
 import { IAnswer } from '../page';
 
 interface IQuestionType {
+  answers?: IAnswer[];
   className?: string;
   questionType: string;
   handleAnswers: (answers: IAnswer[]) => void;
@@ -20,9 +21,15 @@ interface IQuestionType {
 }
 
 export default function RenderQuestionType(props: IQuestionType): ReactElement {
-  const { questionType, className, handleAnswers, handleChangeQuestionType } =
-    props;
+  const {
+    questionType,
+    className,
+    answers,
+    handleAnswers,
+    handleChangeQuestionType,
+  } = props;
   const questionTypes = ['single', 'multiple'];
+
   return (
     <FormControl className={className}>
       <Typography className="ml-2 font-semibold">Type and Answers</Typography>
@@ -51,6 +58,7 @@ export default function RenderQuestionType(props: IQuestionType): ReactElement {
         })}
       </ToggleButtonGroup>
       <RenderQuestionTypeZone
+        renderAnswers={answers}
         questionType={questionType}
         handleAnswers={(answers) =>
           handleAnswers(answers.filter((answ) => answ.id != 0))
