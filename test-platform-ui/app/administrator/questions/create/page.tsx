@@ -88,16 +88,12 @@ export default function CreateQuestion(props: ICreateQuestion) {
     console.log('add question: ', formData, response);
   };
 
-  const handleRedirect = (route: string) => {
-    router.push(route);
-  };
-
   //#region : Create question form
   return (
     <Box>
       <FormProvider {...form}>
         <Typography className="mx-2 my-4 mb-10 text-2xl">
-          {`${questionData ? 'Edit' : 'Create a new'} question`}
+          {`${questionData ? 'Edit' : 'New'} Question`}
         </Typography>
         <Box
           component="form"
@@ -142,14 +138,12 @@ export default function CreateQuestion(props: ICreateQuestion) {
             startIcon={<LibraryAddIcon />}
             onClick={form.handleSubmit(handleAddQuestion)}
           >
-            Create
+            Submit
           </Button>
           <Button
             variant="outlined"
             startIcon={<ClearIcon />}
-            onClick={(evt: React.MouseEvent) =>
-              handleRedirect('/administrator/questions')
-            }
+            onClick={() => router.back()}
           >
             Cancel
           </Button>

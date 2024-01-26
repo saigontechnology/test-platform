@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { ModeEdit, Inventory, AddBox } from '@mui/icons-material';
 import React, { useEffect, useState } from 'react';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
-import { IResponseQuestion } from '@/app/lib/apis/Interfaces';
+import { IResponseQuestion } from '@/app/constants/questions';
 import clsx from 'clsx';
 
 interface IQuestion {
@@ -167,7 +167,7 @@ export default function Page() {
           }}
           startIcon={<AddBox className="!text-2xl" />}
         >
-          Create New Question
+          New Question
         </Button>
       </Box>
       <Divider className="my-10" />
