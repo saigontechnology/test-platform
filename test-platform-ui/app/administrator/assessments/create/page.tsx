@@ -4,6 +4,7 @@ import CustomSingleSelect from '@/app/components/atoms/CustomSingleSelect';
 import CustomTextField from '@/app/components/atoms/CustomTextField';
 import { ICreateAssessment, LevelOptions } from '@/app/constants/assessments';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
+import { showNotification } from '@/app/lib/toast';
 import { createAssessmentSchema } from '@/app/validations/assessment';
 import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -38,9 +39,10 @@ export default function CreatePage(props: ICreatePage) {
 
   const handleAddNew = async () => {
     const formData = form.getValues();
-    await ApiHook(Methods.POST, '/assessments', {
+    const { error } = await ApiHook(Methods.POST, '/assessments', {
       data: formData,
     });
+    !error && showNotification('Create new assessment successfully', 'success');
   };
 
   return (

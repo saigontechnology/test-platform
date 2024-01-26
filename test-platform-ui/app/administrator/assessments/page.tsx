@@ -4,6 +4,7 @@ import DataTable, { multipleLinesTypo } from '@/app/components/molecules/Grid';
 import { IAssessment } from '@/app/constants/assessments';
 import { ROUTE_KEY } from '@/app/constants/routePaths';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
+import { showNotification } from '@/app/lib/toast';
 import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
 import { IconButton, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -47,8 +48,11 @@ export default function Page() {
 
   const handleDelete = async (e: React.MouseEvent, row: IAssessment) => {
     e.stopPropagation();
-    await ApiHook(Methods.DELETE, `/assessments/${row.id}`);
-    getAssessments();
+    const { error } = await ApiHook(Methods.DELETE, `/assessments/${row.id}`);
+    if (!error) {
+      showNotification('Delete assessment successfully', 'success');
+      getAssessments();
+    }
   };
 
   const columns: GridColDef[] = [

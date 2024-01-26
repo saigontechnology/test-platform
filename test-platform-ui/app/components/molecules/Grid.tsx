@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 export const multipleLinesTypo = (content: string) => {
@@ -13,7 +13,14 @@ interface IDataTable {
 export default function DataTable(props: IDataTable) {
   const { rows, columns } = props;
   return (
-    <div style={{ height: '39rem', width: '100%' }}>
+    <Box
+      className="h=[39rem] w-full"
+      sx={{
+        '.MuiDataGrid-cell, .MuiDataGrid-columnHeader': {
+          outline: 'none !important',
+        },
+      }}
+    >
       <DataGrid
         rows={rows}
         columns={columns}
@@ -26,6 +33,6 @@ export default function DataTable(props: IDataTable) {
         pageSizeOptions={[3, 5, 10]}
         checkboxSelection
       />
-    </div>
+    </Box>
   );
 }
