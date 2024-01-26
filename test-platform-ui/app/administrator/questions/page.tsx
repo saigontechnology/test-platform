@@ -105,9 +105,7 @@ export const columns: GridColDef[] = [
             variant="contained"
             startIcon={<ModeEdit />}
             onClick={() =>
-              externalRoute.push(
-                `/administrator/questions/edit/${params.row.id}`,
-              )
+              externalRoute.push(`/administrator/questions/${params.row.id}`)
             }
           />
           <Button
@@ -129,26 +127,24 @@ export default function Page() {
   const router = (externalRoute = useRouter());
   const modalRef = React.useRef<CustomModalHandler>(null);
 
-  const getQuestionsList = async () => {
-    const _questions = await ApiHook(Methods.GET, '/questions');
-    const _questionList: IQuestion[] = (
-      _questions.data as Array<IResponseQuestion>
-    ).map((q: IResponseQuestion) => {
-      return {
-        id: q.id,
-        title: q.question,
-        content: q.description,
-        categories: new Array().concat(q.category),
-        answers: q.answer,
-        options: q.options,
-        type: q.type,
-      };
-    });
-    setQuestionList(_questionList);
-  };
-
   useEffect(() => {
-    getQuestionsList();
+    (async () => {
+      const _questions = await ApiHook(Methods.GET, '/questions');
+      const _questionList: IQuestion[] = (
+        _questions.data as Array<IResponseQuestion>
+      ).map((q: IResponseQuestion) => {
+        return {
+          id: q.id,
+          title: q.question,
+          content: q.description,
+          categories: new Array().concat(q.category),
+          answers: q.answer,
+          options: q.options,
+          type: q.type,
+        };
+      });
+      setQuestionList(_questionList);
+    })();
   }, []);
 
   return (
@@ -172,27 +168,6 @@ export default function Page() {
       </Box>
       <Divider className="my-10" />
       <DataTable rows={questionList} columns={columns} />
-      {/* Pending Modal */}
-      {/* <CustomModal ref={modalRef} title="Create New Question">
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <CustomSingleSelect label="Category" options={CategoriesOptions} />
-          </Grid>
-          <Grid item xs={12}>
-            <CustomRadioGroup />
-          </Grid>
-        </Grid>
-        <Box className="mt-[20px] text-right">
-          <Button
-            onClick={() => modalRef.current?.close()}
-            variant="outlined"
-            className="mr-[10px]"
-          >
-            Cancel
-          </Button>
-          <Button variant="contained">Save</Button>
-        </Box>
-      </CustomModal> */}
     </Box>
   );
 }

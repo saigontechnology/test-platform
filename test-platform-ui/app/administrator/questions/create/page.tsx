@@ -18,12 +18,22 @@ import {
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import RenderQuestionType from './(components)/questionType';
+import RenderQuestionType from './(question-form)/questionType';
 import { DevTool } from '@hookform/devtools';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
 
+export interface IQuestionInfo {
+  id: number;
+  title: string;
+  content: string;
+  categories: string[];
+  answers: number[];
+  options: string[];
+  type: string;
+}
+
 interface ICreateQuestion {
-  questionData: any;
+  questionData: IQuestionInfo;
 }
 
 export interface IAnswer {
@@ -38,7 +48,6 @@ export default function CreateQuestion(props: ICreateQuestion) {
   const [questionType, setQuestionType] = useState<string>(
     questionData?.type.split('_')[0].toLowerCase() || 'single',
   );
-  const [answerArray, setAnswerArray] = useState<IAnswer[]>([]);
 
   const mapEditAnswer = (options: string[], answers: number[]) => {
     const _mapped = options?.map((opt: string, indx: number) => ({
@@ -49,13 +58,11 @@ export default function CreateQuestion(props: ICreateQuestion) {
     return _mapped;
   };
 
-  useEffect(() => {
-    const mappedAnswer = mapEditAnswer(
-      questionData?.options,
-      questionData?.answers,
-    );
-    setAnswerArray(mappedAnswer);
-  }, [questionData]);
+  const [answerArray, setAnswerArray] = useState<IAnswer[]>(
+    questionData
+      ? mapEditAnswer(questionData?.options, questionData?.answers)
+      : [],
+  );
 
   const form = useForm<IAddQuestion>({
     defaultValues: {
@@ -66,31 +73,48 @@ export default function CreateQuestion(props: ICreateQuestion) {
   });
   const { control } = form;
 
-  const handleQuestionType = (
-    event: React.MouseEvent<HTMLElement>,
-    selectedType: string,
-  ) => {
-    event.preventDefault();
-    setQuestionType((prevType) =>
-      prevType != selectedType ? selectedType : prevType,
-    );
+  //#region : Handle interactive functions
+  const HandleInteractions = {
+    handleRedirect: (route: string) => {
+      router.push(route);
+    },
+    handleQuestionType: (
+      event: React.MouseEvent<HTMLElement>,
+      selectedType: string,
+    ) => {
+      event.preventDefault();
+      setQuestionType((prevType) =>
+        prevType != selectedType ? selectedType : prevType,
+      );
+    },
+    handleModifiedQuestion: async (modifiedQuestion: IAddQuestion) => {
+      const formData = {
+        question: modifiedQuestion.title,
+        description: modifiedQuestion.content,
+        answer: answerArray.reduce((array: any, answ: any) => {
+          return answ.isCorrect ? [...array, answ.id] : array;
+        }, []),
+        options: answerArray.map((answ) => answ.answer),
+        category: 'React',
+        type: questionType === 'single' ? 'SINGLE_CHOICE' : 'MULTIPLE_CHOICE',
+      };
+      if (formData.answer.length) {
+        const { error } = await (questionData
+          ? ApiHook(Methods.PUT, `/questions/${questionData.id}`, {
+              data: formData,
+            })
+          : ApiHook(Methods.POST, '/questions', {
+              data: formData,
+            }));
+        if (!error) {
+          HandleInteractions.handleRedirect('/administrator/questions');
+        }
+      } else {
+        alert(`Incorrect fields in create form`);
+      }
+    },
   };
-
-  const handleAddQuestion = (questionData: IAddQuestion) => {
-    const formData = {
-      ...questionData,
-      type: questionType,
-      answers: answerArray,
-    };
-    const response = ApiHook(Methods.POST, '/questions', {
-      data: formData,
-    });
-    console.log('add question: ', formData, response);
-  };
-
-  const handleRedirect = (route: string) => {
-    router.push(route);
-  };
+  //#endregion
 
   //#region : Create question form
   return (
@@ -104,7 +128,9 @@ export default function CreateQuestion(props: ICreateQuestion) {
           noValidate
           autoComplete="off"
           className="flex flex-row"
-          onSubmit={form.handleSubmit(handleAddQuestion)}
+          onSubmit={form.handleSubmit(
+            HandleInteractions.handleModifiedQuestion,
+          )}
         >
           <Box className="grid basis-1/2">
             <FormControl variant="standard" className="!w-4/5 pb-7">
@@ -126,21 +152,21 @@ export default function CreateQuestion(props: ICreateQuestion) {
               />
             </FormControl>
           </Box>
-          {answerArray?.length ? (
-            <RenderQuestionType
-              className="basis-1/2"
-              questionType={questionType}
-              handleChangeQuestionType={handleQuestionType}
-              answers={answerArray}
-              handleAnswers={(answers: IAnswer[]) => setAnswerArray(answers)}
-            />
-          ) : null}
+          <RenderQuestionType
+            className="basis-1/2"
+            questionType={questionType}
+            handleChangeQuestionType={HandleInteractions.handleQuestionType}
+            answers={answerArray}
+            handleAnswers={(answers: IAnswer[]) => setAnswerArray(answers)}
+          />
         </Box>
         <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
           <Button
             variant="contained"
             startIcon={<LibraryAddIcon />}
-            onClick={form.handleSubmit(handleAddQuestion)}
+            onClick={form.handleSubmit(
+              HandleInteractions.handleModifiedQuestion,
+            )}
           >
             Create
           </Button>
@@ -148,7 +174,7 @@ export default function CreateQuestion(props: ICreateQuestion) {
             variant="outlined"
             startIcon={<ClearIcon />}
             onClick={(evt: React.MouseEvent) =>
-              handleRedirect('/administrator/questions')
+              HandleInteractions.handleRedirect('/administrator/questions')
             }
           >
             Cancel
