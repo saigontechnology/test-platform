@@ -46,7 +46,7 @@ model Examination {
   updatedAt        DateTime?         @updatedAt
   email            String
   assessmentId     Int
-  assessment       Assessment        @relation(fields: [assessmentId], references: [id])
+  assessment       Assessment        @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
   submittedAnswers ExamAnswer[]
   score            Decimal?
   status           ExaminationStatus @default(IN_PROGRESS)
