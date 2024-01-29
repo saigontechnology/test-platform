@@ -8,7 +8,19 @@ export class AssessmentsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createAssessmentDto: CreateAssessmentDto) {
-    return await this.prisma.assessment.create({ data: createAssessmentDto });
+    const { questions, ...createData } = createAssessmentDto;
+    const assessment = await this.prisma.assessment.create({
+      data: createData,
+    });
+    await this.prisma.assessmentQuestionMapping.createMany({
+      data: questions.map((item: number) => {
+        return {
+          assessmentId: assessment.id,
+          questionId: item,
+        };
+      }),
+    });
+    return;
   }
 
   async findAll() {

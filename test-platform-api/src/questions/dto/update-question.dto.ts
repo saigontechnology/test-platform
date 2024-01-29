@@ -20,7 +20,7 @@ export class UpdateQuestionDto {
 
   @IsArray()
   @IsNotEmpty()
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, isArray: true, type: Number })
   answer: number[];
 
   @IsString()
