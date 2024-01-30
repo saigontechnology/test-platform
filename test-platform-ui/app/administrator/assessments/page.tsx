@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 
 let externalRoute = null;
 
-export default function Page() {
+export default function EditAssessment() {
   const [assessments, setAssessments] = useState<IAssessment[]>([]);
   const router = (externalRoute = useRouter());
 

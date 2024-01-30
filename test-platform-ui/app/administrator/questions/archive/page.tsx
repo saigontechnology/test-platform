@@ -99,7 +99,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-export default function ArchivedQuestions() {
+const ArchivedQuestions = () => {
   return (
     <>
       <Typography component="h1" className={`text-xl md:text-2xl`}>
@@ -109,4 +109,6 @@ export default function ArchivedQuestions() {
       <DataTable rows={questionRows} columns={columns} />
     </>
   );
-}
+};
+
+export default ArchivedQuestions;
