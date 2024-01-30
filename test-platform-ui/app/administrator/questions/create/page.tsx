@@ -2,11 +2,9 @@
 'use client';
 
 import CustomTextArea from '@/app/components/atoms/CustomTextArea';
-import CustomTextField from '@/app/components/atoms/CustomTextField';
 import { IAddQuestion } from '@/app/constants/questions';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
 import { createQuestionSchema } from '@/app/validations/questions';
-import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
@@ -135,11 +133,18 @@ export default function CreateQuestion(props: ICreateQuestion) {
           <Box className="grid basis-1/2">
             <FormControl variant="standard" className="!w-4/5 pb-7">
               <Typography className="ml-2 font-semibold">Title</Typography>
-              <CustomTextField
+              <CustomTextArea
+                className="mx-2 my-2 w-full"
+                minRows={4}
+                name="title"
+                isResizeAble={true}
+                isMultipleLine={true}
+              />
+              {/* <CustomTextField
                 name="title"
                 id="question-title-input"
                 className="mx-2 my-2 ring-offset-0"
-              />
+              /> */}
             </FormControl>
             <FormControl variant="standard" className="!w-4/5 pb-7">
               <Typography className="ml-2 font-semibold">Content</Typography>
@@ -180,7 +185,6 @@ export default function CreateQuestion(props: ICreateQuestion) {
             Cancel
           </Button>
         </ButtonGroup>
-        <DevTool control={control} />
       </FormProvider>
     </Box>
   );
