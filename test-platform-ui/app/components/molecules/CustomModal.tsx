@@ -31,15 +31,17 @@ const CustomModal = React.forwardRef<CustomModalHandler, ICustomModal>(
         aria-describedby="modal-modal-description"
       >
         <Box className="absolute left-[30%] top-[30%] min-w-[700px] bg-white shadow-[24px]">
-          <Typography
-            p={2}
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-            fontWeight="bold"
-          >
-            {title}
-          </Typography>
+          {title ? (
+            <Typography
+              p={2}
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              fontWeight="bold"
+            >
+              {title}
+            </Typography>
+          ) : null}
           <Divider />
           <Box p={2}>{children}</Box>
         </Box>

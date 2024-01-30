@@ -5,9 +5,9 @@ import {
   Typography,
 } from '@mui/material';
 import { ReactElement } from 'react';
-import RenderQuestionTypeZone from './typezone';
 import clsx from 'clsx';
 import { IAnswer } from '../page';
+import RenderQuestionAnswers from './answers';
 
 interface IQuestionType {
   answers?: IAnswer[];
@@ -28,6 +28,8 @@ export default function RenderQuestionType(props: IQuestionType): ReactElement {
     handleAnswers,
     handleChangeQuestionType,
   } = props;
+
+  // TODO: Have to define common Question_types
   const questionTypes = ['single', 'multiple'];
 
   return (
@@ -57,7 +59,7 @@ export default function RenderQuestionType(props: IQuestionType): ReactElement {
           );
         })}
       </ToggleButtonGroup>
-      <RenderQuestionTypeZone
+      <RenderQuestionAnswers
         renderAnswers={answers}
         questionType={questionType}
         handleAnswers={(answers) =>

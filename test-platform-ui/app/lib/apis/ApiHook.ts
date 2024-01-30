@@ -38,7 +38,6 @@ axiosInstance.interceptors.response.use(
     config.retry -= 1;
     const delayRetryRequest = new Promise<void>((resolve) => {
       setTimeout(() => {
-        console.log('retry the request', config.url);
         resolve();
       }, config.retryDelay || 1000);
     });

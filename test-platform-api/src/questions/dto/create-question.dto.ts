@@ -28,6 +28,11 @@ export class CreateQuestionDto {
   @ApiProperty({ required: true })
   category: string;
 
+  @IsArray()
+  @IsNotEmpty()
+  @ApiProperty({ required: true })
+  options: string[];
+
   @IsOptional()
   @ApiProperty({ required: true, enum: QuestionType })
   @IsEnum(QuestionType)
