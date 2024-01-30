@@ -14,17 +14,12 @@ export enum Methods {
 }
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
-  // baseURL: 'https://test-platform-api.onrender.com',
+  // baseURL: 'http://localhost:8080',
+  baseURL: 'https://test-platform-api.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
-const globalConfig: RetryConfig = {
-  retry: 3,
-  retryDelay: 1000,
-};
 
 //  Axios Error Handling:
 axiosInstance.interceptors.response.use(

@@ -35,7 +35,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   //#region : Handle interaction functions
   const HandleInteractions = {
     updateStateAnswers: (updatedAnswers: IAnswer[]) => {
-      setAnswers((prev) => {
+      setAnswers(() => {
         handleAnswers(updatedAnswers);
         return updatedAnswers;
       });
@@ -99,9 +99,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
             type="checkbox"
             checked={answ.isCorrect}
             className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-            onChange={(evt: any) =>
-              HandleInteractions.handleSelectCorrect(answ)
-            }
+            onChange={() => HandleInteractions.handleSelectCorrect(answ)}
           />
         ) : null}
         <Input

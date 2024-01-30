@@ -76,7 +76,7 @@ const columns: GridColDef[] = [
     sortable: false,
     flex: 0.3,
     disableColumnMenu: true,
-    renderCell: (params) => {
+    renderCell: () => {
       return (
         <Box className="grid gap-1">
           <Button
