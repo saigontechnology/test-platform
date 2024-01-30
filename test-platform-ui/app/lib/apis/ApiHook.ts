@@ -1,11 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { showNotification } from '../toast';
 
-interface RetryConfig extends AxiosRequestConfig {
-  retry: number;
-  retryDelay: number;
-}
-
 export enum Methods {
   GET = 'GET',
   POST = 'POST',
