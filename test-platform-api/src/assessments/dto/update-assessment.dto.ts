@@ -13,6 +13,6 @@ export class UpdateAssessmentDto {
 
   @IsArray()
   @IsNotEmpty()
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, isArray: true, type: Number })
   questions: number[];
 }
