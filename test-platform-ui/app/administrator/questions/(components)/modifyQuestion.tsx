@@ -69,7 +69,6 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     },
     resolver: yupResolver(createQuestionSchema),
   });
-  const { control } = form;
 
   //#region : Handle interactive functions
   const HandleInteractions = {
@@ -92,7 +91,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
         answer: answerArray.reduce((array: any, answ: any) => {
           return answ.isCorrect ? [...array, answ.id] : array;
         }, []),
-        options: answerArray.map((answ) => answ.answer),
+        options: answerArray.map((answ: IAnswer) => answ.answer),
         category: 'React',
         type: questionType === 'single' ? 'SINGLE_CHOICE' : 'MULTIPLE_CHOICE',
       };
@@ -176,7 +175,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
           <Button
             variant="outlined"
             startIcon={<ClearIcon />}
-            onClick={(evt: React.MouseEvent) =>
+            onClick={() =>
               HandleInteractions.handleRedirect('/administrator/questions')
             }
           >
