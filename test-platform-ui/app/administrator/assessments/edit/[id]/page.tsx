@@ -5,7 +5,7 @@ import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
 import { Box } from '@mui/material';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import CreatePage from '../../create/page';
+import ModifyAssessment from '../../(components)/modifyAssessment';
 
 const EditPage = () => {
   const [data, setData] = useState<any>(null);
@@ -22,7 +22,7 @@ const EditPage = () => {
     );
     setData(data);
   };
-  if (data) return <CreatePage detail={data} />;
+  if (data) return <ModifyAssessment detail={data} />;
   return <Box />;
 };
 

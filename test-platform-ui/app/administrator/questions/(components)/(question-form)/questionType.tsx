@@ -4,9 +4,9 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { ReactElement } from 'react';
 import clsx from 'clsx';
-import { IAnswer } from '../page';
+import { ReactElement } from 'react';
+import { IAnswer } from '../modifyQuestion';
 import RenderQuestionAnswers from './answers';
 
 interface IQuestionType {
@@ -20,7 +20,7 @@ interface IQuestionType {
   ) => void;
 }
 
-export default function RenderQuestionType(props: IQuestionType): ReactElement {
+const RenderQuestionType = (props: IQuestionType): ReactElement => {
   const {
     questionType,
     className,
@@ -63,9 +63,11 @@ export default function RenderQuestionType(props: IQuestionType): ReactElement {
         renderAnswers={answers}
         questionType={questionType}
         handleAnswers={(answers) =>
-          handleAnswers(answers.filter((answ) => answ.id != 0))
+          handleAnswers(answers.filter((answ) => answ.id > -1))
         }
       />
     </FormControl>
   );
 }
+
+export default RenderQuestionType;

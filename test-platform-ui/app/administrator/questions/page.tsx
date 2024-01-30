@@ -6,10 +6,10 @@ import CustomModal, {
 import DataTable, { multipleLinesTypo } from '@/app/components/molecules/Grid';
 import { IResponseQuestion } from '@/app/constants/questions';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
-import { AddBox, Inventory, ModeEdit } from '@mui/icons-material';
+import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { Box, Chip, Typography } from '@mui/material';
+import { Box, Chip, IconButton, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
@@ -26,7 +26,7 @@ interface IQuestion {
   options: string[];
 }
 
-export default function Page() {
+const Page = () => {
   const [questionList, setQuestionList] = useState<IQuestion[]>([]);
   const onDeleteQuestion = React.useRef<number>(0);
   const router = useRouter();
@@ -169,27 +169,24 @@ export default function Page() {
       disableColumnMenu: true,
       renderCell: (params) => {
         return (
-          <Box className="grid gap-1">
-            <Button
-              className="w-10 [&>span]:m-0"
-              title="Edit"
-              variant="contained"
-              startIcon={<ModeEdit />}
+          <>
+            <IconButton
               onClick={() =>
                 router.push(`/administrator/questions/${params.row.id}`)
               }
-            />
-            <Button
-              className="w-10 [&>span]:m-0"
-              title="Archive"
-              variant="outlined"
-              startIcon={<Inventory />}
+            >
+              <ModeEdit />
+            </IconButton>
+            <IconButton
+              className="ml-3"
               onClick={() => {
                 onDeleteQuestion.current = params.row.id;
                 modalRef.current?.open();
               }}
-            />
-          </Box>
+            >
+              <Delete />
+            </IconButton>
+          </>
         );
       },
     },
@@ -221,4 +218,6 @@ export default function Page() {
       </CustomModal>
     </Box>
   );
-}
+};
+
+export default Page;

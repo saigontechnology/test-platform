@@ -1,9 +1,9 @@
-import { ReactElement, useEffect, useState } from 'react';
-import { IAnswer } from '../page';
-import { FormControl, Input } from '@mui/material';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { FormControl, Input } from '@mui/material';
 import clsx from 'clsx';
+import { ReactElement, useEffect, useState } from 'react';
+import { IAnswer } from '../modifyQuestion';
 
 interface IQuestionAnswers {
   questionType: string | undefined;
@@ -12,10 +12,7 @@ interface IQuestionAnswers {
 }
 
 const initialAnswer = { id: -1, answer: '', isCorrect: false };
-
-export default function RenderQuestionAnswers(
-  props: IQuestionAnswers,
-): ReactElement {
+const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   const { questionType, renderAnswers, handleAnswers } = props;
   const [firstEditRender, setFirstEditRender] = useState<boolean>(true);
   const [answers, setAnswers] = useState<IAnswer[]>(
@@ -148,4 +145,6 @@ export default function RenderQuestionAnswers(
         : null}
     </>
   );
-}
+};
+
+export default RenderQuestionAnswers;

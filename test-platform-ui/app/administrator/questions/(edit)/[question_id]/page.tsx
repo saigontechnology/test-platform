@@ -3,10 +3,12 @@
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import CreateQuestion, { IQuestionInfo } from '../../create/page';
 
 import { IResponseQuestion } from '@/app/constants/questions';
 import { Box } from '@mui/material';
+import ModifyQuestion, {
+  IQuestionInfo,
+} from '../../(components)/modifyQuestion';
 
 const EditQuestion = () => {
   const [data, setData] = useState<IQuestionInfo | null>(null);
@@ -31,7 +33,7 @@ const EditQuestion = () => {
     })();
   }, []);
 
-  return <Box>{data ? <CreateQuestion questionData={data} /> : null}</Box>;
+  return <Box>{data ? <ModifyQuestion questionData={data} /> : null}</Box>;
 };
 
 export default EditQuestion;
