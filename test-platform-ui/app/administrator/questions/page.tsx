@@ -4,19 +4,18 @@ import CustomModal, {
   CustomModalHandler,
 } from '@/app/components/molecules/CustomModal';
 import DataTable, { multipleLinesTypo } from '@/app/components/molecules/Grid';
-import { Chip, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
+import { IResponseQuestion } from '@/app/constants/questions';
+import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
+import { AddBox, Inventory, ModeEdit } from '@mui/icons-material';
+import ClearIcon from '@mui/icons-material/Clear';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { Box, Chip, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { useRouter } from 'next/navigation';
-import { ModeEdit, Inventory, AddBox } from '@mui/icons-material';
-import React, { useEffect, useState } from 'react';
-import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
-import { IResponseQuestion } from '@/app/lib/apis/Interfaces';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import ClearIcon from '@mui/icons-material/Clear';
 import clsx from 'clsx';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 interface IQuestion {
   id: number;
@@ -212,7 +211,7 @@ export default function Page() {
           }}
           startIcon={<AddBox className="!text-2xl" />}
         >
-          Create New Question
+          New Question
         </Button>
       </Box>
       <Divider className="my-10" />

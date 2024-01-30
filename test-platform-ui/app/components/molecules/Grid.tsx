@@ -1,6 +1,5 @@
-import * as React from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { Box, Chip, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 export const multipleLinesTypo = (content: string) => {
   return <Typography className="whitespace-normal">{content}</Typography>;

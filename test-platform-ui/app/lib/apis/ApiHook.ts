@@ -1,5 +1,5 @@
-import axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from 'axios';
-import { toast } from 'react-toastify';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { showNotification } from '../toast';
 
 interface RetryConfig extends AxiosRequestConfig {
   retry: number;
@@ -45,21 +45,6 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-// Notification Toast:
-function notification(
-  message: string,
-  type: 'info' | 'success' | 'warning' | 'error' = 'info',
-) {
-  return toast[type](message, {
-    position: 'bottom-right',
-    autoClose: 3000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-  });
-}
-
 // Axios Methods:
 const AxiosMethods = {
   /**
@@ -79,7 +64,10 @@ const AxiosMethods = {
     } catch (error) {
       const message = (error as AxiosError<{ message: string }>).response?.data
         ?.message;
-      notification(`Error while fetching ${url}. ${message ?? ''}`, 'error');
+      showNotification(
+        `Error while fetching ${url}. ${message ?? ''}`,
+        'error',
+      );
       throw error;
     }
   },
@@ -108,7 +96,7 @@ const AxiosMethods = {
     } catch (error) {
       const message = (error as AxiosError<{ message: string }>).response?.data
         ?.message;
-      notification(`Error while posting ${url}. ${message ?? ''}`, 'error');
+      showNotification(`Error while posting ${url}. ${message ?? ''}`, 'error');
       throw error;
     }
   },
@@ -137,7 +125,10 @@ const AxiosMethods = {
     } catch (error) {
       const message = (error as AxiosError<{ message: string }>).response?.data
         ?.message;
-      notification(`Error while updating ${url}. ${message ?? ''}`, 'error');
+      showNotification(
+        `Error while updating ${url}. ${message ?? ''}`,
+        'error',
+      );
       throw error;
     }
   },
@@ -162,7 +153,10 @@ const AxiosMethods = {
     } catch (error) {
       const message = (error as AxiosError<{ message: string }>).response?.data
         ?.message;
-      notification(`Error while deleting ${url}. ${message ?? ''}`, 'error');
+      showNotification(
+        `Error while deleting ${url}. ${message ?? ''}`,
+        'error',
+      );
       throw error;
     }
   },

@@ -1,6 +1,5 @@
 'use client';
 import { createTheme } from '@mui/material/styles';
-import { lusitana } from '@/app/styles/fonts';
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
