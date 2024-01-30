@@ -16,7 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import RenderQuestionType from './(question-form)/questionType';
 import { DevTool } from '@hookform/devtools';
@@ -148,7 +148,7 @@ export default function CreateQuestion(props: ICreateQuestion) {
                 minRows={4}
                 name="content"
                 isResizeAble={true}
-                isMultipleLine
+                isMultipleLine={true}
               />
             </FormControl>
           </Box>
@@ -168,7 +168,7 @@ export default function CreateQuestion(props: ICreateQuestion) {
               HandleInteractions.handleModifiedQuestion,
             )}
           >
-            Create
+            {`${questionData ? 'Edit' : 'Create'}`}
           </Button>
           <Button
             variant="outlined"

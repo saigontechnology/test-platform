@@ -1,6 +1,5 @@
 import { TextareaAutosize } from '@mui/base/TextareaAutosize';
-import { StandardTextFieldProps, TextField, Theme } from '@mui/material';
-import { TextareaAutosizeProps } from '@mui/material/TextareaAutosize';
+import { StandardTextFieldProps, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { FieldError, useController, useFormContext } from 'react-hook-form';
 
@@ -89,7 +88,7 @@ export default function CustomTextArea(props: ICustomTextArea) {
       placeholder="Standard"
       multiline={isMultipleLine}
       minRows={2}
-      maxRows={7}
+      maxRows={5}
       error={invalid}
       helperText={invalid ? (error as FieldError)?.message : ''}
       InputProps={

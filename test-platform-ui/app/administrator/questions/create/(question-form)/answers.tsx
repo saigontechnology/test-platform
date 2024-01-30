@@ -17,32 +17,32 @@ export default function RenderQuestionAnswers(
   props: IQuestionAnswers,
 ): ReactElement {
   const { questionType, renderAnswers, handleAnswers } = props;
+  const [firstEditRender, setFirstEditRender] = useState<boolean>(true);
   const [answers, setAnswers] = useState<IAnswer[]>(
     renderAnswers?.length ? renderAnswers : [initialAnswer],
   );
 
-  useEffect(() => {
-    console.log('questionType, renderAnswers: ', questionType, answers);
-  }, []);
-
   // Notes: Reset selected answers on 'questionType' changes.
   useEffect(() => {
+    if (firstEditRender) {
+      setFirstEditRender(false);
+      return;
+    }
     const resetAnswersSelected = answers.map((answ) => ({
       ...answ,
-      isCorrect: answ.isCorrect || false,
+      isCorrect: false,
     }));
     setAnswers(resetAnswersSelected);
   }, [questionType]);
 
-  const updateStateAnswers = (updatedAnswers: IAnswer[]) => {
-    setAnswers((prev) => {
-      handleAnswers(updatedAnswers);
-      return updatedAnswers;
-    });
-  };
-
   //#region : Handle interaction functions
   const HandleInteractions = {
+    updateStateAnswers: (updatedAnswers: IAnswer[]) => {
+      setAnswers((prev) => {
+        handleAnswers(updatedAnswers);
+        return updatedAnswers;
+      });
+    },
     handleAnswerChanges: (event: React.ChangeEvent<HTMLInputElement>) => {
       const modifiedAnswers = answers.map((answ: IAnswer) => {
         if (answ.id === +event.target.id.split('_')[1]) {
@@ -53,7 +53,7 @@ export default function RenderQuestionAnswers(
         }
         return answ;
       });
-      updateStateAnswers(modifiedAnswers);
+      HandleInteractions.updateStateAnswers(modifiedAnswers);
     },
     handleRemoveAnswer: (answer: IAnswer) => {
       const minusAnswers = [...answers];
@@ -61,7 +61,7 @@ export default function RenderQuestionAnswers(
       if (minusAnswers.length < 4) {
         minusAnswers.push(initialAnswer);
       }
-      updateStateAnswers(minusAnswers);
+      HandleInteractions.updateStateAnswers(minusAnswers);
     },
     handleAddAnswer: () => {
       const modifiedAnswers = [...answers];
@@ -69,7 +69,7 @@ export default function RenderQuestionAnswers(
       if (modifiedAnswers.length < 4) {
         modifiedAnswers.push(initialAnswer);
       }
-      updateStateAnswers(modifiedAnswers);
+      HandleInteractions.updateStateAnswers(modifiedAnswers);
     },
     handleSelectCorrect: (target: IAnswer) => {
       const updatedAnswers = answers.map((answ: IAnswer) => {
@@ -83,16 +83,13 @@ export default function RenderQuestionAnswers(
         }
         return answ;
       });
-      updateStateAnswers(updatedAnswers);
+      HandleInteractions.updateStateAnswers(updatedAnswers);
     },
   };
   //#endregion
 
   //#region : Handle render answers
   const renderAnswer = (answ: IAnswer, index: number): ReactElement => {
-    if (answ.isCorrect) {
-      console.log('answ isCorrect: ', answ, typeof answ.isCorrect);
-    }
     return (
       <FormControl
         key={`answer-${answ.id}`}
@@ -144,7 +141,6 @@ export default function RenderQuestionAnswers(
 
   return (
     <>
-      {console.log('answers: ', answers)}
       {questionType != undefined
         ? answers.map((answ: IAnswer, index: number) => {
             return index < 4 ? renderAnswer(answ, index) : null;

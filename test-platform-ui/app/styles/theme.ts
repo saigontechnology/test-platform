@@ -168,11 +168,11 @@ const themeCustom = createTheme({
       lineHeight: '28px',
       fontWeight: bold,
     },
-    body1: {
-      fontSize: '18px',
-      lineHeight: '26px',
-      fontWeight: regular,
-    },
+    // body1: {
+    //   fontSize: '18px',
+    //   lineHeight: '26px',
+    //   fontWeight: regular,
+    // },
     body2: {
       fontSize: '16px',
       lineHeight: '24px',

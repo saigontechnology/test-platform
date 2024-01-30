@@ -14,8 +14,8 @@ export enum Methods {
 }
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
-  // baseURL: 'https://test-platform-api.onrender.com',
+  // baseURL: 'http://localhost:8080',
+  baseURL: 'https://test-platform-api.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -38,7 +38,6 @@ axiosInstance.interceptors.response.use(
     config.retry -= 1;
     const delayRetryRequest = new Promise<void>((resolve) => {
       setTimeout(() => {
-        console.log('retry the request', config.url);
         resolve();
       }, config.retryDelay || 1000);
     });
