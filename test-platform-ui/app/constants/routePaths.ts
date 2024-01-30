@@ -5,4 +5,5 @@ export const ROUTE_KEY = {
   ADMINISTRATION_QUESTIONS_ARCHIVE: '/administrator/questions/archive',
   ADMINISTRATION_ASSESSMENTS: '/administrator/assessments',
   ADMINISTRATION_ASSESSMENTS_CREATE: '/administrator/assessments/create',
+  ADMINISTRATION_ASSESSMENTS_EDIT: '/administrator/assessments/edit',
 };

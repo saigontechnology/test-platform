@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import CreateQuestion from '../../create/page';
+import { IResponseQuestion } from '@/app/constants/questions';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
-import { usePathname } from 'next/navigation';
-import { IResponseQuestion } from '@/app/lib/apis/Interfaces';
 import { Box } from '@mui/material';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import CreateQuestion from '../../create/page';
 
 const EditQuestion = () => {
   const [data, setData] = useState<any>(null);

@@ -1,8 +1,8 @@
-enum Level {
-  Junior,
-  Intermediate,
-  Senior,
-}
+const Level = {
+  Junior: 'Junior',
+  Intermediate: 'Intermediate',
+  Senior: 'Senior',
+};
 export const LevelOptions = [
   {
     label: 'Junior',
@@ -17,3 +17,15 @@ export const LevelOptions = [
     value: Level.Senior,
   },
 ];
+
+export interface IAssessment {
+  id: number;
+  createdAt: Date;
+  name: string;
+  level: string;
+}
+
+export interface ICreateAssessment {
+  name: string;
+  level: string;
+}

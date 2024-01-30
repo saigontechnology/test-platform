@@ -1,8 +1,10 @@
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import * as React from 'react';
+import { FieldError, useController, useFormContext } from 'react-hook-form';
+import FormHelperText from '@mui/material/FormHelperText';
 
 interface IOption {
   label: string;
@@ -11,25 +13,34 @@ interface IOption {
 interface ICustomSingleSelect {
   label: string;
   options: IOption[];
+  name: string;
 }
 
 export default function CustomSingleSelect(props: ICustomSingleSelect) {
-  const { label, options } = props;
-  const [age, setAge] = React.useState('');
+  const { label, options, name } = props;
+  const { control } = useFormContext();
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
-  };
+  const {
+    field: { ref, ...inputProps },
+    fieldState: { invalid, error },
+  } = useController({
+    name,
+    control,
+  });
 
   return (
-    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+    <FormControl
+      sx={{ m: 1, minWidth: 120 }}
+      size="small"
+      error={Boolean(error)}
+    >
       <InputLabel id="demo-select-small-label">{label}</InputLabel>
       <Select
+        {...inputProps}
+        {...props}
         labelId="demo-select-small-label"
         id="demo-select-small"
-        value={age}
         label={label}
-        onChange={handleChange}
       >
         <MenuItem value="">
           <em>None</em>
@@ -40,6 +51,9 @@ export default function CustomSingleSelect(props: ICustomSingleSelect) {
           </MenuItem>
         ))}
       </Select>
+      {invalid && (
+        <FormHelperText>{(error as FieldError)?.message}</FormHelperText>
+      )}
     </FormControl>
   );
 }
