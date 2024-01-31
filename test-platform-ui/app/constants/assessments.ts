@@ -29,3 +29,7 @@ export interface ICreateAssessment {
   name: string;
   level: string;
 }
+
+export interface ILogInValidate {
+  email: string;
+}
