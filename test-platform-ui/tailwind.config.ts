@@ -1,11 +1,15 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  corePlugins: {
+    preflight: false,
+  },
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  important: '#root',
   theme: {
     extend: {
       gridTemplateColumns: {
@@ -24,7 +28,7 @@ const config: Config = {
         '100%': {
           transform: 'translateX(100%)',
         },
-      }
+      },
     },
   },
   plugins: [require('@tailwindcss/forms')],
