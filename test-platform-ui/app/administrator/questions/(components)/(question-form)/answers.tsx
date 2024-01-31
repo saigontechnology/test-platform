@@ -55,7 +55,10 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
     handleRemoveAnswer: (answer: IAnswer) => {
       const minusAnswers = [...answers];
       minusAnswers.splice(minusAnswers.indexOf(answer), 1);
-      if (minusAnswers.length < 4) {
+      if (
+        minusAnswers.length < 4 &&
+        !minusAnswers.find((answ) => answ.id < 0)
+      ) {
         minusAnswers.push(initialAnswer);
       }
       HandleInteractions.updateStateAnswers(minusAnswers);
@@ -91,7 +94,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       <FormControl
         key={`answer-${answ.id}`}
         variant="standard"
-        className="mx-2 my-2 inline-flex w-2/5 flex-row items-center"
+        className="mx-2 my-2 inline-flex w-2/5 !flex-row items-center"
       >
         {answ.id > -1 ? (
           <input
