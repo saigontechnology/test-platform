@@ -25,6 +25,7 @@ export default function DataTable(props: IDataTable) {
         }}
         pageSizeOptions={[3, 5, 10]}
         checkboxSelection={false}
+        disableColumnMenu
       />
     </div>
   );

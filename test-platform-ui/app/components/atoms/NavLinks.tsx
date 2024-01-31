@@ -1,19 +1,17 @@
 'use client';
 
+import { ROUTE_KEY } from '@/app/constants/routePaths';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import QuizIcon from '@mui/icons-material/Quiz';
+import { Box, List, ListItem, SvgIconTypeMap } from '@mui/material';
+import { OverridableComponent } from '@mui/material/OverridableComponent';
+import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import clsx from 'clsx';
-import React from 'react';
-import { Box, List, ListItem, SvgIconTypeMap } from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import QuizIcon from '@mui/icons-material/Quiz';
-import ExtensionIcon from '@mui/icons-material/Extension';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { OverridableComponent } from '@mui/material/OverridableComponent';
-import { ROUTE_KEY } from '@/app/constants/routePaths';
 
 interface ILink {
   name: string;
@@ -36,11 +34,6 @@ const links: IMainLink[] = [
     href: ROUTE_KEY.ADMINISTRATION_QUESTIONS,
     icon: QuizIcon,
     sublinks: [
-      {
-        name: 'Create',
-        href: ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE,
-        icon: ExtensionIcon,
-      },
       {
         name: 'Archived',
         href: ROUTE_KEY.ADMINISTRATION_QUESTIONS_ARCHIVE,

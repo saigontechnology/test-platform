@@ -1,6 +1,7 @@
-import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
+'use client';
+
 import styles from '@/app/styles/home.module.css';
-import Link from 'next/link';
+import Login from './components/logIn';
 // import { lusitana } from './styles/fonts';
 
 export default function Page() {
@@ -14,12 +15,7 @@ export default function Page() {
             <strong>Welcome to Examination Platform.</strong> This is the
             example for the Technical Assessment
           </p>
-          <Link
-            href="/administrator"
-            className="flex items-center gap-5 self-start rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-400 md:text-base"
-          >
-            <span>Log in</span> <DoubleArrowIcon className="w-5 md:w-6" />
-          </Link>
+          <Login />
         </div>
       </div>
     </main>

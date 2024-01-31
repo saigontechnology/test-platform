@@ -9,6 +9,7 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  /** Highly priority Tailwind CSS ( !important ) */
   important: '#root',
   theme: {
     extend: {
