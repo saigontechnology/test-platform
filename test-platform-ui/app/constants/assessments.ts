@@ -28,6 +28,7 @@ export interface IAssessment {
 export interface ICreateAssessment {
   name: string;
   level: string;
+  questions?: string[];
 }
 
 export interface ILogInValidate {
