@@ -5,6 +5,7 @@ import { Box } from '@mui/system';
 import React from 'react';
 import Header from '../components/organisms/Header';
 import CountdownTimer from './(components)/countdownTimer';
+import ExaminationInfo from './(components)/examInformation';
 
 const ExaminationPage = ({ children }: { children: React.ReactNode }) => {
   React.useEffect(() => {
@@ -27,6 +28,10 @@ const ExaminationPage = ({ children }: { children: React.ReactNode }) => {
             Examination
           </Typography>
         </Box>
+        <ExaminationInfo
+          level={'Junior'}
+          categories={['React', 'Javascript']}
+        />
       </Box>
       <Box className="flex-grow bg-[#f9f9f9]">
         <Header>

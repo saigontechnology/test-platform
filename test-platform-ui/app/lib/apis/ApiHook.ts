@@ -9,7 +9,7 @@ export enum Methods {
 }
 
 const axiosInstance = axios.create({
-  // baseURL: 'http://localhost:8080',
+  // baseURL: 'http://localhost:3000',
   baseURL: 'https://test-platform-api.onrender.com',
   headers: {
     'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use(
     const delayRetryRequest = new Promise<void>((resolve) => {
       setTimeout(() => {
         resolve();
-      }, config.retryDelay || 1000);
+      }, config.retryDelay || 3000);
     });
     return delayRetryRequest.then(() => axiosInstance(config));
   },

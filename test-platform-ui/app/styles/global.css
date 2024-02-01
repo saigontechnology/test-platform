@@ -20,3 +20,9 @@ input[type='number']::-webkit-outer-spin-button {
 input:focus, input:focus-visible, input:focus-within, textarea {
   --tw-ring-shadow: 0 0 #000 !important;
 }
+
+@layer components {
+  .text-white-primary {
+    @apply text-slate-50
+  }
+}
