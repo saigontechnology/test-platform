@@ -58,7 +58,7 @@ const ExaminationPage = () => {
       selections: finalAnswers,
     };
     console.log(3, payload);
-    const { data, error } = await ApiHook(Methods.POST, '/examinations', {
+    const { error } = await ApiHook(Methods.POST, '/examinations', {
       data: payload,
     });
     if (!error) {
