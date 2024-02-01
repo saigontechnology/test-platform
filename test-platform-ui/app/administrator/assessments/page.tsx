@@ -22,16 +22,16 @@ export default function EditAssessment() {
 
   const getAssessments = async () => {
     const resp = await ApiHook(Methods.GET, '/assessments');
-    const assessmentsData: IAssessment[] = (
-      resp.data as Array<IAssessment>
-    ).map((q: IAssessment) => {
-      return {
-        id: q.id,
-        level: q.level,
-        name: q.name,
-        createdAt: q.createdAt,
-      };
-    });
+    const assessmentsData: any = (resp.data as Array<IAssessment>).map(
+      (q: IAssessment) => {
+        return {
+          id: q.id,
+          level: q.level,
+          name: q.name,
+          createdAt: q.createdAt,
+        };
+      },
+    );
     setAssessments(assessmentsData);
   };
 
