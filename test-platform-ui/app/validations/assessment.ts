@@ -4,4 +4,7 @@ import * as Yup from 'yup';
 export const createAssessmentSchema = Yup.object({
   name: Yup.string().required(VALIDATE_MESSAGE.REQUIRE_MESSAGE),
   level: Yup.string().required(VALIDATE_MESSAGE.REQUIRE_MESSAGE),
+  questions: Yup.array().of(
+    Yup.string().required(VALIDATE_MESSAGE.REQUIRE_MESSAGE),
+  ),
 });

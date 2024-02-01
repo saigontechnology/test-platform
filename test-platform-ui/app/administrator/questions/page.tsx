@@ -17,7 +17,7 @@ import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
-interface IQuestion {
+export interface IQuestion {
   id: number;
   title: string;
   content: string;
