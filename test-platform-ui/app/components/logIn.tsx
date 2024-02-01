@@ -35,6 +35,7 @@ const Login = () => {
     if (isAdminEmail) {
       router.push('/administrator');
     } else {
+      sessionStorage.setItem('candidateEmail', data.email);
       router.push('/examination');
     }
   };
