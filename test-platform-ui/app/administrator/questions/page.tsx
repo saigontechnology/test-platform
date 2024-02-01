@@ -212,7 +212,7 @@ const Page = () => {
         </Button>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={questionList} columns={columns} />
+      <DataTable rows={questionList} columns={columns} rowHeight={170} />
       <CustomModal ref={modalRef} title={''}>
         <ModalContent />
       </CustomModal>
