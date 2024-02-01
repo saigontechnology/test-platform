@@ -8,16 +8,17 @@ export const multipleLinesTypo = (content: string) => {
 interface IDataTable {
   rows: any[];
   columns: GridColDef[];
+  rowHeight?: number;
 }
 
 export default function DataTable(props: IDataTable) {
-  const { rows, columns } = props;
+  const { rows, columns, rowHeight } = props;
   return (
     <Box className="h-[60vh] w-full overflow-y-auto">
       <DataGrid
         rows={rows}
         columns={columns}
-        rowHeight={70}
+        rowHeight={rowHeight || 70}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 8 },
