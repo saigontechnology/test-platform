@@ -59,13 +59,29 @@ export default function ModifyAssessment(props: IModifyAssessment) {
 
   const form = useForm<ICreateAssessment>({
     defaultValues: {
-      name: detail?.name,
-      level: detail?.level,
+      name: '',
+      level: '',
       questions: [''],
     },
     resolver: yupResolver(createAssessmentSchema),
   });
   const { control, watch } = form;
+
+  useEffect(() => {
+    if (!!detail) {
+      const { assessmentQuestionMapping, id, level, name } = detail;
+      const questions = assessmentQuestionMapping.map(
+        (item: any) => item.question.id,
+      );
+      form.reset((prevState) => ({
+        ...prevState,
+        id,
+        level,
+        name,
+        questions: questions.lengh ? questions : prevState.questions,
+      }));
+    }
+  }, [detail]);
 
   const { append, remove } = useFieldArray<any>({
     control,
@@ -74,12 +90,28 @@ export default function ModifyAssessment(props: IModifyAssessment) {
 
   const questions = watch('questions');
 
+  const submit = () => {
+    if (!!detail?.id) {
+      handleEdit();
+    } else {
+      handleAddNew();
+    }
+  };
+
   const handleAddNew = async () => {
     const formData = form.getValues();
     const { error } = await ApiHook(Methods.POST, '/assessments', {
       data: formData,
     });
     !error && showNotification('Create new assessment successfully', 'success');
+  };
+
+  const handleEdit = async () => {
+    const formData = form.getValues();
+    const { error } = await ApiHook(Methods.PUT, `/assessments/${detail.id}`, {
+      data: formData,
+    });
+    !error && showNotification('Update assessment successfully', 'success');
   };
 
   const questionOptions = useMemo(() => {
@@ -100,7 +132,6 @@ export default function ModifyAssessment(props: IModifyAssessment) {
           noValidate
           autoComplete="off"
           className="flex flex-row"
-          onSubmit={form.handleSubmit(handleAddNew)}
         >
           <Box className="grid basis-1/2">
             <FormControl variant="standard" className="!w-4/5 pb-7">
@@ -130,7 +161,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
                     className="flex items-center"
                   >
                     <CustomSingleSelect
-                      label="Level"
+                      label={`Question ${index + 1}`}
                       name={`questions.${index}`}
                       options={questionOptions}
                       className="w-[200px]"
@@ -153,7 +184,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
           <Button
             variant="contained"
             startIcon={<LibraryAddIcon />}
-            onClick={form.handleSubmit(handleAddNew)}
+            onClick={form.handleSubmit(submit)}
           >
             Submit
           </Button>

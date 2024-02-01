@@ -26,6 +26,7 @@ export interface IAssessment {
 }
 
 export interface ICreateAssessment {
+  id?: string;
   name: string;
   level: string;
   questions?: string[];
