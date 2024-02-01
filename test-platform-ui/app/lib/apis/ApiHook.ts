@@ -76,6 +76,7 @@ const AxiosMethods = {
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<TResponse> => {
+    console.log('POST: ', url, config);
     try {
       const response = await axiosInstance<TResponse>({
         url,
