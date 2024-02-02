@@ -54,6 +54,11 @@ const Login = () => {
             name="email"
             id="question-title-input"
             className="mx-2 my-2 ring-offset-0"
+            onKeyDown={(event: any) => {
+              if (event.keyCode === 13) {
+                event.preventDefault();
+              }
+            }}
           />
         </FormControl>
       </Box>
