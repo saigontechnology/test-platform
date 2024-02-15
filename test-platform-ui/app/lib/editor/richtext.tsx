@@ -67,6 +67,9 @@ const RichTextArea: React.FC<IRichTextArea> = ({ name, placeholder }) => {
         }
       }
     },
+    handleSetInputValues: (editorHtml: string) => {
+      setValue('content', editorHtml);
+    },
   };
 
   const QuillModules = useMemo(() => {
@@ -85,8 +88,7 @@ const RichTextArea: React.FC<IRichTextArea> = ({ name, placeholder }) => {
       <ReactQuill
         ref={quillRef}
         theme="snow"
-        onChange={(val) => setEditorHtml(val)}
-        value={editorHtml}
+        onChange={(val) => Handlers.handleSetInputValues(val)}
         modules={QuillModules}
         formats={Editor.formats}
         bounds={'.app'}
