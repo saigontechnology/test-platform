@@ -106,8 +106,8 @@ export const questionRows = [
 
 export interface IAddQuestion {
   title: string;
-  content: string;
-  // type: string;
+  content?: string;
+  // type?: string;
 }
 
 export interface IResponseQuestion {
