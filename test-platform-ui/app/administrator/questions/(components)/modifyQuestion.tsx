@@ -18,7 +18,7 @@ import {
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import RichTextArea from '../../../lib/editor/richtext';
+import RichTextArea from '../../../components/atoms/Editor/richtext';
 import RenderQuestionType from './(question-form)/questionType';
 
 export interface IQuestionInfo {
