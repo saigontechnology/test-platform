@@ -3,7 +3,7 @@ import {
   convertBase64,
   resize_base64,
 } from '@/app/lib/utils';
-import React, { ElementRef, useMemo, useState } from 'react';
+import React, { ElementRef, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -13,8 +13,7 @@ interface IRichTextArea extends ReactQuillProps {
   placeholder?: string;
 }
 
-const RichTextArea: React.FC<IRichTextArea> = ({ name, placeholder }) => {
-  const [editorHtml, setEditorHtml] = useState<string>();
+const RichTextArea: React.FC<IRichTextArea> = ({ placeholder }) => {
   const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
   const { setValue } = useFormContext();
 
@@ -26,9 +25,9 @@ const RichTextArea: React.FC<IRichTextArea> = ({ name, placeholder }) => {
       input.setAttribute('accept', 'image/*');
       input.click();
       input.onchange = async () => {
-        const file: any = input && input.files ? input.files[0] : null;
+        const file: any = input && input.files ? input.files[0] : null,
+          formData = new FormData();
         console.log('file information: ', file);
-        const formData = new FormData();
         formData.append('file', file);
         await Handlers.handleCompressed(file);
       };
