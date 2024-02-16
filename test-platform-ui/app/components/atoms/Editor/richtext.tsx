@@ -5,44 +5,38 @@ import {
   convertBase64,
   resize_base64,
 } from '@/app/lib/utils';
-import React, { ElementRef, useEffect, useMemo } from 'react';
+import React, { ElementRef, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import { Editor, Modules } from './quillConfig';
+
+import 'react-quill/dist/quill.snow.css';
 
 interface IRichTextArea extends ReactQuillProps {
   name: string;
   placeholder?: string;
 }
 
-let _document: any = null;
-
 export default function RichTextArea(props: IRichTextArea) {
   const { placeholder } = props;
   const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const { setValue } = useFormContext();
-
-  useEffect(() => {
-    _document = document;
-  }, []);
 
   const Handlers = {
     imageHandlers: async () => {
-      if (typeof window !== 'undefined' && _document) {
-        const input = _document?.createElement('input');
-
-        input.setAttribute('type', 'file');
-        input.setAttribute('accept', 'image/*');
-        input.click();
-        input.onchange = async () => {
-          const file: any = input && input.files ? input.files[0] : null,
+      if (inputRef.current) {
+        const _input = inputRef.current;
+        _input.click();
+        _input.onchange = async () => {
+          const file: any = _input && _input.files ? _input.files[0] : null,
             formData = new FormData();
           console.log('file information: ', file);
           formData.append('file', file);
           await Handlers.handleCompressed(file);
         };
       }
+      // }
     },
     handleCompressed: async (uploadFile: any) => {
       const base64 = await convertBase64(uploadFile);
@@ -95,14 +89,22 @@ export default function RichTextArea(props: IRichTextArea) {
   }, []);
 
   return (
-    <ReactQuill
-      ref={quillRef}
-      theme="snow"
-      onChange={(val) => Handlers.handleSetInputValues(val)}
-      modules={QuillModules}
-      formats={Editor.formats}
-      bounds={'.app'}
-      placeholder={placeholder}
-    />
+    <>
+      <ReactQuill
+        ref={quillRef}
+        theme="snow"
+        onChange={(val) => Handlers.handleSetInputValues(val)}
+        modules={QuillModules}
+        formats={Editor.formats}
+        bounds={'.app'}
+        placeholder={placeholder}
+      />
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+      />
+    </>
   );
 }
