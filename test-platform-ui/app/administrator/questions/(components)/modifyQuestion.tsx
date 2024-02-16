@@ -2,6 +2,7 @@
 'use client';
 
 import CustomTextField from '@/app/components/atoms/CustomTextField';
+import RichTextArea from '@/app/components/atoms/Editor/richtext';
 import { IAddQuestion } from '@/app/constants/questions';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
 import { createQuestionSchema } from '@/app/validations/questions';
@@ -18,7 +19,6 @@ import {
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import RichTextArea from '../../../components/atoms/Editor/richtext';
 import RenderQuestionType from './(question-form)/questionType';
 
 export interface IQuestionInfo {
