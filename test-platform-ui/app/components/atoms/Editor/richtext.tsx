@@ -1,9 +1,11 @@
+'use client';
+
 import {
   calc_image_size_base64,
   convertBase64,
   resize_base64,
 } from '@/app/lib/utils';
-import React, { ElementRef, useMemo } from 'react';
+import React, { ElementRef, useEffect, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -14,15 +16,21 @@ interface IRichTextArea extends ReactQuillProps {
   placeholder?: string;
 }
 
+let _document: any = null;
+
 export default function RichTextArea(props: IRichTextArea) {
   const { placeholder } = props;
   const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
   const { setValue } = useFormContext();
 
+  useEffect(() => {
+    _document = document;
+  }, []);
+
   const Handlers = {
     imageHandlers: async () => {
-      if (typeof window === 'undefined') {
-        const input = document?.createElement('input');
+      if (typeof window !== 'undefined' && _document) {
+        const input = _document?.createElement('input');
 
         input.setAttribute('type', 'file');
         input.setAttribute('accept', 'image/*');
