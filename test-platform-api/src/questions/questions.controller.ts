@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Put,
   ValidationPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { QuestionsService } from './question.service';
 import { CreateQuestionDto } from './dto/create-question.dto';

@@ -83,6 +83,7 @@ const AxiosMethods = {
         method: 'post',
         ...config,
       });
+      showNotification('Sent', 'success');
       return response.data;
     } catch (error) {
       const message = (error as AxiosError<{ message: string }>).response?.data
@@ -112,6 +113,7 @@ const AxiosMethods = {
         method: 'put',
         ...config,
       });
+      showNotification('Updated', 'success');
       return response.data;
     } catch (error) {
       const message = (error as AxiosError<{ message: string }>).response?.data
@@ -140,6 +142,7 @@ const AxiosMethods = {
   ): Promise<TResponse> => {
     try {
       const response = await axiosInstance.delete<TResponse>(url, config);
+      showNotification('Deleted', 'success');
       return response.data;
     } catch (error) {
       const message = (error as AxiosError<{ message: string }>).response?.data

@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-async-client-component */
 'use client';
 
-import CustomTextArea from '@/app/components/atoms/CustomTextArea';
+import CustomTextField from '@/app/components/atoms/CustomTextField';
 import { IAddQuestion } from '@/app/constants/questions';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
 import { createQuestionSchema } from '@/app/validations/questions';
@@ -18,6 +18,7 @@ import {
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import RichTextArea from '../../../lib/editor/richtext';
 import RenderQuestionType from './(question-form)/questionType';
 
 export interface IQuestionInfo {
@@ -72,6 +73,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
 
   //#region : Handle interactive functions
   const HandleInteractions = {
+    handleQuestionContentChange: () => {},
     handleRedirect: (route: string) => {
       router.push(route);
     },
@@ -85,6 +87,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
       );
     },
     handleModifiedQuestion: async (modifiedQuestion: IAddQuestion) => {
+      console.log('handleModifiedQuestion content: ', modifiedQuestion.content);
       const formData = {
         question: modifiedQuestion.title,
         description: modifiedQuestion.content,
@@ -132,23 +135,15 @@ const ModifyQuestion = (props: ICreateQuestion) => {
           <Box className="grid basis-1/2">
             <FormControl variant="standard" className="!w-4/5 pb-7">
               <Typography className="ml-2 font-semibold">Title</Typography>
-              <CustomTextArea
-                className="mx-2 my-2 w-full"
-                minRows={4}
+              <CustomTextField
                 name="title"
-                isResizeAble={true}
-                isMultipleLine={true}
+                id="question-title-input"
+                className="mx-2 my-2 ring-offset-0"
               />
             </FormControl>
             <FormControl variant="standard" className="!w-4/5 pb-7">
               <Typography className="ml-2 font-semibold">Content</Typography>
-              <CustomTextArea
-                className="mx-2 my-2 w-full"
-                minRows={4}
-                name="content"
-                isResizeAble={true}
-                isMultipleLine={true}
-              />
+              <RichTextArea name="content" />
             </FormControl>
           </Box>
           <RenderQuestionType
