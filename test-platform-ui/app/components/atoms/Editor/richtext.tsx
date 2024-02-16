@@ -21,18 +21,20 @@ export default function RichTextArea(props: IRichTextArea) {
 
   const Handlers = {
     imageHandlers: async () => {
-      const input = document.createElement('input');
+      if (typeof window === 'undefined') {
+        const input = document?.createElement('input');
 
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-      input.click();
-      input.onchange = async () => {
-        const file: any = input && input.files ? input.files[0] : null,
-          formData = new FormData();
-        console.log('file information: ', file);
-        formData.append('file', file);
-        await Handlers.handleCompressed(file);
-      };
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+        input.onchange = async () => {
+          const file: any = input && input.files ? input.files[0] : null,
+            formData = new FormData();
+          console.log('file information: ', file);
+          formData.append('file', file);
+          await Handlers.handleCompressed(file);
+        };
+      }
     },
     handleCompressed: async (uploadFile: any) => {
       const base64 = await convertBase64(uploadFile);
