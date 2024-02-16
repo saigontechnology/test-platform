@@ -1,3 +1,5 @@
+'use client';
+
 import {
   calc_image_size_base64,
   convertBase64,
