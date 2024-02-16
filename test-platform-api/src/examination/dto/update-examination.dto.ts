@@ -1,7 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsArray, ValidateNested } from 'class-validator';
-import { ExaminationAnswer } from './create-examination.dto';
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsArray, ValidateNested } from "class-validator";
+import { ExaminationAnswer } from "./create-examination.dto";
 
 export class UpdateExaminationDto {
   @IsArray()

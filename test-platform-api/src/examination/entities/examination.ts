@@ -1,5 +1,5 @@
-import { Examination, ExaminationStatus, Prisma } from '@prisma/client';
-import { ApiProperty } from '@nestjs/swagger';
+import { Examination, ExaminationStatus, Prisma } from "@prisma/client";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class ExaminationEntity implements Examination {
   @ApiProperty()

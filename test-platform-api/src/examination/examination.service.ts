@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateExaminationDto } from './dto/update-examination.dto';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "src/prisma/prisma.service";
+import { inviteExamination } from "src/utils/mailer";
 import {
   CreateExaminationDto,
   ExaminationAnswer,
-} from './dto/create-examination.dto';
+} from "./dto/create-examination.dto";
+import { InviteDto } from "./dto/invite.dto";
+import { UpdateExaminationDto } from "./dto/update-examination.dto";
 
 @Injectable()
 export class ExaminationsService {
@@ -66,6 +68,7 @@ export class ExaminationsService {
         score: true,
         status: true,
         createdAt: true,
+        assessmentId: true,
         assessment: {
           select: {
             name: true,
@@ -107,6 +110,17 @@ export class ExaminationsService {
 
   async remove(id: number) {
     await this.prisma.examination.delete({ where: { id } });
+    return;
+  }
+
+  async invite(invite: InviteDto) {
+    const examination = await this.prisma.examination.create({
+      data: {
+        assessmentId: invite.assessmentId,
+        email: invite.email,
+      },
+    });
+    await inviteExamination(invite.email, examination.id);
     return;
   }
 }
