@@ -1,5 +1,3 @@
-'use client';
-
 import {
   calc_image_size_base64,
   convertBase64,
@@ -10,12 +8,14 @@ import { useFormContext } from 'react-hook-form';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Editor, Modules } from './quillConfig';
+
 interface IRichTextArea extends ReactQuillProps {
   name: string;
   placeholder?: string;
 }
 
-const RichTextArea: React.FC<IRichTextArea> = ({ placeholder }) => {
+export default function RichTextArea(props: IRichTextArea) {
+  const { placeholder } = props;
   const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
   const { setValue } = useFormContext();
 
@@ -85,17 +85,14 @@ const RichTextArea: React.FC<IRichTextArea> = ({ placeholder }) => {
   }, []);
 
   return (
-    <>
-      <ReactQuill
-        ref={quillRef}
-        theme="snow"
-        onChange={(val) => Handlers.handleSetInputValues(val)}
-        modules={QuillModules}
-        formats={Editor.formats}
-        bounds={'.app'}
-        placeholder={placeholder}
-      />
-    </>
+    <ReactQuill
+      ref={quillRef}
+      theme="snow"
+      onChange={(val) => Handlers.handleSetInputValues(val)}
+      modules={QuillModules}
+      formats={Editor.formats}
+      bounds={'.app'}
+      placeholder={placeholder}
+    />
   );
-};
-export default RichTextArea;
+}
