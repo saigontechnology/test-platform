@@ -15,10 +15,11 @@ import 'react-quill/dist/quill.snow.css';
 interface IRichTextArea extends ReactQuillProps {
   name: string;
   placeholder?: string;
+  data?: string;
 }
 
 export default function RichTextArea(props: IRichTextArea) {
-  const { placeholder } = props;
+  const { placeholder, data } = props;
   const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { setValue } = useFormContext();
@@ -94,6 +95,7 @@ export default function RichTextArea(props: IRichTextArea) {
         ref={quillRef}
         theme="snow"
         onChange={(val) => Handlers.handleSetInputValues(val)}
+        value={data}
         modules={QuillModules}
         formats={Editor.formats}
         bounds={'.app'}

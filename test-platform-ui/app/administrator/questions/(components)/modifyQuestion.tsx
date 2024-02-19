@@ -143,7 +143,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             </FormControl>
             <FormControl variant="standard" className="!w-4/5 pb-7">
               <Typography className="ml-2 font-semibold">Content</Typography>
-              <RichTextArea name="content" />
+              <RichTextArea name="content" data={questionData?.content} />
             </FormControl>
           </Box>
           <RenderQuestionType
