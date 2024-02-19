@@ -74,8 +74,7 @@ const AssessmentQuestion: React.FC<IProps> = ({
 
   return (
     <>
-      <Question order={order} question={assessment.question.question} />
-
+      <Question order={order} question={assessment.question} />
       {renderAnswers()}
 
       <Box textAlign={'right'}>
