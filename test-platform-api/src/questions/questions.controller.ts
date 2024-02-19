@@ -1,24 +1,23 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
   ParseIntPipe,
+  Post,
   Put,
-  ValidationPipe,
-  UseInterceptors,
+  ValidationPipe
 } from '@nestjs/common';
-import { QuestionsService } from './question.service';
-import { CreateQuestionDto } from './dto/create-question.dto';
-import { UpdateQuestionDto } from './dto/update-question.dto';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { QuestionEntity } from './entities/question.entity';
+import { CreateQuestionDto } from './dto/create-question.dto';
 import { ImportQuestionsDto } from './dto/import-questions.dto';
+import { UpdateQuestionDto } from './dto/update-question.dto';
+import { QuestionEntity } from './entities/question.entity';
+import { QuestionsService } from './question.service';
 
-@Controller('questions')
-@ApiTags('questions')
+@Controller("questions")
+@ApiTags("questions")
 export class QuestionsController {
   constructor(private readonly questionService: QuestionsService) {}
 
@@ -34,28 +33,28 @@ export class QuestionsController {
     return await this.questionService.findAll();
   }
 
-  @Get(':id')
+  @Get(":id")
   @ApiOkResponse({ type: QuestionEntity })
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param("id", ParseIntPipe) id: number) {
     return await this.questionService.findOne(id);
   }
 
-  @Put(':id')
+  @Put(":id")
   @ApiCreatedResponse({ type: QuestionEntity })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateQuestionDto: UpdateQuestionDto,
   ) {
     return await this.questionService.update(id, updateQuestionDto);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @ApiOkResponse()
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param("id", ParseIntPipe) id: number) {
     return await this.questionService.remove(id);
   }
 
-  @Post('import')
+  @Post("import")
   @ApiCreatedResponse()
   async import(@Body(new ValidationPipe()) importData: ImportQuestionsDto) {
     return await this.questionService.import(importData);
