@@ -1,30 +1,25 @@
-import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
-import {
-    FastifyAdapter,
-    NestFastifyApplication,
-} from '@nestjs/platform-fastify';
+import { ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { json, urlencoded } from "express";
+import { AppModule } from "./app.module";
 
 async function bootstrap() {
-    const bodyLimit = 1_485_760; // 1MiB
-    const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { rawBody: true });
+  const LIMIT_PAYLOAD = "50mb";
+  const app = await NestFactory.create(AppModule, { cors: true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.enableCors();
+  app.use(json({ limit: LIMIT_PAYLOAD }));
+  app.use(urlencoded({ extended: true, limit: LIMIT_PAYLOAD }));
 
   const config = new DocumentBuilder()
-    .setTitle('Test Platform')
-    .setDescription('Test Platform API description')
-    .setVersion('1.0')
+    .setTitle("Test Platform")
+    .setDescription("Test Platform API description")
+    .setVersion("1.0")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
-
-    // Extend body limit payloiad
-  app.useBodyParser('application/json', { bodyLimit })
-
+  SwaggerModule.setup("api", app, document);
 
   await app.listen(process.env.PORT);
 }

@@ -1,12 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import {
   IsArray,
   IsNotEmpty,
   IsNumber,
   IsString,
   ValidateNested,
-} from 'class-validator';
+} from "class-validator";
 
 export class ExaminationAnswer {
   @IsNumber()
