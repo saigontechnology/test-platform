@@ -5,9 +5,13 @@ import React, { useEffect, useState } from 'react';
 
 interface ICountdownTimer {
   initialSeconds: number;
+  isPause?: boolean;
 }
 
-const CountdownTimer: React.FC<ICountdownTimer> = ({ initialSeconds }) => {
+const CountdownTimer: React.FC<ICountdownTimer> = ({
+  initialSeconds,
+  isPause = false,
+}) => {
   const [seconds, setSeconds] = useState(initialSeconds);
 
   useEffect(() => {
@@ -18,12 +22,14 @@ const CountdownTimer: React.FC<ICountdownTimer> = ({ initialSeconds }) => {
 
     // Set up the timer
     const timer = setInterval(() => {
-      setSeconds((prevSeconds) => prevSeconds - 1);
+      if (!isPause) {
+        setSeconds((prevSeconds) => prevSeconds - 1);
+      }
     }, 1000);
 
     // Clean up the timer
     return () => clearInterval(timer);
-  }, [seconds]);
+  }, [seconds, isPause]);
 
   // Format the remaining time (e.g., “00:05:10” for 5 minutes and 10 seconds)
   const formatTime = (timeInSeconds: number) => {

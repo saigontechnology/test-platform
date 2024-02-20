@@ -1,13 +1,14 @@
 /* eslint-disable react/display-name */
-import Box from '@mui/material/Box';
-import * as React from 'react';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
 import { Divider } from '@mui/material';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Typography from '@mui/material/Typography';
+import * as React from 'react';
 
 interface ICustomModal {
-  title: string;
+  title?: string;
   children: React.ReactNode;
+  customClass?: string;
 }
 export type CustomModalHandler = {
   open: () => void;
@@ -15,7 +16,7 @@ export type CustomModalHandler = {
 };
 
 const CustomModal = React.forwardRef<CustomModalHandler, ICustomModal>(
-  ({ title, children }, ref) => {
+  ({ title, children, customClass }, ref) => {
     const [open, setOpen] = React.useState(false);
 
     React.useImperativeHandle(ref, () => ({
@@ -25,12 +26,16 @@ const CustomModal = React.forwardRef<CustomModalHandler, ICustomModal>(
 
     return (
       <Modal
+        className="grid justify-items-center"
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={(_: object, reason: 'escapeKeyDown' | 'backdropClick') => {
+          if (reason === 'backdropClick') return;
+          setOpen(false);
+        }}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box className="absolute left-[30%] top-[30%] min-w-[700px] bg-white shadow-[24px]">
+        <Box className="absolute top-[30%] min-w-fit bg-white shadow-[24px]">
           {title ? (
             <Typography
               p={2}
