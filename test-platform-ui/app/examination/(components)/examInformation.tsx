@@ -4,18 +4,35 @@ import clsx from 'clsx';
 type IExaminationInfo = {
   level: string;
   categories: string[];
+  tailWindTextColor?: string;
 };
 
-const ExaminationInfo: React.FC<IExaminationInfo> = ({ level, categories }) => {
+const ExaminationInfo: React.FC<IExaminationInfo> = ({
+  level,
+  categories,
+  tailWindTextColor,
+}) => {
   return (
-    <Box className="text-white-primary m-3 grid gap-3.5">
+    <Box
+      className={`${
+        tailWindTextColor || 'text-white-primary'
+      } m-3 grid gap-3.5`}
+    >
       <Box className="flex gap-10">
-        <Typography className="text-white-primary">Level: </Typography>
-        <Typography className="text-white-primary pl-1">{level}</Typography>
+        <Typography className={`${tailWindTextColor || 'text-white-primary'}`}>
+          Level:
+        </Typography>
+        <Typography
+          className={`${tailWindTextColor || 'text-white-primary'} pl-1`}
+        >
+          {level}
+        </Typography>
       </Box>
-      <Box className="grid">
-        <Typography className="text-white-primary pb-3.5">
-          Categories:{' '}
+      <Box className="flex content-start">
+        <Typography
+          className={`${tailWindTextColor || 'text-white-primary'} pb-3.5`}
+        >
+          Categories:
         </Typography>
         <Box className="grid gap-2 pl-8">
           {categories.map((cate, indx: number) => {

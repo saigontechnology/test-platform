@@ -3,13 +3,16 @@
 import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from '../components/organisms/Header';
 import { IAssessment, IQuestion } from '../constants/assessments';
 import ApiHook, { Methods } from '../lib/apis/ApiHook';
 import AssessmentQuestion from './(components)/assessmentQuestion';
-import CountdownTimer from './(components)/countdownTimer';
+import CountdownTimer, {
+  CountdownTimerHandler,
+} from './(components)/countdownTimer';
 import ExaminationInfo from './(components)/examInformation';
+import ExaminationResult from './(components)/result';
 
 interface IExamAnswerPayload {
   questionId: number;
@@ -19,9 +22,11 @@ interface IExamAnswerPayload {
 const ExaminationPage = () => {
   const [assessmentInfo, setAssessmentInfo] = useState<IAssessment>();
   const [assessments, setAssessments] = useState<IQuestion[]>([]);
-  const [currentAssId, setCurrentAssId] = useState<number>(0);
-  const router = useRouter();
+  const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, number[]>>();
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const countdownTimerRef = useRef<CountdownTimerHandler>(null);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -30,9 +35,18 @@ const ExaminationPage = () => {
         '/assessments/2',
       );
       if (res.data.assessmentQuestionMapping.length) {
-        setAssessmentInfo(res.data);
-        setAssessments(res.data.assessmentQuestionMapping);
-        setCurrentAssId(res.data.assessmentQuestionMapping[0].question.id);
+        const cachedQuestion = JSON.parse(
+          sessionStorage.getItem('examination')!,
+        )?.currentQ;
+        try {
+          setAssessmentInfo(res.data);
+          setAssessments(res.data.assessmentQuestionMapping);
+          setCurrentQuestionId(
+            cachedQuestion || res.data.assessmentQuestionMapping[0].question.id,
+          );
+        } finally {
+          countdownTimerRef.current?.setTime(1200);
+        }
       } else {
         // TODO:
       }
@@ -40,61 +54,67 @@ const ExaminationPage = () => {
   }, []);
 
   useEffect(() => {
-    const handleBeforeUnload = (event: any) => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      // Custom logic to handle the refresh
-      // Display a confirmation message or perform necessary actions
+      event.returnValue = true;
+      // sessionStorage.setItem('finished', (+new Date()).toString(36));
+      sessionStorage.setItem(
+        'examination',
+        JSON.stringify({
+          timer: countdownTimerRef.current?.getTime() as any,
+          currentQ: currentQuestionId,
+        }),
+      );
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, []);
+  }, [currentQuestionId]);
 
-  const handleSubmit = async (finalAnswers: IExamAnswerPayload[]) => {
-    const payload = {
-      email: sessionStorage.getItem('candidateEmail'),
-      assessmentId: assessmentInfo?.id,
-      selections: finalAnswers,
-    };
-    console.log(3, payload);
-    const { error } = await ApiHook(Methods.POST, '/examinations', {
-      data: payload,
-    });
-    if (!error) {
-      router.push('/');
-    } else {
-      alert('Examination submit got error');
-    }
-  };
-
-  const handleNext = ({
-    currId,
-    answers: currentAnswers,
-  }: {
-    currId: number;
-    answers: number[];
-  }) => {
-    const currIndex = assessments.findIndex(
-      (ass) => ass.question.id === currId,
-    );
-    if (currIndex > -1) {
-      const newAnswers = { ...answers, [currId]: currentAnswers };
-      setAnswers(newAnswers);
-      const nextCond = assessments?.[currIndex + 1]?.question?.id;
-      if (nextCond) {
-        setCurrentAssId(nextCond);
-      } else {
-        //submit
-        const _answers = Object.entries(newAnswers).map(([key, value]) => {
-          return {
-            questionId: parseInt(key),
-            selections: value,
-          };
-        });
-        handleSubmit(_answers as IExamAnswerPayload[]);
+  const Handlers = {
+    handleSubmit: async (finalAnswers: IExamAnswerPayload[]) => {
+      setIsSubmit(true);
+      const payload = {
+        email: sessionStorage.getItem('candidateEmail'),
+        assessmentId: assessmentInfo?.id,
+        selections: finalAnswers,
+      };
+      const { error } = await ApiHook(Methods.POST, '/examinations', {
+        data: payload,
+      });
+      if (error) {
+        alert('Examination submit got error');
       }
-    }
+    },
+    handleNext: ({
+      currId,
+      answers: currentAnswers,
+    }: {
+      currId: number;
+      answers: number[];
+    }) => {
+      const currIndex = assessments.findIndex(
+        (ass) => ass.question.id === currId,
+      );
+      if (currIndex > -1) {
+        const newAnswers = { ...answers, [currId]: currentAnswers };
+        setAnswers(newAnswers);
+        const nextCond = assessments?.[currIndex + 1]?.question?.id;
+        if (nextCond) {
+          setCurrentQuestionId(nextCond);
+        } else {
+          //submit
+          const _answers = Object.entries(newAnswers).map(([key, value]) => {
+            return {
+              questionId: parseInt(key),
+              selections: value,
+            };
+          });
+          Handlers.handleSubmit(_answers as IExamAnswerPayload[]);
+        }
+      }
+    },
   };
 
   return (
@@ -112,22 +132,32 @@ const ExaminationPage = () => {
       </Box>
       <Box className="flex-grow bg-[#f9f9f9]">
         <Header>
-          <CountdownTimer initialSeconds={3000} />
+          <CountdownTimer ref={countdownTimerRef} isPause={!assessmentInfo} />
         </Header>
         <Box
           className="m-6 flex-grow rounded-[15px] p-6 md:overflow-y-auto"
           bgcolor="#FFFFFF"
         >
-          {assessments?.map((ass, index) => (
-            <AssessmentQuestion
-              key={ass.question.id}
-              order={index + 1}
-              isLast={assessments.length - 1 === index}
-              assessment={ass}
-              active={currentAssId === ass.question.id}
-              onNext={handleNext}
+          {!isSubmit &&
+            assessments?.map((ass, index) => (
+              <AssessmentQuestion
+                key={ass.question.id}
+                order={index + 1}
+                isLast={assessments.length - 1 === index}
+                assessment={ass}
+                active={currentQuestionId === ass.question.id}
+                onNext={Handlers.handleNext}
+              />
+            ))}
+          {isSubmit && (
+            <ExaminationResult
+              isDisabledExit={false}
+              examResult={{
+                information: assessmentInfo,
+                scored: 70,
+              }}
             />
-          ))}
+          )}
         </Box>
       </Box>
     </Box>
