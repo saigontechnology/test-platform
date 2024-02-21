@@ -7,6 +7,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.BREVO_ACCOUNT,
     pass: process.env.BREVO_PASSWORD,
   },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 export const inviteExamination = async (
   receiver: string,
