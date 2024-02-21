@@ -1,18 +1,18 @@
 'use client';
 
-import { Button, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import CustomModal, {
-  CustomModalHandler,
-} from '../components/molecules/CustomModal';
 import Header from '../components/organisms/Header';
 import { IAssessment, IQuestion } from '../constants/assessments';
 import ApiHook, { Methods } from '../lib/apis/ApiHook';
 import AssessmentQuestion from './(components)/assessmentQuestion';
-import CountdownTimer from './(components)/countdownTimer';
+import CountdownTimer, {
+  CountdownTimerHandler,
+} from './(components)/countdownTimer';
 import ExaminationInfo from './(components)/examInformation';
+import ExaminationResult from './(components)/result';
 
 interface IExamAnswerPayload {
   questionId: number;
@@ -22,44 +22,59 @@ interface IExamAnswerPayload {
 const ExaminationPage = () => {
   const [assessmentInfo, setAssessmentInfo] = useState<IAssessment>();
   const [assessments, setAssessments] = useState<IQuestion[]>([]);
-  const [currentAssId, setCurrentAssId] = useState<number>(0);
-  const router = useRouter();
+  const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, number[]>>();
-  const confirmModalRef = useRef<CustomModalHandler>(null);
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const countdownTimerRef = useRef<CountdownTimerHandler>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    if (sessionStorage.getItem('reloaded')) {
-      router.push('/');
-    } else {
-      (async () => {
-        const res: { data: IAssessment } = await ApiHook(
-          Methods.GET,
-          '/assessments/2',
-        );
-        if (res.data.assessmentQuestionMapping.length) {
+    (async () => {
+      const res: { data: IAssessment } = await ApiHook(
+        Methods.GET,
+        '/assessments/2',
+      );
+      if (res.data.assessmentQuestionMapping.length) {
+        const cachedQuestion = JSON.parse(
+          sessionStorage.getItem('examination')!,
+        )?.currentQ;
+        try {
           setAssessmentInfo(res.data);
           setAssessments(res.data.assessmentQuestionMapping);
-          setCurrentAssId(res.data.assessmentQuestionMapping[0].question.id);
-        } else {
-          // TODO:
+          setCurrentQuestionId(
+            cachedQuestion || res.data.assessmentQuestionMapping[0].question.id,
+          );
+        } finally {
+          countdownTimerRef.current?.setTime(1200);
         }
-      })();
-    }
+      } else {
+        // TODO:
+      }
+    })();
   }, []);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       event.preventDefault();
-      sessionStorage.setItem('reloaded', (+new Date()).toString(36));
+      event.returnValue = true;
+      // sessionStorage.setItem('finished', (+new Date()).toString(36));
+      sessionStorage.setItem(
+        'examination',
+        JSON.stringify({
+          timer: countdownTimerRef.current?.getTime() as any,
+          currentQ: currentQuestionId,
+        }),
+      );
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, []);
+  }, [currentQuestionId]);
 
   const Handlers = {
     handleSubmit: async (finalAnswers: IExamAnswerPayload[]) => {
+      setIsSubmit(true);
       const payload = {
         email: sessionStorage.getItem('candidateEmail'),
         assessmentId: assessmentInfo?.id,
@@ -68,9 +83,7 @@ const ExaminationPage = () => {
       const { error } = await ApiHook(Methods.POST, '/examinations', {
         data: payload,
       });
-      if (!error) {
-        router.push('/');
-      } else {
+      if (error) {
         alert('Examination submit got error');
       }
     },
@@ -89,7 +102,7 @@ const ExaminationPage = () => {
         setAnswers(newAnswers);
         const nextCond = assessments?.[currIndex + 1]?.question?.id;
         if (nextCond) {
-          setCurrentAssId(nextCond);
+          setCurrentQuestionId(nextCond);
         } else {
           //submit
           const _answers = Object.entries(newAnswers).map(([key, value]) => {
@@ -102,33 +115,6 @@ const ExaminationPage = () => {
         }
       }
     },
-  };
-
-  const ModalContent = () => {
-    return (
-      <Box className="grid w-72 justify-self-center">
-        <p className="flex justify-center pb-2 text-2xl font-bold">
-          Reloaded examination
-        </p>
-        <span
-          id="parent-modal-description"
-          className="mt-3 whitespace-pre-line"
-        >
-          {`Candidate reloaded examination, your previous answers will not be submit. 
-            \n Please log in to do examination again.`}
-        </span>
-        <Box className="inline-flex gap-10">
-          <Button
-            className="mt-5 w-full content-end"
-            title="Delete"
-            variant="contained"
-            onClick={() => router.push('/')}
-          >
-            Accept
-          </Button>
-        </Box>
-      </Box>
-    );
   };
 
   return (
@@ -146,27 +132,34 @@ const ExaminationPage = () => {
       </Box>
       <Box className="flex-grow bg-[#f9f9f9]">
         <Header>
-          <CountdownTimer initialSeconds={3000} isPause={!assessmentInfo} />
+          <CountdownTimer ref={countdownTimerRef} isPause={!assessmentInfo} />
         </Header>
         <Box
           className="m-6 flex-grow rounded-[15px] p-6 md:overflow-y-auto"
           bgcolor="#FFFFFF"
         >
-          {assessments?.map((ass, index) => (
-            <AssessmentQuestion
-              key={ass.question.id}
-              order={index + 1}
-              isLast={assessments.length - 1 === index}
-              assessment={ass}
-              active={currentAssId === ass.question.id}
-              onNext={Handlers.handleNext}
+          {!isSubmit &&
+            assessments?.map((ass, index) => (
+              <AssessmentQuestion
+                key={ass.question.id}
+                order={index + 1}
+                isLast={assessments.length - 1 === index}
+                assessment={ass}
+                active={currentQuestionId === ass.question.id}
+                onNext={Handlers.handleNext}
+              />
+            ))}
+          {isSubmit && (
+            <ExaminationResult
+              isDisabledExit={false}
+              examResult={{
+                information: assessmentInfo,
+                scored: 70,
+              }}
             />
-          ))}
+          )}
         </Box>
       </Box>
-      <CustomModal ref={confirmModalRef}>
-        <ModalContent />
-      </CustomModal>
     </Box>
   );
 };

@@ -16,7 +16,7 @@ export type CustomModalHandler = {
 };
 
 const CustomModal = React.forwardRef<CustomModalHandler, ICustomModal>(
-  ({ title, children, customClass }, ref) => {
+  ({ title, children }, ref) => {
     const [open, setOpen] = React.useState(false);
 
     React.useImperativeHandle(ref, () => ({
