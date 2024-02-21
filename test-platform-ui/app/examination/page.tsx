@@ -2,7 +2,6 @@
 
 import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import Header from '../components/organisms/Header';
 import { IAssessment, IQuestion } from '../constants/assessments';
@@ -26,7 +25,6 @@ const ExaminationPage = () => {
   const [answers, setAnswers] = useState<Record<string, number[]>>();
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const countdownTimerRef = useRef<CountdownTimerHandler>(null);
-  const router = useRouter();
 
   useEffect(() => {
     (async () => {
