@@ -1,11 +1,14 @@
 'use client';
 
-import { Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import CustomModal from '../components/molecules/CustomModal';
 import Header from '../components/organisms/Header';
 import { IAssessment, IQuestion } from '../constants/assessments';
 import ApiHook, { Methods } from '../lib/apis/ApiHook';
+import { getClientSideCookie } from '../lib/utils';
 import AssessmentQuestion from './(components)/assessmentQuestion';
 import CountdownTimer, {
   CountdownTimerHandler,
@@ -18,19 +21,40 @@ interface IExamAnswerPayload {
   selections: number[];
 }
 
-const ExaminationPage = () => {
+/** Modal content to warning examination timeout */
+const ModalContent: React.FC = () => {
+  const router = useRouter();
+  return (
+    <Box className="grid p-4">
+      <Typography className="whitespace-pre-line pb-6">
+        {`Your examination is timeout. Result will be send via email ${sessionStorage.candidateEmail}. \n  Thanks you time to join examination.`}
+      </Typography>
+      <Button
+        className="mx-auto text-lg"
+        variant="contained"
+        onClick={() => router.replace('/')}
+      >
+        Exit examination
+      </Button>
+    </Box>
+  );
+};
+
+export default function ExaminationPage() {
   const [assessmentInfo, setAssessmentInfo] = useState<IAssessment>();
   const [assessments, setAssessments] = useState<IQuestion[]>([]);
   const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, number[]>>();
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const modalTimeOutRef = useRef<any>(null);
   const countdownTimerRef = useRef<CountdownTimerHandler>(null);
 
   useEffect(() => {
+    const examinationId = getClientSideCookie('examId');
     (async () => {
       const res: { data: IAssessment } = await ApiHook(
         Methods.GET,
-        '/assessments/2',
+        `/assessments/${examinationId}`,
       );
       if (res.data.assessmentQuestionMapping.length) {
         const cachedQuestion = JSON.parse(
@@ -43,6 +67,9 @@ const ExaminationPage = () => {
             cachedQuestion || res.data.assessmentQuestionMapping[0].question.id,
           );
         } finally {
+          /** Clear cookie of 'examId' */
+          document.cookie =
+            'examId' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
           countdownTimerRef.current?.setTime(1200);
         }
       } else {
@@ -113,6 +140,10 @@ const ExaminationPage = () => {
         }
       }
     },
+    handleExamTimeOut: () => {
+      // Todo: Show dialog notice timeout.
+      modalTimeOutRef.current?.open();
+    },
   };
 
   return (
@@ -130,7 +161,11 @@ const ExaminationPage = () => {
       </Box>
       <Box className="flex-grow bg-[#f9f9f9]">
         <Header>
-          <CountdownTimer ref={countdownTimerRef} isPause={!assessmentInfo} />
+          <CountdownTimer
+            ref={countdownTimerRef}
+            isPause={!assessmentInfo}
+            handleTimeout={Handlers.handleExamTimeOut}
+          />
         </Header>
         <Box
           className="m-6 flex-grow rounded-[15px] p-6 md:overflow-y-auto"
@@ -158,8 +193,9 @@ const ExaminationPage = () => {
           )}
         </Box>
       </Box>
+      <CustomModal ref={modalTimeOutRef}>
+        <ModalContent />
+      </CustomModal>
     </Box>
   );
-};
-
-export default ExaminationPage;
+}
