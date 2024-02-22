@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import CustomModal from '../components/molecules/CustomModal';
 import Header from '../components/organisms/Header';
-import { IAssessment, IQuestion } from '../constants/assessments';
+import { IAssessment, IExamination, IQuestion } from '../constants/assessments';
 import ApiHook, { Methods } from '../lib/apis/ApiHook';
 import { getClientSideCookie } from '../lib/utils';
 import AssessmentQuestion from './(components)/assessmentQuestion';
@@ -41,6 +41,7 @@ const ModalContent: React.FC = () => {
 };
 
 export default function ExaminationPage() {
+  const [examInfo, setExamInfo] = useState<IExamination>();
   const [assessmentInfo, setAssessmentInfo] = useState<IAssessment>();
   const [assessments, setAssessments] = useState<IQuestion[]>([]);
   const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
@@ -50,21 +51,27 @@ export default function ExaminationPage() {
   const countdownTimerRef = useRef<CountdownTimerHandler>(null);
 
   useEffect(() => {
-    const examinationId = getClientSideCookie('examId');
+    const examId = getClientSideCookie('examId');
     (async () => {
-      const res: { data: IAssessment } = await ApiHook(
-        Methods.GET,
-        `/assessments/${examinationId}`,
-      );
-      if (res.data.assessmentQuestionMapping.length) {
+      const resExam: { data: IExamination } = await ApiHook(
+          Methods.GET,
+          `/examinations/${examId}`,
+        ),
+        resAssess: { data: IAssessment } = await ApiHook(
+          Methods.GET,
+          `/assessments/${resExam.data.assessmentId}`,
+        );
+      if (resAssess.data.assessmentQuestionMapping.length) {
         const cachedQuestion = JSON.parse(
           sessionStorage.getItem('examination')!,
         )?.currentQ;
         try {
-          setAssessmentInfo(res.data);
-          setAssessments(res.data.assessmentQuestionMapping);
+          setExamInfo(resExam.data);
+          setAssessmentInfo(resAssess.data);
+          setAssessments(resAssess.data.assessmentQuestionMapping);
           setCurrentQuestionId(
-            cachedQuestion || res.data.assessmentQuestionMapping[0].question.id,
+            cachedQuestion ||
+              resAssess.data.assessmentQuestionMapping[0].question.id,
           );
         } finally {
           /** Clear cookie of 'examId' */
@@ -101,7 +108,7 @@ export default function ExaminationPage() {
     handleSubmit: async (finalAnswers: IExamAnswerPayload[]) => {
       setIsSubmit(true);
       const payload = {
-        email: sessionStorage.getItem('candidateEmail'),
+        email: examInfo?.email,
         assessmentId: assessmentInfo?.id,
         selections: finalAnswers,
       };

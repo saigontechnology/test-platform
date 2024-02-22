@@ -55,3 +55,27 @@ export interface ICreateAssessment {
 export interface ILogInValidate {
   email: string;
 }
+
+/** Assessment Interfaces */
+export interface IExamAnswer {
+  question: {
+    question: string;
+    options: string[];
+  };
+  selections: number[];
+}
+
+export interface IExamInfo {
+  name: string;
+  level: string;
+}
+export interface IExamination {
+  id: number;
+  email: string;
+  score: number | null;
+  status: string;
+  createdAt: Date;
+  assessmentId: number;
+  assessment: IExamInfo;
+  submittedAnswers: IExamAnswer[];
+}
