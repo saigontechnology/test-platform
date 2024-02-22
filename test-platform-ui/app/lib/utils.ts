@@ -43,7 +43,6 @@ export const resize_base64 = async (
   });
 
 export const getClientSideCookie = (name: string): string | undefined => {
-  console.log('getClientSideCookie cookie: ', document.cookie);
   const cookieValue = document.cookie
     .split('; ')
     .find((row) => row.startsWith(`${name}=`))
