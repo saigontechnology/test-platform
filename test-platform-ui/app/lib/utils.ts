@@ -41,3 +41,13 @@ export const resize_base64 = async (
       resolve(canvas.toDataURL());
     };
   });
+
+export const getClientSideCookie = (name: string): string | undefined => {
+  console.log('getClientSideCookie cookie: ', document.cookie);
+  const cookieValue = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith(`${name}=`))
+    ?.split('=')[1];
+
+  return cookieValue;
+};

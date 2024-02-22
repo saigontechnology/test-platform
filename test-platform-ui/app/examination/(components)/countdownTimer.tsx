@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 
 interface ICountdownTimer {
   isPause?: boolean;
+  handleTimeout: () => void;
 }
 
 export type CountdownTimerHandler = {
@@ -14,7 +15,7 @@ export type CountdownTimerHandler = {
 };
 
 const CountdownTimer = React.forwardRef<CountdownTimerHandler, ICountdownTimer>(
-  ({ isPause = false }, ref) => {
+  ({ handleTimeout, isPause = false }, ref) => {
     const [seconds, setSeconds] = useState<number>(0);
 
     React.useImperativeHandle(ref, () => ({
@@ -37,7 +38,10 @@ const CountdownTimer = React.forwardRef<CountdownTimerHandler, ICountdownTimer>(
       // Set up the timer
       const timer = setInterval(() => {
         if (!isPause) {
-          setSeconds((prevSeconds) => prevSeconds - 1);
+          if (seconds === 0) {
+            handleTimeout();
+            setSeconds(0);
+          } else setSeconds((prevSeconds) => prevSeconds - 1);
         }
       }, 1000);
 
