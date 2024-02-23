@@ -14,17 +14,20 @@ import {
   Button,
   ButtonGroup,
   FormControl,
-  Typography,
+  Stack,
+  Typography
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
+import RenderQuestionAnswers from './(question-form)/answers';
 import RenderQuestionType from './(question-form)/questionType';
 
 export interface IQuestionInfo {
   id: number;
-  title: string;
-  content: string;
+  question: string;
+  description: string;
   categories: string[];
   answers: number[];
   options: string[];
@@ -32,11 +35,11 @@ export interface IQuestionInfo {
 }
 
 interface ICreateQuestion {
-  questionData?: IQuestionInfo;
+  questionData: IQuestionInfo;
 }
 
 export interface IAnswer {
-  id: number;
+  id: string;
   answer: string;
   isCorrect: boolean;
 }
@@ -44,32 +47,29 @@ export interface IAnswer {
 const ModifyQuestion = (props: ICreateQuestion) => {
   const { questionData } = props;
   const router = useRouter();
-  const [questionType, setQuestionType] = useState<string>(
-    questionData?.type.split('_')[0].toLowerCase() || 'single',
-  );
 
-  const mapEditAnswer = (options: string[], answers: number[]) => {
-    const _mapped = options?.map((opt: string, indx: number) => ({
-      id: indx,
-      answer: opt,
-      isCorrect: answers.includes(indx),
+  const mapEditAnswer = () => {
+    const { options, answers } = questionData;
+
+    return options.map((option: string, index: number) => ({
+      id: uuidv4(),
+      answer: option,
+      isCorrect: answers.includes(index),
     }));
-    return _mapped;
   };
 
-  const [answerArray, setAnswerArray] = useState<IAnswer[]>(
-    questionData
-      ? mapEditAnswer(questionData?.options, questionData?.answers)
-      : [],
-  );
+  const [answerArray, setAnswerArray] = useState<IAnswer[]>(mapEditAnswer());
 
   const form = useForm<IAddQuestion>({
     defaultValues: {
-      title: questionData?.title,
-      content: questionData?.content,
+      question: questionData.question,
+      description: questionData.description,
+      type: questionData.type,
     },
     resolver: yupResolver(createQuestionSchema),
   });
+  const { setError, watch } = form;
+  const questionType = watch("type");
 
   //#region : Handle interactive functions
   const HandleInteractions = {
@@ -77,29 +77,17 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     handleRedirect: (route: string) => {
       router.push(route);
     },
-    handleQuestionType: (
-      event: React.MouseEvent<HTMLElement>,
-      selectedType: string,
-    ) => {
-      event.preventDefault();
-      setQuestionType((prevType) =>
-        prevType != selectedType ? selectedType : prevType,
-      );
-    },
     handleModifiedQuestion: async (modifiedQuestion: IAddQuestion) => {
-      console.log('handleModifiedQuestion content: ', modifiedQuestion.content);
       const formData = {
-        question: modifiedQuestion.title,
-        description: modifiedQuestion.content,
-        answer: answerArray.reduce((array: any, answ: any) => {
-          return answ.isCorrect ? [...array, answ.id] : array;
-        }, []),
-        options: answerArray.map((answ: IAnswer) => answ.answer),
+        question: modifiedQuestion.question,
+        description: modifiedQuestion.description,
+        answer: answerArray.filter((answer) => answer.id).map((answer, index) => answer.isCorrect ? index : -1).filter(index => index > -1),
+        options: answerArray.filter((answer) => answer.id).map((answer) => answer.answer),
         category: 'React',
-        type: questionType === 'single' ? 'SINGLE_CHOICE' : 'MULTIPLE_CHOICE',
+        type: modifiedQuestion.type,
       };
       if (formData.answer.length) {
-        const { error } = await (questionData
+        const { error } = await (questionData.id
           ? ApiHook(Methods.PUT, `/questions/${questionData.id}`, {
               data: formData,
             })
@@ -110,7 +98,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
           HandleInteractions.handleRedirect('/administrator/questions');
         }
       } else {
-        alert(`Incorrect fields in create form`);
+        setError("root", { type: "minLength", message: "At least one checkbox has been checked"});
       }
     },
   };
@@ -119,10 +107,12 @@ const ModifyQuestion = (props: ICreateQuestion) => {
   //#region : Create question form
   return (
     <Box>
-      <FormProvider {...form}>
-        <Typography className="mx-2 my-4 mb-10 text-2xl">
-          {`${questionData ? 'Edit' : 'New'} Question`}
+      <Box className="flex items-center justify-between">
+        <Typography component="h1" className={`text-xl md:text-2xl mb-10`}>
+          {questionData.id ? 'Edit' : 'Create'} Question
         </Typography>
+      </Box>
+      <FormProvider {...form}>
         <Box
           component="form"
           noValidate
@@ -133,39 +123,44 @@ const ModifyQuestion = (props: ICreateQuestion) => {
           )}
         >
           <Box className="grid basis-1/2">
-            <FormControl variant="standard" className="!w-4/5 pb-7">
-              <Typography className="ml-2 font-semibold">Title</Typography>
+            <FormControl variant="standard" className="!w-11/12 pb-7">
+              <Typography className="font-semibold">Question</Typography>
               <CustomTextField
-                name="title"
-                id="question-title-input"
-                className="mx-2 my-2 ring-offset-0"
+                name="question"
+                className="ring-offset-0"
+                multiline
+                maxRows={5}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                  }
+                }}
               />
             </FormControl>
-            <FormControl variant="standard" className="!w-4/5 pb-7">
-              <Typography className="ml-2 font-semibold">Content</Typography>
-              <RichTextArea name="content" data={questionData?.content} />
+            <FormControl variant="standard" className="!w-11/12 pb-7">
+              <Typography className="font-semibold">Description</Typography>
+              <RichTextArea name="description" data={questionData?.description} />
             </FormControl>
           </Box>
-          <RenderQuestionType
-            className="basis-1/2"
-            questionType={questionType}
-            handleChangeQuestionType={HandleInteractions.handleQuestionType}
-            answers={answerArray}
-            handleAnswers={(answers: IAnswer[]) => {
-              console.log('handle set answers: ', answers);
-              setAnswerArray(answers);
-            }}
-          />
+          <Stack className="basis-1/2 gap-7" flexDirection="column">
+            <RenderQuestionType />
+            <RenderQuestionAnswers
+              questionType={questionType}
+              renderAnswers={answerArray}
+              handleAnswers={setAnswerArray}
+            />
+          </Stack>
         </Box>
         <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
           <Button
+            color="primary"
             variant="contained"
             startIcon={<LibraryAddIcon />}
             onClick={form.handleSubmit(
               HandleInteractions.handleModifiedQuestion,
             )}
           >
-            {`${questionData ? 'Edit' : 'Create'}`}
+            {questionData.id ? 'Edit' : 'Create'}
           </Button>
           <Button
             variant="outlined"

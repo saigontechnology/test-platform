@@ -18,9 +18,11 @@ let externalRoute = null;
 
 export default function EditAssessment() {
   const [assessments, setAssessments] = useState<IAssessment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = (externalRoute = useRouter());
 
   const getAssessments = async () => {
+    setLoading(true);
     const resp = await ApiHook(Methods.GET, '/assessments');
     const assessmentsData: any = (resp.data as Array<IAssessment>).map(
       (q: IAssessment) => {
@@ -33,6 +35,7 @@ export default function EditAssessment() {
       },
     );
     setAssessments(assessmentsData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -60,8 +63,7 @@ export default function EditAssessment() {
       field: 'id',
       headerName: 'ID',
       disableColumnMenu: true,
-      sortable: false,
-      width: 30,
+      width: 70,
     },
     {
       field: 'level',
@@ -118,7 +120,7 @@ export default function EditAssessment() {
         </Button>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={assessments} columns={columns} />
+      <DataTable rows={assessments} columns={columns} loading={loading} />
     </Box>
   );
 }
