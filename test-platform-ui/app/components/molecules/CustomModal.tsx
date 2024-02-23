@@ -1,5 +1,6 @@
 /* eslint-disable react/display-name */
-import { Divider } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { Divider, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
@@ -24,28 +25,38 @@ const CustomModal = React.forwardRef<CustomModalHandler, ICustomModal>(
       close: () => setOpen(false),
     }));
 
+    const handleClose = (
+      _: object,
+      reason: 'escapeKeyDown' | 'backdropClick',
+    ) => {
+      if (reason === 'backdropClick') return;
+      setOpen(false);
+    };
+
     return (
       <Modal
         className="grid justify-items-center"
         open={open}
-        onClose={(_: object, reason: 'escapeKeyDown' | 'backdropClick') => {
-          if (reason === 'backdropClick') return;
-          setOpen(false);
-        }}
+        onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box className="absolute top-[30%] min-w-fit bg-white shadow-[24px]">
           {title ? (
-            <Typography
-              p={2}
-              id="modal-modal-title"
-              variant="h6"
-              component="h2"
-              fontWeight="bold"
-            >
-              {title}
-            </Typography>
+            <Box className="flex items-center justify-between">
+              <Typography
+                p={2}
+                id="modal-modal-title"
+                variant="h6"
+                component="h2"
+                fontWeight="bold"
+              >
+                {title}
+              </Typography>
+              <IconButton onClick={() => setOpen(false)}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
           ) : null}
           <Divider />
           <Box p={2}>{children}</Box>
