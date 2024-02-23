@@ -76,14 +76,12 @@ const AxiosMethods = {
     url: string,
     config?: AxiosRequestConfig,
   ): Promise<TResponse> => {
-    console.log('POST: ', url, config);
     try {
       const response = await axiosInstance<TResponse>({
         url,
         method: 'post',
         ...config,
       });
-      showNotification('Sent', 'success');
       return response.data;
     } catch (error) {
       const message = (error as AxiosError<{ message: string }>).response?.data
