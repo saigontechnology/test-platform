@@ -22,8 +22,8 @@ const EditQuestion = () => {
       );
       const editQuestion: IQuestionInfo = {
         id: data?.id,
-        title: data?.question,
-        content: data?.description,
+        question: data?.question,
+        description: data?.description,
         categories: new Array().concat(data?.category),
         answers: data?.answer,
         options: data?.options,

@@ -28,11 +28,13 @@ export interface IQuestion {
 
 const Page = () => {
   const [questionList, setQuestionList] = useState<IQuestion[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const onDeleteQuestion = React.useRef<number>(0);
   const router = useRouter();
   const modalRef = React.useRef<CustomModalHandler>(null);
 
   const getGridQuestion = async () => {
+    setLoading(true);
     const _questions = await ApiHook(Methods.GET, '/questions');
     const _questionList: IQuestion[] = (
       _questions.data as Array<IResponseQuestion>
@@ -48,6 +50,7 @@ const Page = () => {
       };
     });
     setQuestionList(_questionList);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -103,8 +106,7 @@ const Page = () => {
       field: 'id',
       headerName: 'ID',
       disableColumnMenu: true,
-      sortable: false,
-      width: 30,
+      width: 70,
     },
     {
       field: 'title',
@@ -151,15 +153,13 @@ const Page = () => {
                   key={`answer-${indx}`}
                   label={answ}
                   variant="outlined"
-                  // onDelete={() => console.log('handle delete: ', params)}
                 />
               );
             })}
           </Box>
         );
       },
-      valueGetter: (params: GridValueGetterParams) =>
-        `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+      valueGetter: (params: GridValueGetterParams) => params.row.options.join("\t"),
     },
     {
       field: 'actions',
@@ -212,7 +212,7 @@ const Page = () => {
         </Button>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={questionList} columns={columns} rowHeight={170} />
+      <DataTable rows={questionList} columns={columns} rowHeight={170} loading={loading} />
       <CustomModal ref={modalRef} title={''}>
         <ModalContent />
       </CustomModal>

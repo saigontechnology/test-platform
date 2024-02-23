@@ -23,6 +23,7 @@ let externalRoute = null;
 
 export default function EditAssessment() {
   const [assessments, setAssessments] = useState<IAssessment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = (externalRoute = useRouter());
   const sendInviteModalRef = useRef<any>(null);
   const rowIdValueRef = useRef<any>(null);
@@ -37,6 +38,7 @@ export default function EditAssessment() {
   });
 
   const getAssessments = async () => {
+    setLoading(true);
     const resp = await ApiHook(Methods.GET, '/assessments');
     const assessmentsData: any = (resp.data as Array<IAssessment>).map(
       (q: IAssessment) => {
@@ -49,6 +51,7 @@ export default function EditAssessment() {
       },
     );
     setAssessments(assessmentsData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -94,8 +97,7 @@ export default function EditAssessment() {
       field: 'id',
       headerName: 'ID',
       disableColumnMenu: true,
-      sortable: false,
-      width: 30,
+      width: 70,
     },
     {
       field: 'level',
@@ -158,7 +160,7 @@ export default function EditAssessment() {
         </Button>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={assessments} columns={columns} />
+      <DataTable rows={assessments} columns={columns} loading={loading}/>
       <CustomModal ref={sendInviteModalRef} title="Send Invitation">
         <FormProvider {...sendInviteForm}>
           <Box className="grid w-[300px]">

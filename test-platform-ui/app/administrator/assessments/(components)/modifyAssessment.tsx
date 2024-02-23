@@ -17,9 +17,10 @@ import {
   Button,
   ButtonGroup,
   FormControl,
-  Grid,
+  FormGroup,
   IconButton,
-  Typography,
+  Stack,
+  Typography
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -78,7 +79,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
         id,
         level,
         name,
-        questions: questions.lengh ? questions : prevState.questions,
+        questions: questions.length ? questions : prevState.questions,
       }));
     }
   }, [detail]);
@@ -122,62 +123,70 @@ export default function ModifyAssessment(props: IModifyAssessment) {
   }, [questionList]);
 
   return (
-    <Box>
-      <FormProvider {...form}>
-        <Typography className="mx-2 my-4 mb-10 text-2xl">
-          {`${detail ? 'Edit' : 'New'} Assessment`}
+    <Box sx={{ overflow: "auto" }}>
+      <Box className="flex items-center justify-between">
+        <Typography component="h1" className={`text-xl md:text-2xl mb-10`}>
+          {detail ? 'Edit' : 'New'} Assessment
         </Typography>
+      </Box>
+      <FormProvider {...form}>
         <Box
           component="form"
           noValidate
           autoComplete="off"
           className="flex flex-row"
         >
-          <Box className="grid basis-1/2">
-            <FormControl variant="standard" className="!w-4/5 pb-7">
-              <Typography className="ml-2 font-semibold">Name</Typography>
+          <Box className="!w-1/2">
+            <FormControl variant="standard" className="!w-11/12 pb-7">
+              <Typography className="font-semibold">Name</Typography>
               <CustomTextField
                 name="name"
                 id="question-title-input"
-                className="mx-2 my-2 ring-offset-0"
+                className="ring-offset-0 full-width"
+                multiline
+                maxRows={5}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                  }
+                }}
               />
             </FormControl>
-            <FormControl variant="standard" className="!w-4/5 pb-7">
-              <Typography className="ml-2 font-semibold">Level</Typography>
+            <FormControl variant="standard" className="!w-11/12 pb-7">
+              <Typography className="font-semibold">Level</Typography>
               <CustomSingleSelect
-                label="Level"
                 name="level"
                 options={LevelOptions}
               />
             </FormControl>
-            <Box>
-              <Typography className="ml-2 font-semibold">Questions</Typography>
-              <Grid container>
-                {(questions || []).map((_, index) => (
-                  <Grid
-                    key={`question-${index}`}
-                    item
-                    xs={12}
-                    className="flex items-center"
+            <FormGroup className="!w-11/12 pb-7">
+              <Typography className="font-semibold">Questions</Typography>
+              <Box
+                sx={{ overflowY: "auto", maxHeight: 300, width: "100%" }}
+              >
+                {(questions || []).map((question, index) => (
+                  <Stack
+                    key={`question-${question}`}
+                    alignItems="center"
+                    justifyContent="flex-start"
+                    direction="row"
+                    gap={1}
                   >
+                    <Typography className="font-semibold">{index + 1}.</Typography>
                     <CustomSingleSelect
-                      label={`Question ${index + 1}`}
                       name={`questions.${index}`}
                       options={questionOptions}
-                      className="w-[200px]"
                     />
-                    <IconButton onClick={() => append('')}>
+                    <IconButton color="primary" onClick={() => append('')} sx={{ display: index + 1 === questions?.length ?  "block": "none"}}>
                       <AddBox />
                     </IconButton>
-                    {index > 0 && (
-                      <IconButton onClick={() => remove(index)}>
-                        <Delete />
-                      </IconButton>
-                    )}
-                  </Grid>
+                    <IconButton color="error" onClick={() => remove(index)} disabled={questions?.length === 1}>
+                      <Delete />
+                    </IconButton>
+                  </Stack>
                 ))}
-              </Grid>
-            </Box>
+              </Box>
+            </FormGroup>
           </Box>
         </Box>
         <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">

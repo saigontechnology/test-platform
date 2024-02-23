@@ -1,54 +1,52 @@
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import { FormControl, Input } from '@mui/material';
-import clsx from 'clsx';
-import { ReactElement, useEffect, useState } from 'react';
+import { QuestionType } from '@/app/constants/assessments';
+import { AddBox, Delete } from '@mui/icons-material';
+import { Checkbox, FormControl, FormGroup, FormHelperText, IconButton, Input, Typography } from '@mui/material';
+import { ReactElement, useEffect, useRef, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
 import { IAnswer } from '../modifyQuestion';
 
 interface IQuestionAnswers {
   questionType: string | undefined;
-  renderAnswers?: IAnswer[];
+  renderAnswers: IAnswer[];
   handleAnswers: (answers: IAnswer[]) => void;
 }
 
-const initialAnswer = { id: -1, answer: '', isCorrect: false };
+const initialAnswer = { id: "", answer: '', isCorrect: false };
 const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   const { questionType, renderAnswers, handleAnswers } = props;
-  const [firstEditRender, setFirstEditRender] = useState<boolean>(true);
-  const [answers, setAnswers] = useState<IAnswer[]>(
-    renderAnswers?.length ? renderAnswers : [initialAnswer],
-  );
+
+  const [answers, setAnswers] = useState<IAnswer[]>(renderAnswers.length ? renderAnswers : [initialAnswer]);
+
+  const firstTimeRender = useRef<boolean>(true);
+
+  const { formState: { errors } } = useFormContext();
 
   // Notes: Reset selected answers on 'questionType' changes.
   useEffect(() => {
-    if (firstEditRender) {
-      setFirstEditRender(false);
+    if (firstTimeRender.current) {
+      firstTimeRender.current = false;
       return;
     }
-    const resetAnswersSelected = answers.map((answ) => ({
-      ...answ,
-      isCorrect: false,
-    }));
-    setAnswers(resetAnswersSelected);
+
+    HandleInteractions.handleResetAnswer();
   }, [questionType]);
 
   //#region : Handle interaction functions
   const HandleInteractions = {
     updateStateAnswers: (updatedAnswers: IAnswer[]) => {
-      setAnswers(() => {
-        handleAnswers(updatedAnswers);
-        return updatedAnswers;
-      });
+      setAnswers(updatedAnswers);
+      handleAnswers(updatedAnswers);
     },
     handleAnswerChanges: (event: React.ChangeEvent<HTMLInputElement>) => {
-      const modifiedAnswers = answers.map((answ: IAnswer) => {
-        if (answ.id === +event.target.id.split('_')[1]) {
+      const modifiedAnswers = answers.map((answer: IAnswer) => {
+        if (answer.id === event.target.id) {
           return {
-            ...answ,
+            ...answer,
             answer: event.target.value,
           };
         }
-        return answ;
+        return answer;
       });
       HandleInteractions.updateStateAnswers(modifiedAnswers);
     },
@@ -57,7 +55,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       minusAnswers.splice(minusAnswers.indexOf(answer), 1);
       if (
         minusAnswers.length < 4 &&
-        !minusAnswers.find((answ) => answ.id < 0)
+        !minusAnswers.find((answ) => !answ.id)
       ) {
         minusAnswers.push(initialAnswer);
       }
@@ -65,7 +63,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
     },
     handleAddAnswer: () => {
       const modifiedAnswers = [...answers];
-      modifiedAnswers[modifiedAnswers.length - 1].id = modifiedAnswers.length;
+      modifiedAnswers[modifiedAnswers.length - 1].id = uuidv4();
       if (modifiedAnswers.length < 4) {
         modifiedAnswers.push(initialAnswer);
       }
@@ -78,13 +76,20 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
             ...answ,
             isCorrect: !answ.isCorrect,
           };
-        } else if (questionType === 'single') {
+        } else if (questionType === QuestionType.SINGLE_CHOICE) {
           return { ...answ, isCorrect: false };
         }
         return answ;
       });
       HandleInteractions.updateStateAnswers(updatedAnswers);
     },
+    handleResetAnswer: () => {
+      const resetAnswersSelected = answers.map((answ) => ({
+        ...answ,
+        isCorrect: false,
+      }));
+      HandleInteractions.updateStateAnswers(resetAnswersSelected);
+    }
   };
   //#endregion
 
@@ -94,57 +99,56 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       <FormControl
         key={`answer-${answ.id}`}
         variant="standard"
-        className="mx-2 my-2 inline-flex w-2/5 !flex-row items-center"
+        className="inline-flex w-2/5 !flex-row items-center -ml-3"
       >
-        {answ.id > -1 ? (
-          <input
-            id="default-checkbox"
-            type="checkbox"
-            checked={answ.isCorrect}
-            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
-            onChange={() => HandleInteractions.handleSelectCorrect(answ)}
-          />
-        ) : null}
+        <Checkbox
+          checked={answ.isCorrect}
+          disabled={!answ.id}
+          onClick={() => HandleInteractions.handleSelectCorrect(answ)}
+        />
+
         <Input
-          id={`answer_${answ.id}`}
+          id={answ.id}
           value={answ.answer}
           aria-describedby="component-helper-text"
           className="mx-2 my-2"
           placeholder={`Answer ${index + 1}`}
           onChange={HandleInteractions.handleAnswerChanges}
         />
-        {answ.id > -1 ? (
-          <DeleteForeverIcon
-            className={clsx('w-6 cursor-pointer')}
-            onClick={(evt: React.MouseEvent) => {
-              evt.preventDefault();
-              HandleInteractions.handleRemoveAnswer(answ);
-            }}
-          />
-        ) : (
-          <PlaylistAddIcon
-            className={clsx('w-6', {
-              'cursor-pointer ': answ.answer.length != 0,
-            })}
-            onClick={(evt: React.MouseEvent) => {
-              evt.preventDefault();
-              answ.answer.length != 0 && HandleInteractions.handleAddAnswer();
-            }}
-          />
-        )}
+
+        {
+          answ.id ? (
+            <IconButton
+              color="error"
+              onClick={() => HandleInteractions.handleRemoveAnswer(answ)}
+              type="button"
+            >
+              <Delete />
+            </IconButton>
+          ) : (
+            <IconButton
+              color="primary"
+              disabled={!answ.answer.trim().length}
+              onClick={HandleInteractions.handleAddAnswer}
+              type="button"
+            >
+              <AddBox />
+            </IconButton>
+          )
+        }
       </FormControl>
     );
   };
   //#endregion
 
   return (
-    <>
-      {questionType != undefined
-        ? answers.map((answ: IAnswer, index: number) => {
-            return index < 4 ? renderAnswer(answ, index) : null;
-          })
-        : null}
-    </>
+    <FormGroup>
+      <Typography className="font-semibold">Options</Typography>
+      {
+        answers.map(renderAnswer)
+      }
+      {errors.root ? <FormHelperText error>{errors.root.message}</FormHelperText> : null}
+    </FormGroup>
   );
 };
 

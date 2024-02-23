@@ -1,15 +1,14 @@
-import { lusitana } from '@/app/styles/fonts';
-import { Suspense } from 'react';
-import Loading from './loading';
+import { Box, Divider, Typography } from '@mui/material';
 
 export default async function Page() {
   return (
-    <main>
-      <Suspense fallback={<Loading />}>
-        <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
+    <Box>
+      <Box className="flex items-center justify-between">
+        <Typography component="h1" className={`text-xl md:text-2xl`}>
           Dashboard
-        </h1>
-      </Suspense>
-    </main>
+        </Typography>
+      </Box>
+      <Divider className="my-10" />
+    </Box>
   );
 }
