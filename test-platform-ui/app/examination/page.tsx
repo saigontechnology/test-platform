@@ -21,6 +21,11 @@ interface IExamAnswerPayload {
   selections: number[];
 }
 
+interface IExamResult {
+  email: string;
+  scored: number;
+}
+
 /** Modal content to warning examination timeout */
 const ModalContent: React.FC = () => {
   const router = useRouter();
@@ -47,6 +52,7 @@ export default function ExaminationPage() {
   const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, number[]>>();
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const [examScored, setExamScored] = useState<number>(0);
   const modalTimeOutRef = useRef<any>(null);
   const countdownTimerRef = useRef<CountdownTimerHandler>(null);
 
@@ -75,8 +81,8 @@ export default function ExaminationPage() {
           );
         } finally {
           /** Clear cookie of 'examId' */
-          document.cookie =
-            'examId' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+          // document.cookie =
+          //   'examId' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
           countdownTimerRef.current?.setTime(1200);
         }
       } else {
@@ -112,11 +118,18 @@ export default function ExaminationPage() {
         assessmentId: assessmentInfo?.id,
         selections: finalAnswers,
       };
-      const { error } = await ApiHook(Methods.POST, '/examinations', {
-        data: payload,
-      });
-      if (error) {
+      const result: { data: IExamResult; error: any } = await ApiHook(
+        Methods.PUT,
+        `/examinations/${examInfo?.id}`,
+        {
+          data: payload,
+        },
+      );
+      if (result.error) {
         alert('Examination submit got error');
+      } else {
+        sessionStorage.removeItem('examination');
+        setExamScored(result.data.scored);
       }
     },
     handleNext: ({
@@ -194,7 +207,7 @@ export default function ExaminationPage() {
               isDisabledExit={false}
               examResult={{
                 information: assessmentInfo,
-                scored: 70,
+                scored: examScored,
               }}
             />
           )}
