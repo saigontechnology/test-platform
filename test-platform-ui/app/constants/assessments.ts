@@ -24,6 +24,21 @@ export enum QuestionType {
   TRUE_FALSE = 'TRUE_FALSE',
 }
 
+export const QuestionTypeOptions = [
+  {
+    label: 'Single choice',
+    value: QuestionType.SINGLE_CHOICE,
+  },
+  {
+    label: 'Multiple choice',
+    value: QuestionType.MULTIPLE_CHOICE,
+  },
+  // {
+  //   label: 'True/False',
+  //   value: QuestionType.TRUE_FALSE,
+  // },
+];
+
 export interface IQuestion {
   createdAt: string;
   question: {

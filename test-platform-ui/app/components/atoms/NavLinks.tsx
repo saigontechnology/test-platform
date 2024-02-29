@@ -12,6 +12,7 @@ import { OverridableComponent } from '@mui/material/OverridableComponent';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Fragment } from 'react';
 
 interface ILink {
   name: string;
@@ -98,12 +99,12 @@ export default function NavLinks() {
         const isShowSubs = pathname.includes(link.href);
         const mainLink = handleRenderLink(link, isShowSubs);
         return (
-          <>
+          <Fragment key={link.name}>
             {mainLink}
             {link.sublinks?.length && isShowSubs
               ? handleRenderSublinks(link.sublinks)
               : null}
-          </>
+          </Fragment>
         );
       })}
     </Box>

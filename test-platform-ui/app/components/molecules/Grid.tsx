@@ -1,32 +1,39 @@
 import { Box, Typography } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, DataGridProps, GridToolbar } from '@mui/x-data-grid';
+import CustomGridPagination from './CustomGridPagination';
 
 export const multipleLinesTypo = (content: string) => {
   return <Typography className="whitespace-normal">{content}</Typography>;
 };
 
-interface IDataTable {
-  rows: any[];
-  columns: GridColDef[];
-  rowHeight?: number;
-}
-
-export default function DataTable(props: IDataTable) {
-  const { rows, columns, rowHeight } = props;
+export default function CustomGrid(props: DataGridProps) {
   return (
     <Box className="h-[60vh] w-full overflow-y-auto">
       <DataGrid
-        rows={rows}
-        columns={columns}
-        rowHeight={rowHeight || 70}
         initialState={{
           pagination: {
-            paginationModel: { page: 0, pageSize: 8 },
+            paginationModel: { pageSize: 25 },
+          },
+          sorting: {
+            sortModel: [{ field: 'id', sort: 'desc' }],
           },
         }}
-        pageSizeOptions={[3, 5, 10]}
-        checkboxSelection={false}
+        slots={{
+          pagination: CustomGridPagination,
+          toolbar: GridToolbar
+        }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+            csvOptions: { disableToolbarButton: true },
+            printOptions: { disableToolbarButton: true },
+          },
+        }}
         disableColumnMenu
+        disableColumnFilter
+        disableColumnSelector
+        disableDensitySelector
+        {...props}
       />
     </Box>
   );

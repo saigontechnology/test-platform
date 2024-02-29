@@ -1,5 +1,6 @@
 'use client';
 import { createTheme } from '@mui/material/styles';
+import type { } from '@mui/x-data-grid/themeAugmentation';
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -63,6 +64,11 @@ const themeCustom = createTheme({
     },
   },
   components: {
+    MuiDataGrid: {
+      defaultProps: {
+        rowHeight: 70,
+      }
+    },
     MuiInputBase: {
       styleOverrides: {
         root: ({ theme }) => ({

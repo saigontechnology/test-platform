@@ -1,6 +1,5 @@
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { FieldError, useController, useFormContext } from 'react-hook-form';
@@ -10,14 +9,13 @@ interface IOption {
   value: string | number;
 }
 interface ICustomSingleSelect {
-  label: string;
   options: IOption[];
   name: string;
   className?: string;
 }
 
 export default function CustomSingleSelect(props: ICustomSingleSelect) {
-  const { label, options, name } = props;
+  const { options, name, ...others } = props;
   const { control } = useFormContext();
 
   const {
@@ -30,17 +28,15 @@ export default function CustomSingleSelect(props: ICustomSingleSelect) {
 
   return (
     <FormControl
-      sx={{ m: 1, minWidth: 120 }}
+      sx={{ flex: 1, margin: 0, minWidth: 120 }}
       size="small"
       error={Boolean(error)}
     >
-      <InputLabel id="demo-select-small-label">{label}</InputLabel>
       <Select
         {...inputProps}
-        {...props}
+        {...others}
+        variant="standard"
         labelId="demo-select-small-label"
-        id="demo-select-small"
-        label={label}
       >
         <MenuItem value="">
           <em>None</em>

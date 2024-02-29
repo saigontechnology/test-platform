@@ -1,26 +1,44 @@
 'use client';
 
+import CustomTextField from '@/app/components/atoms/CustomTextField';
+import CustomModal from '@/app/components/molecules/CustomModal';
 import DataTable, { multipleLinesTypo } from '@/app/components/molecules/Grid';
 import { IAssessment } from '@/app/constants/assessments';
 import { ROUTE_KEY } from '@/app/constants/routePaths';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
 import { showNotification } from '@/app/lib/toast';
-import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
-import { IconButton, Typography } from '@mui/material';
+import { sendAssessmentInvitationSchema } from '@/app/validations/assessment';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { AddBox, Delete, ModeEdit, Send } from '@mui/icons-material';
+import { FormControl, IconButton, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { GridColDef } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
 let externalRoute = null;
 
 export default function EditAssessment() {
   const [assessments, setAssessments] = useState<IAssessment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = (externalRoute = useRouter());
+  const sendInviteModalRef = useRef<any>(null);
+  const rowIdValueRef = useRef<any>(null);
+
+  const sendInviteForm = useForm<{
+    email: string;
+  }>({
+    defaultValues: {
+      email: '',
+    },
+    resolver: yupResolver(sendAssessmentInvitationSchema),
+  });
 
   const getAssessments = async () => {
+    setLoading(true);
     const resp = await ApiHook(Methods.GET, '/assessments');
     const assessmentsData: any = (resp.data as Array<IAssessment>).map(
       (q: IAssessment) => {
@@ -33,6 +51,7 @@ export default function EditAssessment() {
       },
     );
     setAssessments(assessmentsData);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -55,13 +74,30 @@ export default function EditAssessment() {
     }
   };
 
+  const handleInvite = async (e: React.MouseEvent, row: IAssessment) => {
+    e.stopPropagation();
+    sendInviteForm.reset();
+    rowIdValueRef.current = row.id;
+    sendInviteModalRef?.current.open();
+  };
+
+  const handleSendInvite = async () => {
+    const formData = sendInviteForm.getValues();
+    const { error } = await ApiHook(Methods.POST, `/examinations/invite`, {
+      data: { ...formData, assessmentId: rowIdValueRef.current },
+    });
+    if (!error) {
+      showNotification('Send assessment invitation successfully', 'success');
+      sendInviteModalRef?.current.close();
+    }
+  };
+
   const columns: GridColDef[] = [
     {
       field: 'id',
       headerName: 'ID',
       disableColumnMenu: true,
-      sortable: false,
-      width: 30,
+      width: 70,
     },
     {
       field: 'level',
@@ -93,6 +129,12 @@ export default function EditAssessment() {
             >
               <Delete />
             </IconButton>
+            <IconButton
+              className="ml-3"
+              onClick={(e) => handleInvite(e, params.row)}
+            >
+              <Send />
+            </IconButton>
           </>
         );
       },
@@ -118,7 +160,25 @@ export default function EditAssessment() {
         </Button>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={assessments} columns={columns} />
+      <DataTable rows={assessments} columns={columns} loading={loading}/>
+      <CustomModal ref={sendInviteModalRef} title="Send Invitation">
+        <FormProvider {...sendInviteForm}>
+          <Box className="grid w-[300px]">
+            <FormControl variant="standard" className="my-4">
+              <Typography className="font-semibold">Email</Typography>
+              <CustomTextField name="email" />
+            </FormControl>
+            <Box className="text-right">
+              <Button
+                variant="contained"
+                onClick={sendInviteForm.handleSubmit(handleSendInvite)}
+              >
+                Send
+              </Button>
+            </Box>
+          </Box>
+        </FormProvider>
+      </CustomModal>
     </Box>
   );
 }
