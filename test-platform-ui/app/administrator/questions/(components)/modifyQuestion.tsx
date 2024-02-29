@@ -4,6 +4,7 @@
 import CustomTextField from '@/app/components/atoms/CustomTextField';
 import RichTextArea from '@/app/components/atoms/Editor/richtext';
 import { IAddQuestion } from '@/app/constants/questions';
+import { ROUTE_KEY } from '@/app/constants/routePaths';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
 import { createQuestionSchema } from '@/app/validations/questions';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,7 +16,7 @@ import {
   ButtonGroup,
   FormControl,
   Stack,
-  Typography
+  Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -69,7 +70,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     resolver: yupResolver(createQuestionSchema),
   });
   const { setError, watch } = form;
-  const questionType = watch("type");
+  const questionType = watch('type');
 
   //#region : Handle interactive functions
   const HandleInteractions = {
@@ -81,8 +82,13 @@ const ModifyQuestion = (props: ICreateQuestion) => {
       const formData = {
         question: modifiedQuestion.question,
         description: modifiedQuestion.description,
-        answer: answerArray.filter((answer) => answer.id).map((answer, index) => answer.isCorrect ? index : -1).filter(index => index > -1),
-        options: answerArray.filter((answer) => answer.id).map((answer) => answer.answer),
+        answer: answerArray
+          .filter((answer) => answer.id)
+          .map((answer, index) => (answer.isCorrect ? index : -1))
+          .filter((index) => index > -1),
+        options: answerArray
+          .filter((answer) => answer.id)
+          .map((answer) => answer.answer),
         category: 'React',
         type: modifiedQuestion.type,
       };
@@ -95,10 +101,13 @@ const ModifyQuestion = (props: ICreateQuestion) => {
               data: formData,
             }));
         if (!error) {
-          HandleInteractions.handleRedirect('/administrator/questions');
+          HandleInteractions.handleRedirect(ROUTE_KEY.ADMINISTRATION_QUESTIONS);
         }
       } else {
-        setError("root", { type: "minLength", message: "At least one checkbox has been checked"});
+        setError('root', {
+          type: 'minLength',
+          message: 'At least one checkbox has been checked',
+        });
       }
     },
   };
@@ -108,7 +117,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
   return (
     <Box>
       <Box className="flex items-center justify-between">
-        <Typography component="h1" className={`text-xl md:text-2xl mb-10`}>
+        <Typography component="h1" className={`mb-10 text-xl md:text-2xl`}>
           {questionData.id ? 'Edit' : 'Create'} Question
         </Typography>
       </Box>
@@ -131,7 +140,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
                 multiline
                 maxRows={5}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") {
+                  if (event.key === 'Enter') {
                     event.preventDefault();
                   }
                 }}
@@ -139,7 +148,10 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             </FormControl>
             <FormControl variant="standard" className="!w-11/12 pb-7">
               <Typography className="font-semibold">Description</Typography>
-              <RichTextArea name="description" data={questionData?.description} />
+              <RichTextArea
+                name="description"
+                data={questionData?.description}
+              />
             </FormControl>
           </Box>
           <Stack className="basis-1/2 gap-7" flexDirection="column">
@@ -166,7 +178,9 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             variant="outlined"
             startIcon={<ClearIcon />}
             onClick={() =>
-              HandleInteractions.handleRedirect('/administrator/questions')
+              HandleInteractions.handleRedirect(
+                ROUTE_KEY.ADMINISTRATION_QUESTIONS,
+              )
             }
           >
             Cancel

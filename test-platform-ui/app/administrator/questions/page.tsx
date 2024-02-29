@@ -5,6 +5,7 @@ import CustomModal, {
 } from '@/app/components/molecules/CustomModal';
 import DataTable, { multipleLinesTypo } from '@/app/components/molecules/Grid';
 import { IResponseQuestion } from '@/app/constants/questions';
+import { ROUTE_KEY } from '@/app/constants/routePaths';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
 import { showNotification } from '@/app/lib/toast';
 import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
@@ -95,8 +96,9 @@ const Page = () => {
       const { error } = await ApiHook(Methods.POST, `/questions/import`, {
         data: e.target.result,
       });
-      !error && showNotification('Imported question successfully', 'success');
+      !error && showNotification('Import questions successfully', 'success');
       setImportLoading(false);
+      getGridQuestion();
     };
   };
 
@@ -205,7 +207,9 @@ const Page = () => {
           <>
             <IconButton
               onClick={() =>
-                router.push(`/administrator/questions/${params.row.id}`)
+                router.push(
+                  `${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${params.row.id}`,
+                )
               }
             >
               <ModeEdit />
@@ -254,7 +258,7 @@ const Page = () => {
             variant="contained"
             onClick={(evt: React.MouseEvent) => {
               evt.preventDefault();
-              router.push('/administrator/questions/create');
+              router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
             }}
             startIcon={<AddBox className="!text-2xl" />}
           >
