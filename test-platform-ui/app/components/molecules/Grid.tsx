@@ -10,6 +10,11 @@ export default function CustomGrid(props: DataGridProps) {
   return (
     <Box className="h-[60vh] w-full overflow-y-auto">
       <DataGrid
+        sx={{
+          '.MuiDataGrid-cell:focus, .MuiDataGrid-cell:focus-within': {
+            outline: 'none',
+          },
+        }}
         initialState={{
           pagination: {
             paginationModel: { pageSize: 25 },
@@ -20,7 +25,7 @@ export default function CustomGrid(props: DataGridProps) {
         }}
         slots={{
           pagination: CustomGridPagination,
-          toolbar: GridToolbar
+          toolbar: GridToolbar,
         }}
         slotProps={{
           toolbar: {

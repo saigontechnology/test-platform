@@ -111,7 +111,6 @@ const AxiosMethods = {
         method: 'put',
         ...config,
       });
-      showNotification('Updated', 'success');
       return response.data;
     } catch (error) {
       const message = (error as AxiosError<{ message: string }>).response?.data
