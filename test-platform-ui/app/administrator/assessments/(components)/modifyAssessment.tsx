@@ -20,7 +20,7 @@ import {
   FormGroup,
   IconButton,
   Stack,
-  Typography
+  Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -104,7 +104,10 @@ export default function ModifyAssessment(props: IModifyAssessment) {
     const { error } = await ApiHook(Methods.POST, '/assessments', {
       data: formData,
     });
-    !error && showNotification('Create new assessment successfully', 'success');
+    if (!error) {
+      showNotification('Create new assessment successfully', 'success');
+      router.back();
+    }
   };
 
   const handleEdit = async () => {
@@ -112,7 +115,10 @@ export default function ModifyAssessment(props: IModifyAssessment) {
     const { error } = await ApiHook(Methods.PUT, `/assessments/${detail.id}`, {
       data: formData,
     });
-    !error && showNotification('Update assessment successfully', 'success');
+    if (!error) {
+      showNotification('Update assessment successfully', 'success');
+      router.back();
+    }
   };
 
   const questionOptions = useMemo(() => {
@@ -123,9 +129,9 @@ export default function ModifyAssessment(props: IModifyAssessment) {
   }, [questionList]);
 
   return (
-    <Box sx={{ overflow: "auto" }}>
+    <Box sx={{ overflow: 'auto' }}>
       <Box className="flex items-center justify-between">
-        <Typography component="h1" className={`text-xl md:text-2xl mb-10`}>
+        <Typography component="h1" className={`mb-10 text-xl md:text-2xl`}>
           {detail ? 'Edit' : 'New'} Assessment
         </Typography>
       </Box>
@@ -142,11 +148,11 @@ export default function ModifyAssessment(props: IModifyAssessment) {
               <CustomTextField
                 name="name"
                 id="question-title-input"
-                className="ring-offset-0 full-width"
+                className="full-width ring-offset-0"
                 multiline
                 maxRows={5}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") {
+                  if (event.key === 'Enter') {
                     event.preventDefault();
                   }
                 }}
@@ -154,16 +160,11 @@ export default function ModifyAssessment(props: IModifyAssessment) {
             </FormControl>
             <FormControl variant="standard" className="!w-11/12 pb-7">
               <Typography className="font-semibold">Level</Typography>
-              <CustomSingleSelect
-                name="level"
-                options={LevelOptions}
-              />
+              <CustomSingleSelect name="level" options={LevelOptions} />
             </FormControl>
             <FormGroup className="!w-11/12 pb-7">
               <Typography className="font-semibold">Questions</Typography>
-              <Box
-                sx={{ overflowY: "auto", maxHeight: 300, width: "100%" }}
-              >
+              <Box sx={{ overflowY: 'auto', maxHeight: 300, width: '100%' }}>
                 {(questions || []).map((question, index) => (
                   <Stack
                     key={`question-${question}`}
@@ -172,15 +173,28 @@ export default function ModifyAssessment(props: IModifyAssessment) {
                     direction="row"
                     gap={1}
                   >
-                    <Typography className="font-semibold">{index + 1}.</Typography>
+                    <Typography className="font-semibold">
+                      {index + 1}.
+                    </Typography>
                     <CustomSingleSelect
                       name={`questions.${index}`}
                       options={questionOptions}
                     />
-                    <IconButton color="primary" onClick={() => append('')} sx={{ display: index + 1 === questions?.length ?  "block": "none"}}>
+                    <IconButton
+                      color="primary"
+                      onClick={() => append('')}
+                      sx={{
+                        display:
+                          index + 1 === questions?.length ? 'block' : 'none',
+                      }}
+                    >
                       <AddBox />
                     </IconButton>
-                    <IconButton color="error" onClick={() => remove(index)} disabled={questions?.length === 1}>
+                    <IconButton
+                      color="error"
+                      onClick={() => remove(index)}
+                      disabled={questions?.length === 1}
+                    >
                       <Delete />
                     </IconButton>
                   </Stack>

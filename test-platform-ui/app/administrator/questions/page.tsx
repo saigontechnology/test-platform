@@ -5,13 +5,17 @@ import CustomModal, {
 } from '@/app/components/molecules/CustomModal';
 import DataTable, { multipleLinesTypo } from '@/app/components/molecules/Grid';
 import { IResponseQuestion } from '@/app/constants/questions';
+import { ROUTE_KEY } from '@/app/constants/routePaths';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
+import { showNotification } from '@/app/lib/toast';
 import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { Box, Chip, IconButton, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import { styled } from '@mui/material/styles';
 import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
@@ -26,12 +30,25 @@ export interface IQuestion {
   options: string[];
 }
 
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
 const Page = () => {
   const [questionList, setQuestionList] = useState<IQuestion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const onDeleteQuestion = React.useRef<number>(0);
   const router = useRouter();
   const modalRef = React.useRef<CustomModalHandler>(null);
+  const [isImportLoading, setImportLoading] = useState<boolean>(false);
 
   const getGridQuestion = async () => {
     setLoading(true);
@@ -66,6 +83,23 @@ const Page = () => {
       alert(`Can not delete question ${questionId}`);
     }
     modalRef.current?.close();
+  };
+
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    const file = files?.[0];
+    if (!file) return;
+    const fileReader = new FileReader();
+    fileReader.readAsText(file, 'UTF-8');
+    fileReader.onload = async (e: any) => {
+      setImportLoading(true);
+      const { error } = await ApiHook(Methods.POST, `/questions/import`, {
+        data: e.target.result,
+      });
+      !error && showNotification('Import questions successfully', 'success');
+      setImportLoading(false);
+      getGridQuestion();
+    };
   };
 
   const ModalContent = () => {
@@ -159,7 +193,8 @@ const Page = () => {
           </Box>
         );
       },
-      valueGetter: (params: GridValueGetterParams) => params.row.options.join("\t"),
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.options.join('\t'),
     },
     {
       field: 'actions',
@@ -172,7 +207,9 @@ const Page = () => {
           <>
             <IconButton
               onClick={() =>
-                router.push(`/administrator/questions/${params.row.id}`)
+                router.push(
+                  `${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${params.row.id}`,
+                )
               }
             >
               <ModeEdit />
@@ -199,20 +236,43 @@ const Page = () => {
         <Typography component="h1" className={`text-xl md:text-2xl`}>
           Questions
         </Typography>
-        <Button
-          className="text-xl"
-          variant="contained"
-          onClick={(evt: React.MouseEvent) => {
-            evt.preventDefault();
-            router.push('/administrator/questions/create');
-          }}
-          startIcon={<AddBox className="!text-2xl" />}
-        >
-          New Question
-        </Button>
+        <Box>
+          <Button
+            component="label"
+            role={undefined}
+            variant="contained"
+            tabIndex={-1}
+            startIcon={<CloudUploadIcon />}
+            className="mr-3"
+            disabled={isImportLoading}
+          >
+            Import
+            <VisuallyHiddenInput
+              type="file"
+              accept="application/JSON"
+              onChange={handleImport}
+            />
+          </Button>
+          <Button
+            className="text-xl"
+            variant="contained"
+            onClick={(evt: React.MouseEvent) => {
+              evt.preventDefault();
+              router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
+            }}
+            startIcon={<AddBox className="!text-2xl" />}
+          >
+            New Question
+          </Button>
+        </Box>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={questionList} columns={columns} rowHeight={170} loading={loading} />
+      <DataTable
+        rows={questionList}
+        columns={columns}
+        rowHeight={170}
+        loading={loading}
+      />
       <CustomModal ref={modalRef} title={''}>
         <ModalContent />
       </CustomModal>

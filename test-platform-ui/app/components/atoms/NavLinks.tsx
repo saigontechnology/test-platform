@@ -27,6 +27,7 @@ interface IMainLink extends ILink {
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links: IMainLink[] = [
+  // { name: 'Dashboard', href: ROUTE_KEY.ADMINISTRATION, icon: DashboardIcon },
   {
     name: 'Questions',
     href: ROUTE_KEY.ADMINISTRATION_QUESTIONS,

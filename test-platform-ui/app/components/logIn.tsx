@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { ILogInValidate } from '../constants/assessments';
+import { ROUTE_KEY } from '../constants/routePaths';
 import { Validations } from '../validations/validation';
 import CustomTextField from './atoms/CustomTextField';
 
@@ -33,10 +34,10 @@ const Login = () => {
   const onSubmitLogIn = (data: ILogInValidate) => {
     const isAdminEmail = TestValidateAdminEmail.includes(data.email);
     if (isAdminEmail) {
-      router.push('/administrator');
+      router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS);
     } else {
       sessionStorage.setItem('candidateEmail', data.email);
-      router.push('/examination');
+      router.push(ROUTE_KEY.EXAMINATION);
     }
   };
 
