@@ -74,7 +74,7 @@ export default function RichTextArea(props: IRichTextArea) {
       }
     },
     handleSetInputValues: (editorHtml: string) => {
-      setValue('content', editorHtml);
+      setValue('description', editorHtml);
     },
   };
 

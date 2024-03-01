@@ -69,7 +69,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     },
     resolver: yupResolver(createQuestionSchema),
   });
-  const { setError, watch } = form;
+  const { setError, watch, getValues } = form;
   const questionType = watch('type');
 
   //#region : Handle interactive functions
@@ -150,7 +150,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
               <Typography className="font-semibold">Description</Typography>
               <RichTextArea
                 name="description"
-                data={questionData?.description}
+                data={questionData?.description || getValues('description')}
               />
             </FormControl>
           </Box>
