@@ -6,6 +6,7 @@ import RichTextArea from '@/app/components/atoms/Editor/richtext';
 import { IAddQuestion } from '@/app/constants/questions';
 import { ROUTE_KEY } from '@/app/constants/routePaths';
 import ApiHook, { Methods } from '@/app/lib/apis/ApiHook';
+import { showNotification } from '@/app/lib/toast';
 import { createQuestionSchema } from '@/app/validations/questions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -48,6 +49,7 @@ export interface IAnswer {
 const ModifyQuestion = (props: ICreateQuestion) => {
   const { questionData } = props;
   const router = useRouter();
+  const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
 
   const mapEditAnswer = () => {
     const { options, answers } = questionData;
@@ -93,6 +95,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
         type: modifiedQuestion.type,
       };
       if (formData.answer.length) {
+        setIsSubmitLoading(true);
         const { error } = await (questionData.id
           ? ApiHook(Methods.PUT, `/questions/${questionData.id}`, {
               data: formData,
@@ -100,7 +103,9 @@ const ModifyQuestion = (props: ICreateQuestion) => {
           : ApiHook(Methods.POST, '/questions', {
               data: formData,
             }));
+        setIsSubmitLoading(false);
         if (!error) {
+          showNotification('Upsert question successfully', 'success');
           HandleInteractions.handleRedirect(ROUTE_KEY.ADMINISTRATION_QUESTIONS);
         }
       } else {
@@ -171,8 +176,9 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             onClick={form.handleSubmit(
               HandleInteractions.handleModifiedQuestion,
             )}
+            disabled={isSubmitLoading}
           >
-            {questionData.id ? 'Edit' : 'Create'}
+            Submit
           </Button>
           <Button
             variant="outlined"

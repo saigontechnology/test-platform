@@ -243,7 +243,7 @@ const Page = () => {
             variant="contained"
             tabIndex={-1}
             startIcon={<CloudUploadIcon />}
-            className="mr-3"
+            className="mr-3 text-xl"
             disabled={isImportLoading}
           >
             Import

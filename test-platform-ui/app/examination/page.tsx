@@ -187,10 +187,7 @@ export default function ExaminationPage() {
             handleTimeout={Handlers.handleExamTimeOut}
           />
         </Header>
-        <Box
-          className="m-6 flex-grow rounded-[15px] p-6 md:overflow-y-auto"
-          bgcolor="#FFFFFF"
-        >
+        <Box className="m-6 flex-grow rounded-[15px] p-6 md:overflow-y-auto">
           {!isSubmit &&
             assessments?.map((ass, index) => (
               <AssessmentQuestion

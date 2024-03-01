@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 import { IQuestion, QuestionType } from '@/app/constants/assessments';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import MultipleChoice from './multipleChoice';
 import Question from './question';
 import SingleChoice from './singleChoice';
@@ -74,10 +74,26 @@ const AssessmentQuestion: React.FC<IProps> = ({
 
   return (
     <>
-      <Question order={order} question={assessment.question} />
-      {renderAnswers()}
-
-      <Box textAlign={'right'}>
+      <Grid container spacing={4}>
+        <Grid item xs={6}>
+          <Box
+            p={3}
+            className="border-grey h-full rounded-[10px] border-2 bg-white"
+          >
+            <Question order={order} question={assessment.question} />
+          </Box>
+        </Grid>
+        <Grid item xs={6}>
+          <Box
+            p={3}
+            className="border-grey h-full rounded-[10px] border-2 bg-white"
+          >
+            <Typography variant="h6">Answer</Typography>
+            {renderAnswers()}
+          </Box>
+        </Grid>
+      </Grid>
+      <Box className="mt-5 text-right">
         <Button
           variant="contained"
           title="Next"
