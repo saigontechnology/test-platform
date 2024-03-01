@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 import { IQuestion, QuestionType } from '@/app/constants/assessments';
-import { Box, Button, Grid } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import MultipleChoice from './multipleChoice';
 import Question from './question';
 import SingleChoice from './singleChoice';
@@ -88,6 +88,7 @@ const AssessmentQuestion: React.FC<IProps> = ({
             p={3}
             className="border-grey h-full rounded-[10px] border-2 bg-white"
           >
+            <Typography variant="h6">Answer</Typography>
             {renderAnswers()}
           </Box>
         </Grid>

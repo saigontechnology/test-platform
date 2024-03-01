@@ -5,7 +5,6 @@ import React from 'react';
 import {
   FormControl,
   FormControlLabel,
-  FormLabel,
   Radio,
   RadioGroup,
 } from '@mui/material';
@@ -18,7 +17,6 @@ interface IProps {
 const SingleChoice: React.FC<any> = ({ options, onSelect }: IProps) => {
   return (
     <FormControl>
-      <FormLabel id="demo-radio-buttons-group-label">Answers</FormLabel>
       <RadioGroup
         aria-labelledby="demo-radio-buttons-group-label"
         defaultValue="female"
