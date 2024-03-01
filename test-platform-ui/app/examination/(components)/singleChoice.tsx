@@ -3,7 +3,6 @@
 import React from 'react';
 
 import {
-  Box,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -18,24 +17,22 @@ interface IProps {
 
 const SingleChoice: React.FC<any> = ({ options, onSelect }: IProps) => {
   return (
-    <Box className="flex items-center gap-10 pt-5">
-      <FormControl>
-        <FormLabel id="demo-radio-buttons-group-label">Answers</FormLabel>
-        <RadioGroup
-          aria-labelledby="demo-radio-buttons-group-label"
-          defaultValue="female"
-          name="radio-buttons-group"
-        >
-          {options?.map((opt, index) => (
-            <FormControlLabel
-              key={opt}
-              control={<Radio value={index} onChange={onSelect} />}
-              label={opt}
-            />
-          ))}
-        </RadioGroup>
-      </FormControl>
-    </Box>
+    <FormControl>
+      <FormLabel id="demo-radio-buttons-group-label">Answers</FormLabel>
+      <RadioGroup
+        aria-labelledby="demo-radio-buttons-group-label"
+        defaultValue="female"
+        name="radio-buttons-group"
+      >
+        {options?.map((opt, index) => (
+          <FormControlLabel
+            key={opt}
+            control={<Radio value={index} onChange={onSelect} />}
+            label={opt}
+          />
+        ))}
+      </RadioGroup>
+    </FormControl>
   );
 };
 

@@ -59,13 +59,7 @@ const Login = () => {
         </FormControl>
       </Box>
 
-      <Button
-        onClick={form.handleSubmit(onSubmitLogIn)}
-        variant="contained"
-        // className={clsx(
-        //   'flex items-center gap-5 self-start rounded-lg px-6 py-3 text-sm font-medium md:text-base',
-        // )}
-      >
+      <Button onClick={form.handleSubmit(onSubmitLogIn)} variant="contained">
         Enter <DoubleArrowIcon className="w-5 md:w-6" />
       </Button>
     </FormProvider>

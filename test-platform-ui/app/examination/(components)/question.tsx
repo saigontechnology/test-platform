@@ -12,10 +12,13 @@ interface IProps {
 const Question: React.FC<IProps> = ({ order, question }) => {
   return (
     <Box className="grid items-center gap-10">
-      <Typography>
-        <strong>Question {order}:</strong> {question.question}
+      <Typography variant="h6">
+        Question {order}: {question.question}
       </Typography>
-      <div dangerouslySetInnerHTML={{ __html: question.description }} />
+      <Box
+        component="div"
+        dangerouslySetInnerHTML={{ __html: question.description }}
+      />
     </Box>
   );
 };

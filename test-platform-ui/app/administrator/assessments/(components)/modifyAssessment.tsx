@@ -35,6 +35,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
   const { detail } = props;
   const router = useRouter();
   const [questionList, setQuestionList] = useState<IQuestion[]>([]);
+  const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
 
   useEffect(() => {
     getQuestionsList();
@@ -92,6 +93,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
   const questions = watch('questions');
 
   const submit = () => {
+    setIsSubmitLoading(true);
     if (!!detail?.id) {
       handleEdit();
     } else {
@@ -104,6 +106,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
     const { error } = await ApiHook(Methods.POST, '/assessments', {
       data: formData,
     });
+    setIsSubmitLoading(false);
     if (!error) {
       showNotification('Create new assessment successfully', 'success');
       router.back();
@@ -115,6 +118,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
     const { error } = await ApiHook(Methods.PUT, `/assessments/${detail.id}`, {
       data: formData,
     });
+    setIsSubmitLoading(false);
     if (!error) {
       showNotification('Update assessment successfully', 'success');
       router.back();
@@ -208,6 +212,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
             variant="contained"
             startIcon={<LibraryAddIcon />}
             onClick={form.handleSubmit(submit)}
+            disabled={isSubmitLoading}
           >
             Submit
           </Button>
