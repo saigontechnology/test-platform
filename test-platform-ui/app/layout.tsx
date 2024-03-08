@@ -13,6 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <title>Saigon Technology - Test Platform</title>
       <body id="root" className={`${inter.className} antialiased`}>
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={themeCustom}>{children}</ThemeProvider>
