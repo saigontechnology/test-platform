@@ -1,5 +1,6 @@
 'use client';
 
+import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
 import { Button, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
@@ -169,9 +170,10 @@ export default function ExaminationPage() {
   return (
     <Box className="flex h-screen flex-col md:flex-row md:overflow-hidden">
       <Box className="w-full flex-none md:w-64" bgcolor="#002a37">
-        <Box className="flex w-full items-center justify-center p-9">
+        <Box className="flex w-full flex-col items-center justify-center p-9">
+          <LocalFloristIcon sx={{ color: '#1ff29e' }} />
           <Typography color="#1ff29e" fontWeight="bold" fontSize="25px">
-            Examination
+            Test Platform
           </Typography>
         </Box>
         <ExaminationInfo
@@ -180,13 +182,15 @@ export default function ExaminationPage() {
         />
       </Box>
       <Box className="flex-grow bg-[#f9f9f9]">
-        <Header>
-          <CountdownTimer
-            ref={countdownTimerRef}
-            isPause={!assessmentInfo}
-            handleTimeout={Handlers.handleExamTimeOut}
-          />
-        </Header>
+        {!isSubmit && (
+          <Header>
+            <CountdownTimer
+              ref={countdownTimerRef}
+              isPause={!assessmentInfo}
+              handleTimeout={Handlers.handleExamTimeOut}
+            />
+          </Header>
+        )}
         <Box className="m-6 flex-grow rounded-[15px] p-6 md:overflow-y-auto">
           {!isSubmit &&
             assessments?.map((ass, index) => (

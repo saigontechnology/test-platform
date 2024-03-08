@@ -243,7 +243,7 @@ const Page = () => {
             variant="contained"
             tabIndex={-1}
             startIcon={<CloudUploadIcon />}
-            className="mr-3 text-xl"
+            className="mr-3"
             disabled={isImportLoading}
           >
             Import
@@ -254,13 +254,12 @@ const Page = () => {
             />
           </Button>
           <Button
-            className="text-xl"
             variant="contained"
             onClick={(evt: React.MouseEvent) => {
               evt.preventDefault();
               router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
             }}
-            startIcon={<AddBox className="!text-2xl" />}
+            startIcon={<AddBox />}
           >
             New Question
           </Button>

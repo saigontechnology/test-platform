@@ -148,19 +148,18 @@ export default function EditAssessment() {
           Assessments
         </Typography>
         <Button
-          className="text-xl"
           variant="contained"
           onClick={(evt: React.MouseEvent) => {
             evt.preventDefault();
             router.push(ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_CREATE);
           }}
-          startIcon={<AddBox className="!text-2xl" />}
+          startIcon={<AddBox />}
         >
           New Assessment
         </Button>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={assessments} columns={columns} loading={loading}/>
+      <DataTable rows={assessments} columns={columns} loading={loading} />
       <CustomModal ref={sendInviteModalRef} title="Send Invitation">
         <FormProvider {...sendInviteForm}>
           <Box className="grid w-[300px]">

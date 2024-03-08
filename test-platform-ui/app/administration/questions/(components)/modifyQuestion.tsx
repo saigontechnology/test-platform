@@ -123,7 +123,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     <Box>
       <Box className="flex items-center justify-between">
         <Typography component="h1" className={`mb-10 text-xl md:text-2xl`}>
-          {questionData.id ? 'Edit' : 'Create'} Question
+          {questionData.id ? 'Edit' : 'New'} Question
         </Typography>
       </Box>
       <FormProvider {...form}>

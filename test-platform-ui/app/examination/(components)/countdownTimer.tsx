@@ -59,8 +59,7 @@ const CountdownTimer = React.forwardRef<CountdownTimerHandler, ICountdownTimer>(
     };
 
     return (
-      <Box className="flex items-center gap-10">
-        <Typography variant="h6">Countdown</Typography>
+      <Box className="flex w-full items-center justify-center">
         <Typography variant="h5">{formatTime(seconds)}</Typography>
       </Box>
     );
