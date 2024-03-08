@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { AssessmentsService } from "src/assessments/assessment.service";
 import { PrismaService } from "src/prisma/prisma.service";
-import { inviteExamination } from "src/utils/mailer";
-import { CalculateExamScored } from "src/utils/scoring";
+import { inviteExamination, sendResult } from "src/utils/mailer";
+import { calculateExamScored } from "src/utils/scoring";
 import {
   CreateExaminationDto,
   ExaminationAnswer,
@@ -113,11 +113,13 @@ export class ExaminationsService {
     const assessmentInfo = await this.assessment.findOne(
       updateExaminationDto.assessmentId,
     );
-    return await CalculateExamScored(
+    const { email, scored } = calculateExamScored(
       assessmentInfo,
       updateExaminationDto.selections,
       updateExaminationDto.email,
     );
+    await sendResult(email, assessmentInfo.name, scored);
+    return { email, scored };
   }
 
   async remove(id: number) {

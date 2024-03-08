@@ -22,3 +22,22 @@ export const inviteExamination = async (
     text: `Your examination is: ${process.env.CLIENT_WEB_URL}/exam_invitation/${examinationId}`,
   });
 };
+
+export const sendResult = async (
+  receiver: string,
+  assessmentName: string,
+  score: number,
+) => {
+  let text: string;
+  if (score >= 5) {
+    text = `Congratulations! Your score in ${assessmentName} is ${score}.`;
+  } else {
+    text = `Your score in ${assessmentName} is ${score}. Please improve and try later.`;
+  }
+  await transporter.sendMail({
+    text,
+    from: process.env.SENDER_EMAIL,
+    to: receiver,
+    subject: "Your examination result",
+  });
+};

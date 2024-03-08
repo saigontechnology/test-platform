@@ -1,9 +1,9 @@
-export async function CalculateExamScored(
+export function calculateExamScored(
   assessmentInfo: any,
   examAnswers: any,
   candidateEmail: string,
 ) {
-  const numberCorrect = await assessmentInfo.assessmentQuestionMapping
+  const numberCorrect = assessmentInfo.assessmentQuestionMapping
     .map((question) => {
       const exam_answers = examAnswers.find((answ) => answ.questionId)
         ?.selections;
