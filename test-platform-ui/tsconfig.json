@@ -19,7 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"]
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true
@@ -29,7 +29,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/lib/placeholder-data.js",
+    "src/libs/placeholder-data.js",
     "scripts/seed.js"
   ],
   "exclude": ["node_modules"]
