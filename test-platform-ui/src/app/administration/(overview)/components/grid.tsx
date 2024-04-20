@@ -58,7 +58,7 @@ export default function DashboardGrid() {
               ? 'warning'
               : _status === 'Completed'
               ? 'info'
-              : 'error',
+              : 'success',
         },
       };
     });
