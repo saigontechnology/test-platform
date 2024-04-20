@@ -118,6 +118,14 @@ export class ExaminationsService {
       updateExaminationDto.selections,
       updateExaminationDto.email,
     );
+    await this.prisma.examination.updateMany({
+      where: {
+        id: id,
+      },
+      data: {
+        score: scored,
+      },
+    });
     await sendResult(email, assessmentInfo.name, scored);
     return { email, scored };
   }
