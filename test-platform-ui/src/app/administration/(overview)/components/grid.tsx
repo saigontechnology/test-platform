@@ -98,7 +98,7 @@ export default function DashboardGrid() {
     {
       field: 'result',
       headerName: 'Result',
-      flex: 0.9,
+      flex: 0.7,
       renderCell: (params) => {
         return (
           <LinearProgressBar

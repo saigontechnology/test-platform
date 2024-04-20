@@ -1,5 +1,5 @@
 import { Box, Divider, Typography } from '@mui/material';
-import DashboardGrid from './(components)/grid';
+import DashboardGrid from './components/grid';
 
 export default async function Page() {
   return (
