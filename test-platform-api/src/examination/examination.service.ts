@@ -119,13 +119,15 @@ export class ExaminationsService {
       updateExaminationDto.selections,
       updateExaminationDto.email,
     );
+    const examStatus =
+      scored > 65 ? ExaminationStatus.EVALUATED : ExaminationStatus.COMPLETED;
     await this.prisma.examination.updateMany({
       where: {
         id: id,
       },
       data: {
         score: scored,
-        status: ExaminationStatus.COMPLETED,
+        status: examStatus,
       },
     });
     await sendResult(email, assessmentInfo.name, scored);

@@ -15,6 +15,6 @@ export function calculateExamScored(
     .filter(Boolean).length;
   return {
     email: candidateEmail,
-    scored: (numberCorrect / examAnswers.length) * 100,
+    scored: Number(((numberCorrect / examAnswers.length) * 100).toFixed(2)),
   };
 }
