@@ -8,8 +8,9 @@ import {
 import React, { ElementRef, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import { Editor, Modules } from './quillConfig';
+
+import 'react-quill/dist/quill.snow.css';
 
 interface IRichTextArea extends ReactQuillProps {
   name: string;
@@ -31,7 +32,6 @@ export default function RichTextArea(props: IRichTextArea) {
         _input.onchange = async () => {
           const file: any = _input && _input.files ? _input.files[0] : null,
             formData = new FormData();
-          console.log('file information: ', file);
           formData.append('file', file);
           await Handlers.handleCompressed(file);
         };

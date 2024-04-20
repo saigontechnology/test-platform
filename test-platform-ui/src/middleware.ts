@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
      *      to set custom cookie values
      */
     if (_examId) {
-      const targetUrl = `${url.origin}/examination/`,
+      const targetUrl = `${url.origin}/examination`,
         response = NextResponse.redirect(targetUrl);
       response.cookies.set('examId', _examId);
       return response;
@@ -21,7 +21,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/exam_invitation/:path*',
-    '/about/:path*',
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };

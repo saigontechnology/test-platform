@@ -2,7 +2,7 @@
 
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import { IResponseQuestion } from '@/constants/questions';
 import { Box } from '@mui/material';
@@ -33,7 +33,11 @@ const EditQuestion = () => {
     })();
   }, []);
 
-  return <Box>{data ? <ModifyQuestion questionData={data} /> : null}</Box>;
+  return (
+    <Suspense fallback={<p>Loading ....</p>}>
+      <Box>{data ? <ModifyQuestion questionData={data} /> : null}</Box>
+    </Suspense>
+  );
 };
 
 export default EditQuestion;

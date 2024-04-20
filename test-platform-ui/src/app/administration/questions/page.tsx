@@ -206,6 +206,7 @@ const Page = () => {
         return (
           <>
             <IconButton
+              title="Edit"
               onClick={() =>
                 router.push(
                   `${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${params.row.id}`,
@@ -215,6 +216,7 @@ const Page = () => {
               <ModeEdit />
             </IconButton>
             <IconButton
+              title="Delete"
               className="ml-3"
               onClick={() => {
                 onDeleteQuestion.current = params.row.id;
