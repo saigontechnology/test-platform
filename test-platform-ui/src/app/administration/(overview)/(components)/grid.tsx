@@ -1,5 +1,6 @@
 'use client';
 
+import LinearProgressBar from '@/components/atoms/LinearProgressBar';
 import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IExamination } from '@/constants/assessments';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
@@ -12,7 +13,10 @@ interface IExamResults {
   title: string;
   level: string;
   candidate: string;
-  result: number | null;
+  result: {
+    score: number | string;
+    status: string;
+  } | null;
   status: {
     label: string;
     color: string;
@@ -43,7 +47,10 @@ export default function DashboardGrid() {
         title: ex.assessment.name,
         level: ex.assessment.level,
         candidate: ex.email,
-        result: ex.score,
+        result: {
+          score: ex.score || 0,
+          status: _status,
+        },
         status: {
           label: _status,
           color:
@@ -85,14 +92,21 @@ export default function DashboardGrid() {
     {
       field: 'candidate',
       headerName: 'Candidate',
-      flex: 0.8,
+      flex: 0.5,
       renderCell: (params) => multipleLinesTypo(params.row.candidate),
     },
     {
       field: 'result',
       headerName: 'Result',
-      flex: 0.8,
-      renderCell: (params) => multipleLinesTypo(params.row.score),
+      flex: 0.9,
+      renderCell: (params) => {
+        return (
+          <LinearProgressBar
+            value={params.row.result.score}
+            status={params.row.result.status}
+          />
+        );
+      },
     },
     {
       field: 'status',
