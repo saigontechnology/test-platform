@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-async-client-component */
 'use client';
 
-import CustomTextField from '@/components/atoms/CustomTextField';
+import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';

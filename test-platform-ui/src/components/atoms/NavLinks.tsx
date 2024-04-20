@@ -1,6 +1,7 @@
 'use client';
 
 import { ROUTE_KEY } from '@/constants/routePaths';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
@@ -27,6 +28,11 @@ interface IMainLink extends ILink {
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links: IMainLink[] = [
+  {
+    name: 'Dashboard',
+    href: ROUTE_KEY.ADMINISTRATION,
+    icon: DashboardIcon,
+  },
   {
     name: 'Questions',
     href: ROUTE_KEY.ADMINISTRATION_QUESTIONS,

@@ -6,7 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { ILogInValidate } from '../../../constants/assessments';
 import { ROUTE_KEY } from '../../../constants/routePaths';
 import { Validations } from '../../../validations/validation';
-import CustomTextField from '../../atoms/CustomTextField';
+import CustomTextField from '../../atoms/CustomModules/CustomTextField';
 
 const TestValidateAdminEmail = [
   'phuong.bui@saigontechnology.com',
@@ -32,7 +32,7 @@ const SignIn = () => {
   const onSubmitLogIn = (data: ILogInValidate) => {
     const isAdminEmail = TestValidateAdminEmail.includes(data.email);
     if (isAdminEmail) {
-      router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS);
+      router.push(ROUTE_KEY.ADMINISTRATION);
     } else {
       sessionStorage.setItem('candidateEmail', data.email);
       router.push(ROUTE_KEY.EXAMINATION);

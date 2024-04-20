@@ -1,6 +1,6 @@
 'use client';
 
-import CustomTextField from '@/components/atoms/CustomTextField';
+import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
 import CustomModal from '@/components/molecules/CustomModal';
 import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IAssessment } from '@/constants/assessments';

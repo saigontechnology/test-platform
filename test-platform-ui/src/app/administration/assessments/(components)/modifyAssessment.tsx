@@ -1,7 +1,7 @@
 'use client';
 
-import CustomSingleSelect from '@/components/atoms/CustomSingleSelect';
-import CustomTextField from '@/components/atoms/CustomTextField';
+import CustomSingleSelect from '@/components/atoms/CustomModules/CustomSingleSelect';
+import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
 import { ICreateAssessment, LevelOptions } from '@/constants/assessments';
 import { IResponseQuestion } from '@/constants/questions';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';

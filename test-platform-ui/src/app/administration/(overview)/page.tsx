@@ -1,4 +1,5 @@
 import { Box, Divider, Typography } from '@mui/material';
+import DashboardGrid from './(components)/grid';
 
 export default async function Page() {
   return (
@@ -9,6 +10,7 @@ export default async function Page() {
         </Typography>
       </Box>
       <Divider className="my-10" />
+      <DashboardGrid />
     </Box>
   );
 }
