@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ExaminationStatus } from "@prisma/client";
 import { AssessmentsService } from "src/assessments/assessment.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { inviteExamination, sendResult } from "src/utils/mailer";
@@ -124,6 +125,7 @@ export class ExaminationsService {
       },
       data: {
         score: scored,
+        status: ExaminationStatus.COMPLETED,
       },
     });
     await sendResult(email, assessmentInfo.name, scored);
