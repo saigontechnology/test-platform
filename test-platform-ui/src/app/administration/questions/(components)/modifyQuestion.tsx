@@ -1,8 +1,12 @@
 /* eslint-disable @next/next/no-async-client-component */
 'use client';
 
+// import EditorUI from '@/components/atoms/CodeEditor/editorUI';
+import EditorLogic from '@/components/atoms/CodeEditor/editorLogic/editorLogic';
+import EditorUI from '@/components/atoms/CodeEditor/editorUI';
 import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
-import RichTextArea from '@/components/atoms/Editor/richtext';
+import RichTextArea from '@/components/atoms/Editor/Richtext';
+import { QuestionType } from '@/constants/assessments';
 import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
@@ -115,6 +119,15 @@ const ModifyQuestion = (props: ICreateQuestion) => {
         });
       }
     },
+    handleRenderCoding: (): JSX.Element => {
+      if (questionType === QuestionType.CODING) {
+        return <EditorUI customClass="mt-4" />;
+      } else if (questionType === QuestionType.LOGIC) {
+        return <EditorLogic />;
+      } else {
+        return <></>;
+      }
+    },
   };
   //#endregion
 
@@ -136,7 +149,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             HandleInteractions.handleModifiedQuestion,
           )}
         >
-          <Box className="grid basis-1/2">
+          <Box className="grid basis-2/5">
             <FormControl variant="standard" className="!w-11/12 pb-7">
               <Typography className="font-semibold">Question</Typography>
               <CustomTextField
@@ -159,16 +172,21 @@ const ModifyQuestion = (props: ICreateQuestion) => {
               />
             </FormControl>
           </Box>
-          <Stack className="basis-1/2 gap-7" flexDirection="column">
+          <Stack className="basis-3/5 gap-7" flexDirection="column">
             <RenderQuestionType />
-            <RenderQuestionAnswers
-              questionType={questionType}
-              renderAnswers={answerArray}
-              handleAnswers={setAnswerArray}
-            />
+            {questionType === QuestionType.CODING ||
+            questionType === QuestionType.LOGIC ? (
+              HandleInteractions.handleRenderCoding()
+            ) : (
+              <RenderQuestionAnswers
+                questionType={questionType}
+                renderAnswers={answerArray}
+                handleAnswers={setAnswerArray}
+              />
+            )}
           </Stack>
         </Box>
-        <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
+        <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2 pt-12">
           <Button
             color="primary"
             variant="contained"
@@ -176,7 +194,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             onClick={form.handleSubmit(
               HandleInteractions.handleModifiedQuestion,
             )}
-            disabled={isSubmitLoading}
+            disabled={isSubmitLoading || questionType == QuestionType.CODING}
           >
             Submit
           </Button>

@@ -120,7 +120,7 @@ export class ExaminationsService {
       updateExaminationDto.email,
     );
     const examStatus =
-      scored > 65 ? ExaminationStatus.EVALUATED : ExaminationStatus.COMPLETED;
+      scored > 65 ? ExaminationStatus.COMPLETED : ExaminationStatus.EVALUATED;
     await this.prisma.examination.updateMany({
       where: {
         id: id,

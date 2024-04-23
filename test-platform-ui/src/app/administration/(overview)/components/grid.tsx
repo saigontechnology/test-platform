@@ -31,7 +31,7 @@ export default function DashboardGrid() {
     return {
       IN_PROGRESS: 'Processing',
       COMPLETED: 'Completed',
-      EVALUATED: 'Evaluated',
+      EVALUATED: 'Failed',
     }[type];
   };
 
@@ -58,7 +58,7 @@ export default function DashboardGrid() {
               ? 'warning'
               : _status === 'Completed'
               ? 'info'
-              : 'success',
+              : 'error',
         },
       };
     });
@@ -125,9 +125,5 @@ export default function DashboardGrid() {
     },
   ];
 
-  return (
-    <>
-      <DataTable columns={columns} rows={examsInfo} loading={isLoading} />
-    </>
-  );
+  return <DataTable columns={columns} rows={examsInfo} loading={isLoading} />;
 }

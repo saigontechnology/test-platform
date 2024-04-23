@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
+//#region : Middleware of Routing, responsibility to redirect an exception URLs or modified browser's URL.
 export function middleware(request: NextRequest) {
   const { nextUrl: url } = request;
   if (url.pathname.startsWith('/exam_invitation')) {
@@ -24,3 +25,4 @@ export const config = {
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
+//#endregion
