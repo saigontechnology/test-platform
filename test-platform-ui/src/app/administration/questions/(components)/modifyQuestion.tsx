@@ -122,11 +122,11 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     handleRenderCoding: (): JSX.Element => {
       if (questionType === QuestionType.CODING) {
         return <EditorUI customClass="mt-4" />;
-      } else if (questionType === QuestionType.LOGIC) {
-        return <EditorLogic />;
-      } else {
-        return <></>;
       }
+      if (questionType === QuestionType.LOGIC) {
+        return <EditorLogic />;
+      }
+      return <></>;
     },
   };
   //#endregion
