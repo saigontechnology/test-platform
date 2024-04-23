@@ -9,7 +9,7 @@ import {
   styled,
 } from '@mui/material';
 import { useState } from 'react';
-import { LANGUAGE_VERSIONS } from './constants';
+import { LANGUAGE_VERSIONS } from '../../../../constants/code-question-constants';
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu

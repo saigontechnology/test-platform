@@ -1,7 +1,7 @@
 import { Editor } from '@monaco-editor/react';
 import { Box } from '@mui/material';
 import { useRef, useState } from 'react';
-import { CODE_SNIPPETS } from './constants';
+import { CODE_SNIPPETS } from '../../../../constants/code-question-constants';
 import LanguageSelector from './languageSelector';
 import OutPut from './output';
 
