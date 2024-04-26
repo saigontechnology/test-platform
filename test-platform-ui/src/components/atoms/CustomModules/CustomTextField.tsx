@@ -4,10 +4,11 @@ import { FieldError, useController, useFormContext } from 'react-hook-form';
 
 interface ICustomTextField extends StandardTextFieldProps {
   name: string;
+  customClass?: string;
 }
 
 export default function CustomTextField(props: ICustomTextField) {
-  const { name } = props;
+  const { name, customClass } = props;
   const { control } = useFormContext();
 
   const {
@@ -19,6 +20,7 @@ export default function CustomTextField(props: ICustomTextField) {
   });
   return (
     <TextField
+      className={customClass}
       {...inputProps}
       {...props}
       error={invalid}

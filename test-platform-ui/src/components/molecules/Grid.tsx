@@ -3,7 +3,11 @@ import { DataGrid, DataGridProps, GridToolbar } from '@mui/x-data-grid';
 import CustomGridPagination from './CustomGridPagination';
 
 export const multipleLinesTypo = (content: string) => {
-  return <Typography className="whitespace-normal">{content}</Typography>;
+  return (
+    <Typography className="overflow-hidden text-ellipsis whitespace-normal">
+      {content}
+    </Typography>
+  );
 };
 
 export default function CustomGrid(props: DataGridProps) {
