@@ -1,6 +1,6 @@
 'use client';
 
-import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
+import AccordionExpandIcon from '@/components/molecules/Accordion';
 import CustomModal from '@/components/molecules/CustomModal';
 import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IAssessment } from '@/constants/assessments';
@@ -164,8 +164,7 @@ export default function EditAssessment() {
         <FormProvider {...sendInviteForm}>
           <Box className="grid w-[300px]">
             <FormControl variant="standard" className="my-4">
-              <Typography className="font-semibold">Email</Typography>
-              <CustomTextField name="email" />
+              <AccordionExpandIcon />
             </FormControl>
             <Box className="text-right">
               <Button

@@ -23,7 +23,6 @@ export const Editor = {
 //#endregion
 
 /**
- *
  * @param customize is a objects of personal customize
  * @returns
  */

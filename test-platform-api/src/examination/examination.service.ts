@@ -131,6 +131,7 @@ export class ExaminationsService {
       },
     });
     await sendResult(email, assessmentInfo.name, scored);
+    // await handleSendmail(email, assessmentInfo.name, scored);
     return { email, scored };
   }
 

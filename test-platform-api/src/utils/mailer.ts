@@ -4,21 +4,24 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.BREVO_ACCOUNT,
-    pass: process.env.BREVO_PASSWORD,
+    user: process.env.BREVO_MAILER_ACCOUNT,
+    pass: process.env.BREVO_MAILER_PASSWORD,
   },
   tls: {
     rejectUnauthorized: false,
   },
 });
+
+console.log(process.env);
+
 export const inviteExamination = async (
   receiver: string,
   examinationId: number,
 ) => {
   await transporter.sendMail({
-    from: process.env.SENDER_EMAIL,
+    from: "flatformtester@gmail.com",
     to: receiver,
-    subject: "Invite to do exam",
+    subject: "Invite to do exam - via Brevo",
     text: `Your examination is: ${process.env.CLIENT_WEB_URL}/exam_invitation/${examinationId}`,
   });
 };
@@ -38,6 +41,6 @@ export const sendResult = async (
     text,
     from: process.env.SENDER_EMAIL,
     to: receiver,
-    subject: "Your examination result",
+    subject: "Your examination result via Brevo",
   });
 };
