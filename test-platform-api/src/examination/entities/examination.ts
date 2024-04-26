@@ -1,5 +1,5 @@
-import { Examination, ExaminationStatus, Prisma } from "@prisma/client";
 import { ApiProperty } from "@nestjs/swagger";
+import { Examination, ExaminationStatus, Prisma } from "@prisma/client";
 
 export class ExaminationEntity implements Examination {
   @ApiProperty()
@@ -10,6 +10,9 @@ export class ExaminationEntity implements Examination {
 
   @ApiProperty()
   assessmentId: number;
+
+  @ApiProperty({ type: Date })
+  expiredUntil: Date;
 
   @ApiProperty({ type: Number })
   score: Prisma.Decimal;
@@ -24,4 +27,7 @@ export class ExaminationEntity implements Examination {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty()
+  expireUtil: Date;
 }

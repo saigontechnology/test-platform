@@ -140,13 +140,25 @@ export class ExaminationsService {
   }
 
   async invite(invite: InviteDto) {
-    const examination = await this.prisma.examination.create({
-      data: {
-        assessmentId: invite.assessmentId,
-        email: invite.email,
-      },
-    });
-    await inviteExamination(invite.email, examination.id);
+    let expireTime = null;
+    const periodDays = 5;
+
+    await (() => {
+      let result = new Date();
+      result.setDate(result.getDate() + periodDays);
+      expireTime = result;
+    })();
+
+    if (expireTime) {
+      const examination = await this.prisma.examination.create({
+        data: {
+          assessmentId: invite.assessmentId,
+          email: invite.email,
+          expireUtil: expireTime,
+        },
+      });
+      await inviteExamination(invite.email, examination.id);
+    }
     return;
   }
 }
