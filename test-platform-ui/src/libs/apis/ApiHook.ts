@@ -9,8 +9,8 @@ export enum Methods {
 }
 
 const axiosInstance = axios.create({
-  // baseURL: 'http://localhost:3000',
-  baseURL: 'https://test-platform-api.onrender.com',
+  baseURL: 'http://localhost:3000',
+  // baseURL: 'https://test-platform-api.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },

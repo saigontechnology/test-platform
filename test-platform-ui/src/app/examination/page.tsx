@@ -1,6 +1,5 @@
 'use client';
 
-import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
 import { Button, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
@@ -18,7 +17,6 @@ import AssessmentQuestion from './(components)/assessmentQuestion';
 import CountdownTimer, {
   CountdownTimerHandler,
 } from './(components)/countdownTimer';
-import ExaminationInfo from './(components)/examInformation';
 import ExaminationResult from './(components)/result';
 
 interface IExamAnswerPayload {
@@ -173,7 +171,7 @@ export default function ExaminationPage() {
 
   return (
     <Box className="flex h-screen flex-col md:flex-row md:overflow-hidden">
-      <Box className="w-full flex-none md:w-64" bgcolor="#002a37">
+      {/* <Box className="w-full flex-none md:w-64" bgcolor="#002a37">
         <Box className="flex w-full flex-col items-center justify-center p-9">
           <LocalFloristIcon sx={{ color: '#1ff29e' }} />
           <Typography color="#1ff29e" fontWeight="bold" fontSize="25px">
@@ -184,7 +182,7 @@ export default function ExaminationPage() {
           level={'Junior'}
           categories={['React', 'Javascript']}
         />
-      </Box>
+      </Box> */}
       <Box className="flex-grow bg-[#f9f9f9]">
         {!isSubmit && (
           <Header>
