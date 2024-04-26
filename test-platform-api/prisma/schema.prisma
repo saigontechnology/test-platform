@@ -50,6 +50,7 @@ model Examination {
   submittedAnswers ExamAnswer[]
   score            Decimal?
   status           ExaminationStatus @default(IN_PROGRESS)
+  expireUtil       DateTime
 }
 
 model ExamAnswer {

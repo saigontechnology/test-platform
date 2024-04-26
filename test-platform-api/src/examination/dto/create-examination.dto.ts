@@ -28,6 +28,10 @@ export class CreateExaminationDto {
   @ApiProperty({ required: false })
   assessmentId: number;
 
+  @IsString()
+  @ApiProperty({ required: true })
+  expireUtil: Date;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ExaminationAnswer)
