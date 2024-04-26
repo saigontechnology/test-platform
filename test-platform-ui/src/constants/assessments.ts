@@ -99,4 +99,5 @@ export interface IExamination {
   assessmentId: number;
   assessment: IExamInfo;
   submittedAnswers: IExamAnswer[];
+  expireUtil: Date;
 }

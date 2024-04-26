@@ -48,6 +48,24 @@ const ModalContent: React.FC = () => {
   );
 };
 
+const ModalExpired: React.FC = () => {
+  const router = useRouter();
+  return (
+    <Box className="grid p-4">
+      <Typography className="whitespace-pre-line pb-6">
+        {`Your examination link is expired. Thanks for you time, please contact with our HR department for more details {HRDepartment}.`}
+      </Typography>
+      <Button
+        className="mx-auto text-lg"
+        variant="contained"
+        onClick={() => router.replace('/')}
+      >
+        Close Examination
+      </Button>
+    </Box>
+  );
+};
+
 export default function ExaminationPage() {
   const [examInfo, setExamInfo] = useState<IExamination>();
   const [assessmentInfo, setAssessmentInfo] = useState<IAssessment>();
@@ -58,6 +76,7 @@ export default function ExaminationPage() {
   const [examScored, setExamScored] = useState<number>(0);
   const modalTimeOutRef = useRef<any>(null);
   const countdownTimerRef = useRef<CountdownTimerHandler>(null);
+  const [isExpired, setIsExpired] = useState<boolean>(false);
 
   useEffect(() => {
     const examId = getClientSideCookie('examId');
@@ -75,13 +94,18 @@ export default function ExaminationPage() {
           sessionStorage.getItem('examination')!,
         )?.currentQ;
         try {
-          setExamInfo(resExam.data);
-          setAssessmentInfo(resAssess.data);
-          setAssessments(resAssess.data.assessmentQuestionMapping);
-          setCurrentQuestionId(
-            cachedQuestion ||
-              resAssess.data.assessmentQuestionMapping[0].question.id,
-          );
+          const currDate = new Date();
+          if (currDate != resExam.data.expireUtil) {
+            setExamInfo(resExam.data);
+            setAssessmentInfo(resAssess.data);
+            setAssessments(resAssess.data.assessmentQuestionMapping);
+            setCurrentQuestionId(
+              cachedQuestion ||
+                resAssess.data.assessmentQuestionMapping[0].question.id,
+            );
+          } else {
+            setIsExpired(true);
+          }
         } finally {
           /** Clear cookie of 'examId' */
           // document.cookie =
@@ -217,7 +241,7 @@ export default function ExaminationPage() {
         </Box>
       </Box>
       <CustomModal ref={modalTimeOutRef}>
-        <ModalContent />
+        {isExpired ? <ModalContent /> : <ModalExpired />}
       </CustomModal>
     </Box>
   );
