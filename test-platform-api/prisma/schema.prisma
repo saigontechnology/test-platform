@@ -63,7 +63,7 @@ model ExamAnswer {
 }
 
 enum ExaminationStatus {
-  IN_PROGRESS
+  IN_PROGRESS // Candidate is working on examination, but not finish or submit
   COMPLETED
   EVALUATED
 }
