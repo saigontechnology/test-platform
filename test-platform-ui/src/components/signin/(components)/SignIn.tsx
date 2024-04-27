@@ -1,6 +1,6 @@
+import { CSButton } from '@/components/organisms/Button';
 import { yupResolver } from '@hookform/resolvers/yup';
-import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
-import { Box, Button, FormControl } from '@mui/material';
+import { Box, FormControl } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { ILogInValidate } from '../../../constants/assessments';
@@ -25,9 +25,9 @@ const SignIn = () => {
     mode: 'onBlur',
   });
 
-  // const {
-  //   formState: { isValid },
-  // } = form;
+  const {
+    formState: { isValid },
+  } = form;
 
   const onSubmitLogIn = (data: ILogInValidate) => {
     const isAdminEmail = TestValidateAdminEmail.includes(data.email);
@@ -41,14 +41,14 @@ const SignIn = () => {
 
   return (
     <FormProvider {...form}>
-      <Box component="form" noValidate autoComplete="off">
+      <Box component="form" noValidate autoComplete="off" className='w-full'>
         <FormControl variant="standard" className="w-full pb-7">
           <CustomTextField
-            placeholder="Company Email"
+            placeholder="Administrator Email"
             name="email"
             className="mx-2 my-2"
             sx={{
-              '& input': { backgroundColor: 'transparent', color: '#1ff29e' },
+              '& input': { backgroundColor: 'transparent'},
             }}
             onKeyDown={(event: any) => {
               if (event.keyCode === 13) {
@@ -58,10 +58,7 @@ const SignIn = () => {
           />
         </FormControl>
       </Box>
-
-      <Button onClick={form.handleSubmit(onSubmitLogIn)} variant="contained">
-        Enter <DoubleArrowIcon className="w-5 md:w-6" />
-      </Button>
+      <CSButton label='Login' onClick={form.handleSubmit(onSubmitLogIn)} isDisabled={!isValid} />
     </FormProvider>
   );
 };

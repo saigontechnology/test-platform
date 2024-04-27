@@ -21,9 +21,11 @@ declare module '@mui/material/styles' {
 
   interface PaletteColor {
     salsify_grass?: string;
+    cornflower_blue?: string;
   }
   interface SimplePaletteColorOptions {
     salsify_grass?: string;
+    cornflower_blue?: string;
   }
 
   interface Palette {
@@ -56,7 +58,8 @@ const themeCustom = createTheme({
   palette: {
     primary: {
       main: '#002a37',
-      salsify_grass: '#33b27f',
+      // salsify_grass: '#33b27f',
+      cornflower_blue: '#2196f3'
     },
     base: {
       white: '#FFFFFF',
@@ -97,15 +100,15 @@ const themeCustom = createTheme({
           boxShadow: 'none',
           maxHeight: 48,
           fontSize: 16,
-          borderColor: theme.palette.primary.salsify_grass,
+          borderColor: theme.palette.primary.cornflower_blue,
           color: theme.palette.base.black,
           textTransform: 'capitalize',
           ...(ownerState.variant === 'contained' && {
-            backgroundColor: `${theme.palette.primary.salsify_grass} !important`,
+            backgroundColor: `${theme.palette.primary.cornflower_blue} !important`,
             color: theme.palette.base.white,
           }),
           '&:hover': {
-            borderColor: theme.palette.primary.salsify_grass,
+            borderColor: theme.palette.primary.cornflower_blue,
           },
         }),
         sizeLarge: {

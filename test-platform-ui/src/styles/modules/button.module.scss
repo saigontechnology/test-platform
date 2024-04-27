@@ -1,0 +1,71 @@
+@import './variables.scss';
+
+.slidEffect {
+    top: 0;;
+    left: -1400px;
+    position: absolute;
+    width: 300%;
+    height: 105%;
+    background-color: $primary-blue;
+    clip-path: polygon(0 0, 94% 0, 100% 100%, 0 100%);
+    transition: $transition;
+}
+
+span.label {
+    position: relative;
+    color: $primary-blue;
+    font-family: 'Roboto', sans-serif;
+    transition: $transition;
+    letter-spacing: 1px;
+}
+
+.disabled {
+    border: 2px solid $disabled-color;
+    border-radius: 10px;
+    width: 250px;
+    height: 44px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    // position: absolute;
+    position: relative;
+    overflow: hidden;
+
+    span.label {
+        &:hover {
+            cursor: default;
+        }
+        color: $disabled-color;
+        letter-spacing: 0;
+    }
+}
+
+.customButton {
+    border: 2px solid $primary-blue;
+    border-radius: 10px;
+    width: 250px;
+    height: 44px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    // position: absolute;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+        box-shadow: 3px 3px 4px 2px rgba(0,0,0,0.2);
+
+        .slidEffect {
+            left: 0;
+        }
+
+        span.label {
+            color: #FFF;
+            letter-spacing: 0;
+        }
+    }
+}
