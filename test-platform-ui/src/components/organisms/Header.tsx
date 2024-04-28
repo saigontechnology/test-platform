@@ -32,7 +32,7 @@ const Header: React.FC<IHeader> = ({ children }) => {
   }, [pathname]);
 
   return (
-    <Box className="flex h-[70px] items-center justify-between bg-white p-6">
+    <Box className="flex h-auto items-center justify-between bg-white p-6 gap-5">
       {breadCrumbs && !children ? (
         <PlatformBreadCrumbs breadcrumbs={breadCrumbs} />
       ) : (
