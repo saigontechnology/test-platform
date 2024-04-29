@@ -1,4 +1,6 @@
 /* eslint-disable react/display-name */
+'use client';
+
 import CloseIcon from '@mui/icons-material/Close';
 import { Divider, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';

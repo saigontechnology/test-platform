@@ -51,6 +51,7 @@ export default function DashboardGrid() {
           score: ex.score || 0,
           status: _status,
         },
+        expireUtil: ex.expireUtil,
         status: {
           label: _status,
           color:
@@ -80,13 +81,13 @@ export default function DashboardGrid() {
     {
       field: 'title',
       headerName: 'Title',
-      flex: 0.4,
+      flex: 0.3,
       renderCell: (params) => multipleLinesTypo(params.row.title),
     },
     {
       field: 'level',
       headerName: 'Level',
-      flex: 0.4,
+      flex: 0.3,
       renderCell: (params) => multipleLinesTypo(params.row.level),
     },
     {
@@ -98,7 +99,7 @@ export default function DashboardGrid() {
     {
       field: 'result',
       headerName: 'Result',
-      flex: 0.7,
+      flex: 0.5,
       renderCell: (params) => {
         return (
           <LinearProgressBar
@@ -121,6 +122,18 @@ export default function DashboardGrid() {
             />
           </div>
         );
+      },
+    },
+    {
+      field: 'expireUtil',
+      headerName: 'Expire Time',
+      flex: 0.5,
+      renderCell: (params) => {
+        const lang = navigator.language,
+          expiredDate = new Date(params.row.expireUtil).toLocaleDateString(
+            lang,
+          );
+        return <span>{expiredDate}</span>;
       },
     },
   ];
