@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -48,6 +48,7 @@ const ModalContent: React.FC = () => {
   );
 };
 
+/** Modal content to warning examination expired */
 const ModalExpired: React.FC = () => {
   const router = useRouter();
   return (
@@ -79,7 +80,7 @@ export default function ExaminationPage() {
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
   useEffect(() => {
-    const examId = getClientSideCookie('examId');
+    const examId = getClientSideCookie('examId') || 113;
     (async () => {
       const resExam: { data: IExamination } = await ApiHook(
           Methods.GET,
@@ -196,26 +197,24 @@ export default function ExaminationPage() {
 
   return (
     <Box className="flex h-screen flex-col md:flex-row md:overflow-hidden">
-      {/* <Box className="w-full flex-none md:w-64" bgcolor="#002a37">
-        <Box className="flex w-full flex-col items-center justify-center p-9">
-          <LocalFloristIcon sx={{ color: '#1ff29e' }} />
-          <Typography color="#1ff29e" fontWeight="bold" fontSize="25px">
-            Test Platform
-          </Typography>
-        </Box>
-        <ExaminationInfo
-          level={'Junior'}
-          categories={['React', 'Javascript']}
-        />
-      </Box> */}
       <Box className="flex-grow bg-[#f9f9f9]">
         {!isSubmit && (
           <Header>
+            <Stack className="justify-center" direction="row" spacing={4} height={50} width={500}>
+              <Box width={50} bgcolor={'#c5c5c5'} />
+              <Stack>
+                <span><b>Examination:</b></span>
+                <span>{examInfo?.assessment.name}</span>
+              </Stack>
+            </Stack>
             <CountdownTimer
               ref={countdownTimerRef}
               isPause={!assessmentInfo}
               handleTimeout={Handlers.handleExamTimeOut}
             />
+            <Stack className="items-center justify-center" direction="row" spacing={4} height={50} width={500}>
+              <Box>{examInfo?.email}</Box>
+            </Stack>
           </Header>
         )}
         <Box className="m-6 flex-grow rounded-[15px] p-6 md:overflow-y-auto">
