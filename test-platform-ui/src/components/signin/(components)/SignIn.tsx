@@ -27,6 +27,7 @@ const SignIn = () => {
 
   const {
     formState: { isValid },
+    setError,
   } = form;
 
   const onSubmitLogIn = (data: ILogInValidate) => {
@@ -34,21 +35,23 @@ const SignIn = () => {
     if (isAdminEmail) {
       router.push(ROUTE_KEY.ADMINISTRATION);
     } else {
-      sessionStorage.setItem('candidateEmail', data.email);
-      router.push(ROUTE_KEY.EXAMINATION);
+      setError('email', {
+        type: 'manual',
+        message: 'Email did not exist as an administrator.',
+      });
     }
   };
 
   return (
     <FormProvider {...form}>
-      <Box component="form" noValidate autoComplete="off" className='w-full'>
+      <Box component="form" noValidate autoComplete="off" className="w-full">
         <FormControl variant="standard" className="w-full pb-7">
           <CustomTextField
             placeholder="Administrator Email"
             name="email"
             className="mx-2 my-2"
             sx={{
-              '& input': { backgroundColor: 'transparent'},
+              '& input': { backgroundColor: 'transparent' },
             }}
             onKeyDown={(event: any) => {
               if (event.keyCode === 13) {
@@ -58,7 +61,11 @@ const SignIn = () => {
           />
         </FormControl>
       </Box>
-      <CSButton label='Login' onClick={form.handleSubmit(onSubmitLogIn)} isDisabled={!isValid} />
+      <CSButton
+        label="Login"
+        onClick={form.handleSubmit(onSubmitLogIn)}
+        isDisabled={!isValid}
+      />
     </FormProvider>
   );
 };
