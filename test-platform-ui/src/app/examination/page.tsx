@@ -80,7 +80,7 @@ export default function ExaminationPage() {
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
   useEffect(() => {
-    const examId = getClientSideCookie('examId') || 113;
+    const examId = getClientSideCookie('examId');
     (async () => {
       const resExam: { data: IExamination } = await ApiHook(
           Methods.GET,
