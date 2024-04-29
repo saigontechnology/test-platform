@@ -54,7 +54,7 @@ const ModalExpired: React.FC = () => {
   return (
     <Box className="grid p-4">
       <Typography className="whitespace-pre-line pb-6">
-        {`Your examination link is expired. Thanks for you time, please contact with our HR department for more details {HRDepartment}.`}
+        {`Your examination link is expired or not existed. Please contact with our HR department for more details {HRDepartment}. Thanks for your time.`}
       </Typography>
       <Button
         className="mx-auto text-lg"
@@ -82,6 +82,9 @@ export default function ExaminationPage() {
   useEffect(() => {
     const examId = getClientSideCookie('examId');
     (async () => {
+      if (!examId) {
+        setIsExpired(true);
+      }
       const resExam: { data: IExamination } = await ApiHook(
           Methods.GET,
           `/examinations/${examId}`,
@@ -200,10 +203,18 @@ export default function ExaminationPage() {
       <Box className="flex-grow bg-[#f9f9f9]">
         {!isSubmit && (
           <Header>
-            <Stack className="justify-center" direction="row" spacing={4} height={50} width={500}>
+            <Stack
+              className="justify-center"
+              direction="row"
+              spacing={4}
+              height={50}
+              width={500}
+            >
               <Box width={50} bgcolor={'#c5c5c5'} />
               <Stack>
-                <span><b>Examination:</b></span>
+                <span>
+                  <b>Examination:</b>
+                </span>
                 <span>{examInfo?.assessment.name}</span>
               </Stack>
             </Stack>
@@ -212,7 +223,13 @@ export default function ExaminationPage() {
               isPause={!assessmentInfo}
               handleTimeout={Handlers.handleExamTimeOut}
             />
-            <Stack className="items-center justify-center" direction="row" spacing={4} height={50} width={500}>
+            <Stack
+              className="items-center justify-center"
+              direction="row"
+              spacing={4}
+              height={50}
+              width={500}
+            >
               <Box>{examInfo?.email}</Box>
             </Stack>
           </Header>
