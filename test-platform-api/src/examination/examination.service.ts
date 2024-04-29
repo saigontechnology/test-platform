@@ -50,6 +50,7 @@ export class ExaminationsService {
             level: true,
           },
         },
+        expireUtil: true,
         submittedAnswers: {
           select: {
             question: {
@@ -81,6 +82,7 @@ export class ExaminationsService {
             level: true,
           },
         },
+        expireUtil: true,
         submittedAnswers: {
           select: {
             question: {

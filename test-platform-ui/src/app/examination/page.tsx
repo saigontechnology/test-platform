@@ -75,12 +75,12 @@ export default function ExaminationPage() {
   const [answers, setAnswers] = useState<Record<string, number[]>>();
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [examScored, setExamScored] = useState<number>(0);
-  const modalTimeOutRef = useRef<any>(null);
+  const modalExaminationRef = useRef<any>(null);
   const countdownTimerRef = useRef<CountdownTimerHandler>(null);
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
   useEffect(() => {
-    const examId = getClientSideCookie('examId') || 113;
+    const examId = getClientSideCookie('examId');
     (async () => {
       const resExam: { data: IExamination } = await ApiHook(
           Methods.GET,
@@ -96,7 +96,7 @@ export default function ExaminationPage() {
         )?.currentQ;
         try {
           const currDate = new Date();
-          if (currDate != resExam.data.expireUtil) {
+          if (currDate > resExam.data.expireUtil) {
             setExamInfo(resExam.data);
             setAssessmentInfo(resAssess.data);
             setAssessments(resAssess.data.assessmentQuestionMapping);
@@ -106,6 +106,7 @@ export default function ExaminationPage() {
             );
           } else {
             setIsExpired(true);
+            modalExaminationRef.current?.open();
           }
         } finally {
           /** Clear cookie of 'examId' */
@@ -190,7 +191,7 @@ export default function ExaminationPage() {
     },
     handleExamTimeOut: () => {
       // Todo: Show dialog notice timeout.
-      modalTimeOutRef.current?.open();
+      modalExaminationRef.current?.open();
     },
   };
 
@@ -239,8 +240,8 @@ export default function ExaminationPage() {
           )}
         </Box>
       </Box>
-      <CustomModal ref={modalTimeOutRef}>
-        {isExpired ? <ModalContent /> : <ModalExpired />}
+      <CustomModal ref={modalExaminationRef}>
+        {isExpired ? <ModalExpired /> : <ModalContent />}
       </CustomModal>
     </Box>
   );
