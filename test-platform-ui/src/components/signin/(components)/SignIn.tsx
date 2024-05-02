@@ -13,6 +13,7 @@ const TestValidateAdminEmail = [
   'dat.ngo@saigontechnology.com',
   'nghia.nguyen@saigontechnology.com',
   'khanh.nguyen@saigontechnology.com',
+  'tan.vo@saigontechnology.com',
 ];
 
 const SignIn = () => {
