@@ -5,7 +5,7 @@
 import EditorLogic from '@/components/atoms/CodeEditor/editorLogic/editorLogic';
 import EditorUI from '@/components/atoms/CodeEditor/editorUI';
 import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
-import RichTextArea from '@/components/atoms/Editor/Richtext';
+import RichTextArea from '@/components/atoms/Editor/richtext';
 import { QuestionType } from '@/constants/assessments';
 import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
