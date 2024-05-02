@@ -80,20 +80,18 @@ export default function ExaminationPage() {
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
   useEffect(() => {
+    const examId = getClientSideCookie('examId');
     (async () => {
-      const examId = getClientSideCookie('examId');
-      if (!examId) {
-        setIsExpired(true);
-        return;
-      }
+      console.log('examId: ', examId);
       const resExam: { data: IExamination } = await ApiHook(
-          Methods.GET,
-          `/examinations/${examId}`,
-        ),
-        resAssess: { data: IAssessment } = await ApiHook(
-          Methods.GET,
-          `/assessments/${resExam.data.assessmentId}`,
-        );
+        Methods.GET,
+        `/examinations/${examId}`,
+      );
+      
+      const resAssess: { data: IAssessment } = await ApiHook(
+        Methods.GET,
+        `/assessments/${resExam.data.assessmentId}`,
+      );
       if (resAssess.data.assessmentQuestionMapping.length) {
         const cachedQuestion = JSON.parse(
           sessionStorage.getItem('examination')!,
