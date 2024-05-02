@@ -108,19 +108,17 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       <FormControl
         key={`answer-${answ.id}`}
         variant="standard"
-        className="-ml-3 inline-flex w-2/5 !flex-row items-center"
+        className="-ml-3 inline-flex w-full !flex-row items-center"
       >
         <Checkbox
           checked={answ.isCorrect}
           disabled={!answ.id}
           onClick={() => HandleInteractions.handleSelectCorrect(answ)}
         />
-
         <Input
           id={answ.id}
           value={answ.answer}
           aria-describedby="component-helper-text"
-          className="mx-2 my-2"
           placeholder={`Answer ${index + 1}`}
           onChange={HandleInteractions.handleAnswerChanges}
         />
@@ -149,7 +147,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   //#endregion
 
   return (
-    <FormGroup>
+    <FormGroup className="gap-4">
       <Typography className="font-semibold">Options</Typography>
       {answers.map(renderAnswer)}
       {errors.root ? (

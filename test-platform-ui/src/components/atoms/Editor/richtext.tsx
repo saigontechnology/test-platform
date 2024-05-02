@@ -85,7 +85,7 @@ export default function RichTextArea(props: IRichTextArea) {
     Modules.toolbar.handlers = {
       image: Handlers.imageHandlers,
     };
-    return Modules;
+    return Modules || {};
   }, []);
 
   return (

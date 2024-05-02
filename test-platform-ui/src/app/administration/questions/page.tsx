@@ -8,6 +8,7 @@ import { IResponseQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { showNotification } from '@/libs/toast';
+import { handleMappingImportData, isStringHTML } from '@/libs/utils';
 import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -92,9 +93,17 @@ const Page = () => {
     const fileReader = new FileReader();
     fileReader.readAsText(file, 'UTF-8');
     fileReader.onload = async (e: any) => {
+      let importQuestions = JSON.parse(e.target.result);
+      console.log(importQuestions);
+      const mappedQuestions = await handleMappingImportData(
+        'X',
+        importQuestions,
+        'React',
+      ).then((result) => result);
+      importQuestions = JSON.stringify(mappedQuestions);
       setImportLoading(true);
       const { error } = await ApiHook(Methods.POST, `/questions/import`, {
-        data: e.target.result,
+        data: importQuestions,
       });
       !error && showNotification('Import questions successfully', 'success');
       setImportLoading(false);
@@ -152,7 +161,18 @@ const Page = () => {
       field: 'content',
       headerName: 'Question Content',
       flex: 0.8,
-      renderCell: (params) => multipleLinesTypo(params.row.content),
+      renderCell: (params) => {
+        if (isStringHTML(params.row.content)) {
+          return (
+            <Box
+              className="h-[150px] w-[350px] overflow-hidden text-ellipsis whitespace-normal"
+              dangerouslySetInnerHTML={{ __html: params.row.content }}
+            />
+          );
+        } else {
+          return multipleLinesTypo(params.row.content);
+        }
+      },
     },
     {
       field: 'categories',

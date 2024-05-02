@@ -7,6 +7,11 @@ export const calc_image_size_base64 = (image: string) => {
   return Math.round(x_size / 1024 / 1024);
 };
 
+export const isStringHTML = (string: string) => {
+  const regexForHTML = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/;
+  return regexForHTML.test(string);
+};
+
 export const convertBase64 = (file: File) => {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
@@ -50,3 +55,72 @@ export const getClientSideCookie = (name: string): string | undefined => {
 
   return cookieValue;
 };
+
+export const handleMappingImportData = async (
+  sourceType: string,
+  importData: any,
+  _category: string,
+) => {
+  if (sourceType === 'X') {
+    const result_data = {
+      category: _category,
+      questions: [],
+    };
+    const _questions = await MappingDataX(
+      importData,
+      `temporary title ${importData.test_name} - ${importData.level}`,
+    ).then((questions) => questions);
+    return {
+      categories: [
+        {
+          category: _category,
+          questions: _questions,
+        },
+      ],
+    };
+  }
+};
+
+//#region : Private functions
+interface IMappingQuestion {
+  id: number;
+  answer: any[];
+  question: {
+    id: number;
+    text: string;
+    type: string; // example: 'multiple-choice'
+    answers: {
+      text: string;
+    }[];
+  };
+  [k: string]: any; // rest of unnecessary props
+}
+
+interface IMappingDataX {
+  id: number;
+  questions: IMappingQuestion[];
+  test_name: string; // example: 'React'
+  duration: string; // example: '720.0'
+  level: string; // example: 'intermediate'
+  [k: string]: any; // rest of unnecessary props
+}
+
+const MappingDataX = async (data: IMappingDataX, tempoTitle: string) => {
+  const mappedQuestion = await data.questions.map(
+    (_q: IMappingQuestion, index: number) => {
+      return {
+        question: `${index} - ` + tempoTitle,
+        // type: _q.question.type,
+        answer: 0,
+        description: _q.question.text,
+        options: _q.question.answers.map((ans: { text: string }) => {
+          return {
+            value: ans.text,
+          };
+        }),
+      };
+    },
+  );
+  return mappedQuestion;
+};
+//#endregion : Private functions

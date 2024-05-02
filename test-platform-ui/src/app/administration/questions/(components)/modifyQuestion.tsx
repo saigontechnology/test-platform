@@ -11,6 +11,7 @@ import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { showNotification } from '@/libs/toast';
+import { isStringHTML } from '@/libs/utils';
 import { createQuestionSchema } from '@/validations/questions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -24,7 +25,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import RenderQuestionAnswers from './(question-form)/answers';
@@ -54,6 +55,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
   const { questionData } = props;
   const router = useRouter();
   const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
+  const [isExistHTMLAns, setIsExistHTMLAns] = useState<boolean>(false);
 
   const mapEditAnswer = () => {
     const { options, answers } = questionData;
@@ -77,6 +79,26 @@ const ModifyQuestion = (props: ICreateQuestion) => {
   });
   const { setError, watch, getValues } = form;
   const questionType = watch('type');
+
+  const previewHTMLAnswer = useMemo(() => {
+    return (
+      <>
+        <div
+          className="mt-4"
+          dangerouslySetInnerHTML={{
+            __html: answerArray.find((ans) => ans.isCorrect)?.answer || '',
+          }}
+        />
+      </>
+    );
+  }, [answerArray]);
+
+  useEffect(() => {
+    const isExistHTMLAnswer = answerArray.find((ans) =>
+      isStringHTML(ans.answer),
+    );
+    setIsExistHTMLAns(isExistHTMLAnswer ? true : false);
+  }, [answerArray]);
 
   //#region : Handle interactive functions
   const HandleInteractions = {
@@ -178,11 +200,21 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             questionType === QuestionType.LOGIC ? (
               HandleInteractions.handleRenderCoding()
             ) : (
-              <RenderQuestionAnswers
-                questionType={questionType}
-                renderAnswers={answerArray}
-                handleAnswers={setAnswerArray}
-              />
+              <Stack className="mx-2 my-2 gap-12" direction="row" spacing={2}>
+                <RenderQuestionAnswers
+                  questionType={questionType}
+                  renderAnswers={answerArray}
+                  handleAnswers={setAnswerArray}
+                />
+                {isExistHTMLAns ? (
+                  <Box className="w-[inherit] overflow-hidden text-ellipsis whitespace-normal">
+                    <Typography className="font-semibold">
+                      Preview Code:
+                    </Typography>
+                    {previewHTMLAnswer}
+                  </Box>
+                ) : null}
+              </Stack>
             )}
           </Stack>
         </Box>
