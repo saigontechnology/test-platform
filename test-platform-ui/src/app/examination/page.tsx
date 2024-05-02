@@ -80,14 +80,17 @@ export default function ExaminationPage() {
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
   useEffect(() => {
-    const examId = getClientSideCookie('examId');
     (async () => {
-      console.log('examId: ', examId);
+      const examId = getClientSideCookie('examId');
+      if (!examId) {
+        setIsExpired(true);
+        return;
+      }
       const resExam: { data: IExamination } = await ApiHook(
         Methods.GET,
         `/examinations/${examId}`,
       );
-      
+      console.log('resExam: ', resExam);
       const resAssess: { data: IAssessment } = await ApiHook(
         Methods.GET,
         `/assessments/${resExam.data.assessmentId}`,
@@ -98,7 +101,7 @@ export default function ExaminationPage() {
         )?.currentQ;
         try {
           const currDate = new Date();
-          if (currDate > resExam.data.expireUtil) {
+          if (currDate <= resExam.data.expireUtil) {
             setExamInfo(resExam.data);
             setAssessmentInfo(resAssess.data);
             setAssessments(resAssess.data.assessmentQuestionMapping);
