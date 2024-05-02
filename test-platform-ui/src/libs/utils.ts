@@ -62,10 +62,6 @@ export const handleMappingImportData = async (
   _category: string,
 ) => {
   if (sourceType === 'X') {
-    const result_data = {
-      category: _category,
-      questions: [],
-    };
     const _questions = await MappingDataX(
       importData,
       `temporary title ${importData.test_name} - ${importData.level}`,
