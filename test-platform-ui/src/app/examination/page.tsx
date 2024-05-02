@@ -100,8 +100,9 @@ export default function ExaminationPage() {
           sessionStorage.getItem('examination')!,
         )?.currentQ;
         try {
-          const currDate = new Date();
-          if (currDate <= resExam.data.expireUtil) {
+          const currDate = new Date(),
+            expireDate = new Date(resExam.data.expireUtil);
+          if (currDate <= expireDate) {
             setExamInfo(resExam.data);
             setAssessmentInfo(resAssess.data);
             setAssessments(resAssess.data.assessmentQuestionMapping);
