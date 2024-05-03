@@ -79,6 +79,10 @@ export default function ExaminationPage() {
   const countdownTimerRef = useRef<CountdownTimerHandler>(null);
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
+  const updateAssessmentExpired = async (examId: number) => {
+    await ApiHook(Methods.PUT, `/examinations/expired/${examId}`);
+  };
+
   useEffect(() => {
     (async () => {
       const examId = getClientSideCookie('examId');
@@ -110,6 +114,7 @@ export default function ExaminationPage() {
               cachedQuestion ||
                 resAssess.data.assessmentQuestionMapping[0].question.id,
             );
+            updateAssessmentExpired(parseInt(examId));
           } else {
             setIsExpired(true);
             modalExaminationRef.current?.open();
