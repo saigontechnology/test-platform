@@ -2,6 +2,7 @@
 
 import React from 'react';
 
+import { isStringHTML } from '@/libs/utils';
 import {
   FormControl,
   FormControlLabel,
@@ -22,13 +23,20 @@ const SingleChoice: React.FC<any> = ({ options, onSelect }: IProps) => {
         defaultValue="female"
         name="radio-buttons-group"
       >
-        {options?.map((opt, index) => (
-          <FormControlLabel
-            key={opt}
-            control={<Radio value={index} onChange={onSelect} />}
-            label={opt}
-          />
-        ))}
+        {options?.map((opt, index) => {
+          const _option = isStringHTML(opt) ? (
+            <div dangerouslySetInnerHTML={{ __html: opt }} />
+          ) : (
+            opt
+          );
+          return (
+            <FormControlLabel
+              key={opt}
+              control={<Radio value={index} onChange={onSelect} />}
+              label={_option}
+            />
+          );
+        })}
       </RadioGroup>
     </FormControl>
   );
