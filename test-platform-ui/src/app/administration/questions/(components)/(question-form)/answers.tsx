@@ -1,4 +1,5 @@
 import { QuestionType } from '@/constants/assessments';
+import { isStringHTML } from '@/libs/utils';
 import { AddBox, Delete } from '@mui/icons-material';
 import {
   Checkbox,
@@ -115,14 +116,17 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
           disabled={!answ.id}
           onClick={() => HandleInteractions.handleSelectCorrect(answ)}
         />
-        <Input
-          id={answ.id}
-          value={answ.answer}
-          aria-describedby="component-helper-text"
-          placeholder={`Answer ${index + 1}`}
-          onChange={HandleInteractions.handleAnswerChanges}
-        />
-
+        {/** Notes: Specific cases answer include code patterns, simply envision the answer contents. */}
+        <div>{String.fromCharCode(index + 'A'.charCodeAt(0))}</div>
+        {isStringHTML(answ.answer) ? null : (
+          <Input
+            id={answ.id}
+            value={answ.answer}
+            aria-describedby="component-helper-text"
+            placeholder={`Answer ${index + 1}`}
+            onChange={HandleInteractions.handleAnswerChanges}
+          />
+        )}
         {answ.id ? (
           <IconButton
             color="error"

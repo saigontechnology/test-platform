@@ -198,6 +198,11 @@ const Page = () => {
         return (
           <Box className="grid gap-1">
             {params.row.options?.map((answ: any, indx: number) => {
+              const _answ = isStringHTML(answ) ? (
+                <div>{String.fromCharCode(indx + 'A'.charCodeAt(0))}</div>
+              ) : (
+                answ
+              );
               return (
                 <Chip
                   className={clsx('w-fit max-w-sm', {
@@ -205,7 +210,7 @@ const Page = () => {
                       params.row.answers?.includes(indx),
                   })}
                   key={`answer-${indx}`}
-                  label={answ}
+                  label={_answ}
                   variant="outlined"
                 />
               );
