@@ -118,7 +118,7 @@ export default function ExaminationPage() {
           /** Clear cookie of 'examId' */
           // document.cookie =
           //   'examId' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-          countdownTimerRef.current?.setTime(1200);
+          countdownTimerRef.current?.setTime(1800);
         }
       } else {
         // TODO:
