@@ -163,4 +163,16 @@ export class ExaminationsService {
     }
     return;
   }
+
+  async updateExpireDate(id: number) {
+    await this.prisma.examination.update({
+      where: {
+        id: id,
+      },
+      data: {
+        expireUtil: new Date(),
+      },
+    });
+    return;
+  }
 }

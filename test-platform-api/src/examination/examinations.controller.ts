@@ -58,4 +58,11 @@ export class ExaminationsController {
   async invite(@Body() invite: InviteDto) {
     return await this.examinationService.invite(invite);
   }
+
+  @Put("expired/:id")
+  @ApiCreatedResponse({ type: ExaminationEntity })
+  async updateExpireDate(@Param("id", ParseIntPipe) id: number) {
+    console.log("updateExpireDate id: ", id);
+    return await this.examinationService.updateExpireDate(id);
+  }
 }
