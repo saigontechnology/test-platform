@@ -88,7 +88,9 @@ const AssessmentQuestion: React.FC<IProps> = ({
             p={3}
             className="border-grey h-full rounded-[10px] border-2 bg-white"
           >
-            <Typography variant="h6">Answer</Typography>
+            <Typography variant="h6" className="mb-6">
+              Answer
+            </Typography>
             {renderAnswers()}
           </Box>
         </Grid>
