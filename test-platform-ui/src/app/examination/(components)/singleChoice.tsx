@@ -22,10 +22,20 @@ const SingleChoice: React.FC<any> = ({ options, onSelect }: IProps) => {
         aria-labelledby="demo-radio-buttons-group-label"
         defaultValue="female"
         name="radio-buttons-group"
+        style={{
+          overflow: 'hidden',
+          overflowY: 'scroll',
+          height: '55vh',
+          width: '44vw',
+          display: 'grid',
+        }}
       >
         {options?.map((opt, index) => {
           const _option = isStringHTML(opt) ? (
-            <div dangerouslySetInnerHTML={{ __html: opt }} />
+            <div
+              className="bg-slate-100"
+              dangerouslySetInnerHTML={{ __html: opt }}
+            />
           ) : (
             opt
           );
@@ -34,6 +44,7 @@ const SingleChoice: React.FC<any> = ({ options, onSelect }: IProps) => {
               key={opt}
               control={<Radio value={index} onChange={onSelect} />}
               label={_option}
+              className="py-4"
             />
           );
         })}

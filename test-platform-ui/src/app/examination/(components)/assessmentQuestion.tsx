@@ -83,7 +83,7 @@ const AssessmentQuestion: React.FC<IProps> = ({
             <Question order={order} question={assessment.question} />
           </Box>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={6} className="h-[70vh] overflow-hidden">
           <Box
             p={3}
             className="border-grey h-full rounded-[10px] border-2 bg-white"
