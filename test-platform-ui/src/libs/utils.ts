@@ -7,6 +7,15 @@ export const calc_image_size_base64 = (image: string) => {
   return Math.round(x_size / 1024 / 1024);
 };
 
+export const regexEmail = (email: string | null) => {
+  if (!email) return false;
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    );
+};
+
 export const isStringHTML = (string: string) => {
   const regexForHTML = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/;
   return regexForHTML.test(string);

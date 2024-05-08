@@ -64,6 +64,7 @@ export interface IAssessment {
   name: string;
   level: string;
   assessmentQuestionMapping: IQuestion[];
+  error?: Error;
 }
 
 export interface ICreateAssessment {
@@ -99,5 +100,5 @@ export interface IExamination {
   assessmentId: number;
   assessment: IExamInfo;
   submittedAnswers: IExamAnswer[];
-  expireUtil: Date;
+  expireUtil: string;
 }

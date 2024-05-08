@@ -1,23 +1,19 @@
 'use client';
 
-import { Button, Stack, Typography } from '@mui/material';
+import { IAssessment, IExamination, IQuestion } from '@/constants/assessments';
+import { getClientSideCookie, regexEmail } from '@/libs/utils';
+import { Stack } from '@mui/material';
 import { Box } from '@mui/system';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import CustomModal from '../../components/molecules/CustomModal';
 import Header from '../../components/organisms/Header';
-import {
-  IAssessment,
-  IExamination,
-  IQuestion,
-} from '../../constants/assessments';
 import ApiHook, { Methods } from '../../libs/apis/ApiHook';
-import { getClientSideCookie } from '../../libs/utils';
-import AssessmentQuestion from './(components)/assessmentQuestion';
 import CountdownTimer, {
   CountdownTimerHandler,
 } from './(components)/countdownTimer';
-import ExaminationResult from './(components)/result';
+import { PaperContent } from './(components)/modalContents/paperContent';
 
 interface IExamAnswerPayload {
   questionId: number;
@@ -29,107 +25,39 @@ interface IExamResult {
   scored: number;
 }
 
-/** Modal content to warning examination timeout */
-const ModalContent: React.FC = () => {
-  const router = useRouter();
-  return (
-    <Box className="grid p-4">
-      <Typography className="whitespace-pre-line pb-6">
-        {`Your examination is timeout. Result will be send via email ${sessionStorage.candidateEmail}. \n  Thanks you time to join examination.`}
-      </Typography>
-      <Button
-        className="mx-auto text-lg"
-        variant="contained"
-        onClick={() => router.replace('/')}
-      >
-        Exit examination
-      </Button>
-    </Box>
-  );
-};
-
-/** Modal content to warning examination expired */
-const ModalExpired: React.FC = () => {
-  const router = useRouter();
-  return (
-    <Box className="grid p-4">
-      <Typography className="whitespace-pre-line pb-6">
-        {`Your examination link is expired or not existed. Please contact with our HR department for more details {HRDepartment}. Thanks for your time.`}
-      </Typography>
-      <Button
-        className="mx-auto text-lg"
-        variant="contained"
-        onClick={() => router.replace('/')}
-      >
-        Close Examination
-      </Button>
-    </Box>
-  );
-};
+const ModalExpiredContent = dynamic(
+  () => import('./(components)/modalContents/modalExpired'),
+);
+const ModalTimeoutContent = dynamic(
+  () => import('./(components)/modalContents/modalTimeout'),
+);
+const AssessmentQuestions = dynamic(
+  () => import('./(components)/assessmentQuestion'),
+  {
+    ssr: false,
+  },
+);
+const ExaminationFinalResult = dynamic(() => import('./(components)/result'), {
+  ssr: false,
+});
 
 export default function ExaminationPage() {
-  const [examInfo, setExamInfo] = useState<IExamination>();
-  const [assessmentInfo, setAssessmentInfo] = useState<IAssessment>();
+  const router = useRouter();
+  const [examInfo, setExamInfo] = useState<IExamination | null>(null);
+  const [assessmentInfo, setAssessmentInfo] = useState<{
+    data: IAssessment | null;
+    error: Error | null;
+    retryTimes?: number;
+  } | null>(null);
   const [assessments, setAssessments] = useState<IQuestion[]>([]);
   const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
   const [answers, setAnswers] = useState<Record<string, number[]>>();
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [examScored, setExamScored] = useState<number>(0);
   const modalExaminationRef = useRef<any>(null);
+  const [candidateEmail, setCandidateEmail] = useState<string | null>(null);
   const countdownTimerRef = useRef<CountdownTimerHandler>(null);
   const [isExpired, setIsExpired] = useState<boolean>(false);
-
-  const updateAssessmentExpired = async (examId: number) => {
-    await ApiHook(Methods.PUT, `/examinations/expired/${examId}`);
-  };
-
-  useEffect(() => {
-    (async () => {
-      const examId = getClientSideCookie('examId');
-      if (!examId) {
-        setIsExpired(true);
-        return;
-      }
-      const resExam: { data: IExamination } = await ApiHook(
-        Methods.GET,
-        `/examinations/${examId}`,
-      );
-      console.log('resExam: ', resExam);
-      const resAssess: { data: IAssessment } = await ApiHook(
-        Methods.GET,
-        `/assessments/${resExam.data.assessmentId}`,
-      );
-      if (resAssess.data.assessmentQuestionMapping.length) {
-        const cachedQuestion = JSON.parse(
-          sessionStorage.getItem('examination')!,
-        )?.currentQ;
-        try {
-          const currDate = new Date(),
-            expireDate = new Date(resExam.data.expireUtil);
-          if (currDate <= expireDate) {
-            setExamInfo(resExam.data);
-            setAssessmentInfo(resAssess.data);
-            setAssessments(resAssess.data.assessmentQuestionMapping);
-            setCurrentQuestionId(
-              cachedQuestion ||
-                resAssess.data.assessmentQuestionMapping[0].question.id,
-            );
-            updateAssessmentExpired(parseInt(examId));
-          } else {
-            setIsExpired(true);
-            modalExaminationRef.current?.open();
-          }
-        } finally {
-          /** Clear cookie of 'examId' */
-          // document.cookie =
-          //   'examId' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-          countdownTimerRef.current?.setTime(1800);
-        }
-      } else {
-        // TODO:
-      }
-    })();
-  }, []);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -151,11 +79,87 @@ export default function ExaminationPage() {
   }, [currentQuestionId]);
 
   const Handlers = {
+    updateAssessmentExpired: async (examId: number) => {
+      await ApiHook(Methods.PUT, `/examinations/expired/${examId}`);
+    },
+    getExamInfo: async (examId: string) => {
+      if (candidateEmail) {
+        const resExam: { data: IExamination } = await ApiHook(
+          Methods.GET,
+          `/examinations/${examId}`,
+        );
+        return resExam.data.email === candidateEmail ? resExam.data : null;
+      }
+      return null;
+    },
+    getAssessment: async (examId: string, examData: IExamination) => {
+      const resAssess: { data: IAssessment } = await ApiHook(
+        Methods.GET,
+        `/assessments/${examData?.assessmentId}`,
+      );
+      if (resAssess.data.assessmentQuestionMapping.length) {
+        const cachedQuestion = JSON.parse(
+          sessionStorage.getItem('examination')!,
+        )?.currentQ;
+        try {
+          const currDate = new Date(),
+            expireDate = new Date(examData.expireUtil);
+          if (currDate <= expireDate) {
+            setExamInfo(examData);
+            setAssessmentInfo({ data: resAssess.data, error: null });
+            setAssessments(resAssess.data.assessmentQuestionMapping);
+            setCurrentQuestionId(
+              cachedQuestion ||
+                resAssess.data.assessmentQuestionMapping[0].question.id,
+            );
+            Handlers.updateAssessmentExpired(parseInt(examId));
+          } else {
+            setIsExpired(true);
+            modalExaminationRef.current?.open();
+          }
+        } finally {
+          /** Clear cookie of 'examId' */
+          // document.cookie =
+          //   'examId' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+          countdownTimerRef.current?.setTime(1800);
+        }
+      } else {
+        // TODO:
+      }
+    },
+    fetchExamination: async () => {
+      const examId = getClientSideCookie('examId');
+      if (!examId) {
+        setIsExpired(true);
+        return;
+      }
+      const examInformation = await Handlers.getExamInfo(examId).then(
+        (result) => result,
+      );
+      if (candidateEmail === examInformation?.email) {
+        Handlers.getAssessment(examId, examInformation);
+      } else {
+        let _retryTimes = assessmentInfo?.retryTimes || 3;
+        _retryTimes < 1
+          ? router.replace('/')
+          : setAssessmentInfo({
+              data: null,
+              retryTimes: _retryTimes,
+              error: new Error(
+                `Invalid candidate email, you have ${_retryTimes--} times to retry. ${
+                  _retryTimes < 2
+                    ? 'The last time it failed, it will automatically reroute and end the examination.'
+                    : null
+                }`,
+              ),
+            });
+      }
+    },
     handleSubmit: async (finalAnswers: IExamAnswerPayload[]) => {
       setIsSubmit(true);
       const payload = {
         email: examInfo?.email,
-        assessmentId: assessmentInfo?.id,
+        assessmentId: assessmentInfo?.data?.id,
         selections: finalAnswers,
       };
       const result: { data: IExamResult; error: any } = await ApiHook(
@@ -243,30 +247,44 @@ export default function ExaminationPage() {
           </Header>
         )}
         <Box className="m-6 flex-grow rounded-[15px] p-6 md:overflow-y-auto">
-          {!isSubmit &&
-            assessments?.map((ass, index) => (
-              <AssessmentQuestion
-                key={ass.question.id}
-                order={index + 1}
-                isLast={assessments.length - 1 === index}
-                assessment={ass}
-                active={currentQuestionId === ass.question.id}
-                onNext={Handlers.handleNext}
-              />
-            ))}
-          {isSubmit && (
-            <ExaminationResult
-              isDisabledExit={false}
-              examResult={{
-                information: assessmentInfo,
-                scored: examScored,
+          {!examInfo ? (
+            <PaperContent
+              setStateEmail={setCandidateEmail}
+              isDisabled={!regexEmail(candidateEmail)}
+              onChanged={Boolean(candidateEmail?.length)}
+              gotoExam={() => {
+                Handlers.fetchExamination();
               }}
+              error={assessmentInfo?.error?.message}
             />
+          ) : (
+            <>
+              {!isSubmit &&
+                assessments?.map((ass, index) => (
+                  <AssessmentQuestions
+                    key={ass.question.id}
+                    order={index + 1}
+                    isLast={assessments.length - 1 === index}
+                    assessment={ass}
+                    active={currentQuestionId === ass.question.id}
+                    onNext={Handlers.handleNext}
+                  />
+                ))}
+              {isSubmit && (
+                <ExaminationFinalResult
+                  isDisabledExit={false}
+                  examResult={{
+                    information: assessmentInfo,
+                    scored: examScored,
+                  }}
+                />
+              )}
+            </>
           )}
         </Box>
       </Box>
       <CustomModal ref={modalExaminationRef}>
-        {isExpired ? <ModalExpired /> : <ModalContent />}
+        {isExpired ? <ModalExpiredContent /> : <ModalTimeoutContent />}
       </CustomModal>
     </Box>
   );
