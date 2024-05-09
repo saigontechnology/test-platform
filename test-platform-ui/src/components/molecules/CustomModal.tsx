@@ -50,8 +50,7 @@ const CustomModal = React.forwardRef<CustomModalHandler, ICustomModal>(
                 p={2}
                 id="modal-modal-title"
                 variant="h6"
-                component="h2"
-                fontWeight="bold"
+                fontWeight={500}
               >
                 {title}
               </Typography>

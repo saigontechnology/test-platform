@@ -12,8 +12,9 @@ export const createAssessmentSchema = Yup.object({
 });
 
 export const sendAssessmentInvitationSchema = Yup.object({
-  email: Yup.string()
-    .required(VALIDATE_MESSAGE.REQUIRE_MESSAGE)
-    .email(VALIDATE_MESSAGE.WRONG_EMAIL_PATTERN)
-    .matches(EMAIL_REGEX, VALIDATE_MESSAGE.WRONG_EMAIL_PATTERN),
+  email: Yup.array().required().of(
+    Yup.string().required(VALIDATE_MESSAGE.REQUIRE_MESSAGE),
+    // .email(VALIDATE_MESSAGE.WRONG_EMAIL_PATTERN),
+    // .matches(EMAIL_REGEX, VALIDATE_MESSAGE.WRONG_EMAIL_PATTERN),
+  ),
 });

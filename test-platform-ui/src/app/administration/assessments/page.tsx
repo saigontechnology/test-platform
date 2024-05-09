@@ -1,6 +1,5 @@
 'use client';
 
-import AccordionExpandIcon from '@/components/molecules/Accordion';
 import CustomModal from '@/components/molecules/CustomModal';
 import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IAssessment } from '@/constants/assessments';
@@ -18,6 +17,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import AccordionExpandIcon from './(components)/autocompleteAddCandidate';
 
 let externalRoute = null;
 
@@ -29,13 +29,15 @@ export default function EditAssessment() {
   const rowIdValueRef = useRef<any>(null);
 
   const sendInviteForm = useForm<{
-    email: string;
+    email: string[];
   }>({
     defaultValues: {
-      email: '',
+      email: [],
     },
     resolver: yupResolver(sendAssessmentInvitationSchema),
   });
+
+  const selectedEmails = sendInviteForm.watch('email');
 
   const getAssessments = async () => {
     setLoading(true);
@@ -57,6 +59,14 @@ export default function EditAssessment() {
   useEffect(() => {
     getAssessments();
   }, []);
+
+  useEffect(() => {
+    console.log(
+      'sendInviteForm email: ',
+      sendInviteForm,
+      sendInviteForm.getValues('email'),
+    );
+  });
 
   const handleEdit = (e: React.MouseEvent, row: IAssessment) => {
     e.stopPropagation();
@@ -82,7 +92,9 @@ export default function EditAssessment() {
   };
 
   const handleSendInvite = async () => {
-    const formData = sendInviteForm.getValues();
+    const formData: {
+      email: string[];
+    } = sendInviteForm.getValues();
     const { error } = await ApiHook(Methods.POST, `/examinations/invite`, {
       data: { ...formData, assessmentId: rowIdValueRef.current },
     });
@@ -160,9 +172,11 @@ export default function EditAssessment() {
       </Box>
       <Divider className="my-10" />
       <DataTable rows={assessments} columns={columns} loading={loading} />
+
+      {/* Send invitation modal */}
       <CustomModal ref={sendInviteModalRef} title="Send Invitation">
         <FormProvider {...sendInviteForm}>
-          <Box className="grid w-[300px]">
+          <Box className="grid w-[500px]">
             <FormControl variant="standard" className="my-4">
               <AccordionExpandIcon />
             </FormControl>
@@ -170,6 +184,7 @@ export default function EditAssessment() {
               <Button
                 variant="contained"
                 onClick={sendInviteForm.handleSubmit(handleSendInvite)}
+                disabled={!selectedEmails.length}
               >
                 Send
               </Button>

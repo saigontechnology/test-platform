@@ -180,7 +180,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
                 multiline
                 maxRows={5}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.keyCode === 13) {
                     event.preventDefault();
                   }
                 }}
