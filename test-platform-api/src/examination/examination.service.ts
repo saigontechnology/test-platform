@@ -3,6 +3,7 @@ import { ExaminationStatus } from "@prisma/client";
 import { AssessmentsService } from "src/assessments/assessment.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { inviteExamination, sendResult } from "src/utils/mailer";
+import { regexEmailPattern } from "src/utils/regex";
 import { calculateExamScored } from "src/utils/scoring";
 import {
   CreateExaminationDto,
@@ -141,8 +142,12 @@ export class ExaminationsService {
     return;
   }
 
+  /** Updated:
+   *  - Send invitation to multiple candidates.
+   */
   async invite(invite: InviteDto) {
     let expireTime = null;
+    const assessmentID = invite.assessmentId;
     const periodDays = 5;
 
     await (() => {
@@ -151,16 +156,23 @@ export class ExaminationsService {
       expireTime = result;
     })();
 
-    if (expireTime) {
-      const examination = await this.prisma.examination.create({
-        data: {
-          assessmentId: invite.assessmentId,
-          email: invite.email,
-          expireUtil: expireTime,
-        },
-      });
-      await inviteExamination(invite.email, examination.id);
-    }
+    await invite.email.forEach(async (candidate: string) => {
+      // Handle email pattern:
+      if (!regexEmailPattern(candidate)) {
+        candidate = candidate + "@saigontechnology.com";
+      }
+
+      if (expireTime) {
+        const examination = await this.prisma.examination.create({
+          data: {
+            assessmentId: assessmentID,
+            email: candidate,
+            expireUtil: expireTime,
+          },
+        });
+        inviteExamination(candidate, examination.id);
+      }
+    });
     return;
   }
 
