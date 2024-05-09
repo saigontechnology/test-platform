@@ -60,14 +60,6 @@ export default function EditAssessment() {
     getAssessments();
   }, []);
 
-  useEffect(() => {
-    console.log(
-      'sendInviteForm email: ',
-      sendInviteForm,
-      sendInviteForm.getValues('email'),
-    );
-  });
-
   const handleEdit = (e: React.MouseEvent, row: IAssessment) => {
     e.stopPropagation();
     externalRoute.push(
