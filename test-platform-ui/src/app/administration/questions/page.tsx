@@ -7,6 +7,7 @@ import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IResponseQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
+import { DataContext } from '@/libs/contextStore';
 import { showNotification } from '@/libs/toast';
 import { handleMappingImportData, isStringHTML } from '@/libs/utils';
 import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
@@ -20,7 +21,7 @@ import { styled } from '@mui/material/styles';
 import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 export interface IQuestion {
   id: number;
@@ -50,6 +51,8 @@ const Page = () => {
   const router = useRouter();
   const modalRef = React.useRef<CustomModalHandler>(null);
   const [isImportLoading, setImportLoading] = useState<boolean>(false);
+
+  const { data, updateData } = useContext(DataContext);
 
   const getGridQuestion = async () => {
     setLoading(true);
@@ -284,6 +287,12 @@ const Page = () => {
             variant="contained"
             onClick={(evt: React.MouseEvent) => {
               evt.preventDefault();
+              updateData({
+                ...data,
+                pagination: {
+                  pageNum: 1,
+                },
+              });
               router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
             }}
             startIcon={<AddBox />}

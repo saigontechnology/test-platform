@@ -5,6 +5,7 @@ import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IAssessment } from '@/constants/assessments';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
+import { DataContext } from '@/libs/contextStore';
 import { showNotification } from '@/libs/toast';
 import { sendAssessmentInvitationSchema } from '@/validations/assessment';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,7 +16,7 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { GridColDef } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import AccordionExpandIcon from './(components)/autocompleteAddCandidate';
 
@@ -27,6 +28,8 @@ export default function EditAssessment() {
   const router = (externalRoute = useRouter());
   const sendInviteModalRef = useRef<any>(null);
   const rowIdValueRef = useRef<any>(null);
+
+  const { data, updateData } = useContext(DataContext);
 
   const sendInviteForm = useForm<{
     email: string[];
@@ -155,6 +158,12 @@ export default function EditAssessment() {
           variant="contained"
           onClick={(evt: React.MouseEvent) => {
             evt.preventDefault();
+            updateData({
+              ...data,
+              pagination: {
+                pageNum: 1,
+              },
+            });
             router.push(ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_CREATE);
           }}
           startIcon={<AddBox />}
