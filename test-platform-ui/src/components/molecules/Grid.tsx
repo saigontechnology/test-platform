@@ -1,5 +1,7 @@
+import { DataContext } from '@/libs/contextStore';
 import { Box, Typography } from '@mui/material';
 import { DataGrid, DataGridProps, GridToolbar } from '@mui/x-data-grid';
+import { useContext } from 'react';
 import CustomGridPagination from './CustomGridPagination';
 
 export const multipleLinesTypo = (content: string) => {
@@ -11,6 +13,8 @@ export const multipleLinesTypo = (content: string) => {
 };
 
 export default function CustomGrid(props: DataGridProps) {
+  const { data } = useContext(DataContext);
+
   return (
     <Box className="h-[60vh] w-full overflow-y-auto">
       <DataGrid
@@ -21,7 +25,10 @@ export default function CustomGrid(props: DataGridProps) {
         }}
         initialState={{
           pagination: {
-            paginationModel: { pageSize: 25 },
+            paginationModel: {
+              pageSize: 25,
+              page: data.pagination ? data.pagination.pageNum - 1 : 1,
+            },
           },
           sorting: {
             sortModel: [{ field: 'id', sort: 'desc' }],
