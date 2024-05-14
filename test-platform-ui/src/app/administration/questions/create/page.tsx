@@ -2,7 +2,11 @@
 
 import { QuestionType } from '@/libs/definitions';
 import { Box } from '@mui/material';
-import ModifyQuestion from '../(components)/modifyQuestion';
+import dynamic from 'next/dynamic';
+
+const ModifyQuestion = dynamic(() => import('../(components)/modifyQuestion'), {
+  ssr: false,
+});
 
 const CreateQuestion = () => {
   return (
@@ -13,10 +17,10 @@ const CreateQuestion = () => {
           question: '',
           description: '',
           notes: '',
+          level: '',
           categories: [],
           answers: [],
           options: [],
-          level: '',
           type: QuestionType.SINGLE_CHOICE,
         }}
       />
