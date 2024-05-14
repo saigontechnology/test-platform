@@ -45,4 +45,6 @@ const CustomDrawer = React.forwardRef<CustomDrawerHandler, ICustomDrawer>(
   },
 );
 
+CustomDrawer.displayName = 'CustomDrawer';
+
 export default CustomDrawer;
