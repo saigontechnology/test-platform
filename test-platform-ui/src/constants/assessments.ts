@@ -1,3 +1,5 @@
+import { QuestionType } from '@/libs/definitions';
+
 const Level = {
   Junior: 'Junior',
   Intermediate: 'Intermediate',
@@ -17,14 +19,6 @@ export const LevelOptions = [
     value: Level.Senior,
   },
 ];
-
-export enum QuestionType {
-  SINGLE_CHOICE = 'SINGLE_CHOICE',
-  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
-  TRUE_FALSE = 'TRUE_FALSE',
-  CODING = 'CODING',
-  LOGIC = 'LOGIC',
-}
 
 export const QuestionTypeOptions = [
   {

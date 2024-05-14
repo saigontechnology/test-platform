@@ -10,7 +10,7 @@ import { showNotification } from '@/libs/toast';
 import { sendAssessmentInvitationSchema } from '@/validations/assessment';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AddBox, Delete, ModeEdit, Send } from '@mui/icons-material';
-import { FormControl, IconButton, Typography } from '@mui/material';
+import { Chip, FormControl, IconButton, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -107,16 +107,30 @@ export default function EditAssessment() {
       width: 70,
     },
     {
+      field: 'name',
+      headerName: 'Name',
+      flex: 0.5,
+      renderCell: (params) => multipleLinesTypo(params.row.name),
+    },
+    {
       field: 'level',
       headerName: 'Level',
-      flex: 0.6,
+      flex: 0.3,
       renderCell: (params) => multipleLinesTypo(params.row.level),
     },
     {
-      field: 'name',
-      headerName: 'Name',
-      flex: 0.8,
-      renderCell: (params) => multipleLinesTypo(params.row.name),
+      field: 'categories',
+      headerName: 'Categories',
+      flex: 0.6,
+      renderCell: (params) => {
+        return (
+          <Box className="grid gap-1">
+            {params.row.categories?.map((cate: any, indx: number) => {
+              return <Chip key={`cate-${indx}`} label={cate} />;
+            })}
+          </Box>
+        );
+      },
     },
     {
       field: 'actions',

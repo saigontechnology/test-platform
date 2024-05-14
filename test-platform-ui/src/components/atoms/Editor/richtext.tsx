@@ -8,9 +8,9 @@ import {
 import React, { ElementRef, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
-import { Editor, Modules } from './quillConfig';
 
 import 'react-quill/dist/quill.snow.css';
+import { Editor, Modules } from './quillConfig';
 
 interface IRichTextArea extends ReactQuillProps {
   name: string;
@@ -19,7 +19,7 @@ interface IRichTextArea extends ReactQuillProps {
 }
 
 export default function RichTextArea(props: IRichTextArea) {
-  const { placeholder, data } = props;
+  const { placeholder, data, name } = props;
   const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { setValue } = useFormContext();
@@ -73,7 +73,7 @@ export default function RichTextArea(props: IRichTextArea) {
       }
     },
     handleSetInputValues: (editorHtml: string) => {
-      setValue('description', editorHtml);
+      setValue(name, editorHtml);
     },
   };
 

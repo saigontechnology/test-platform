@@ -1,38 +1,15 @@
-import { QuestionTypeOptions } from '@/constants/assessments';
-import {
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Typography,
-} from '@mui/material';
+import CustomRadioGroup from '@/components/molecules/CustomRadioGroup';
+import { QuestionTypes } from '@/libs/definitions';
 import { ReactElement } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
 
-const RenderQuestionType = (): ReactElement => {
-  const { control } = useFormContext();
-
+const QuestionKind = (): ReactElement => {
   return (
-    <FormControl>
-      <Typography className="font-semibold">Type</Typography>
-      <Controller
-        name="type"
-        control={control}
-        render={({ field }) => (
-          <RadioGroup row {...field}>
-            {QuestionTypeOptions.map((option) => (
-              <FormControlLabel
-                key={option.value}
-                value={option.value}
-                control={<Radio />}
-                label={option.label}
-              />
-            ))}
-          </RadioGroup>
-        )}
-      />
-    </FormControl>
+    <CustomRadioGroup
+      label={'Type'}
+      controlName={'type'}  
+      options={QuestionTypes}
+    />
   );
 };
 
-export default RenderQuestionType;
+export default QuestionKind;

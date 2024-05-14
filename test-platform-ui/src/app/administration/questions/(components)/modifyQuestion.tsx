@@ -2,14 +2,16 @@
 'use client';
 
 // import EditorUI from '@/components/atoms/CodeEditor/editorUI';
-import EditorLogic from '@/components/atoms/CodeEditor/editorLogic/editorLogic';
+import EditorLogic, {
+  EditorCode,
+} from '@/components/atoms/CodeEditor/editorLogic/editorLogic';
 import EditorUI from '@/components/atoms/CodeEditor/editorUI';
 import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
 import RichTextArea from '@/components/atoms/Editor/richtext';
-import { QuestionType } from '@/constants/assessments';
 import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
+import { QuestionType } from '@/libs/definitions';
 import { showNotification } from '@/libs/toast';
 import { isStringHTML } from '@/libs/utils';
 import { createQuestionSchema } from '@/validations/questions';
@@ -29,13 +31,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import RenderQuestionAnswers from './(question-form)/answers';
-import RenderQuestionType from './(question-form)/questionType';
+import QuestionStandard from './(question-form)/questionLevel';
+import QuestionKind from './(question-form)/questionType';
 
 export interface IQuestionInfo {
   id: number;
   question: string;
   description: string;
-  categories: string[];
+  notes?: string;
+  level: string;
+  categories: any;
   answers: number[];
   options: string[];
   type: string;
@@ -69,11 +74,16 @@ const ModifyQuestion = (props: ICreateQuestion) => {
 
   const [answerArray, setAnswerArray] = useState<IAnswer[]>(mapEditAnswer());
 
-  const form = useForm<IAddQuestion>({
+  const form = useForm<any>({
+    // interface: IAddQuestion
     defaultValues: {
-      question: questionData.question,
       description: questionData.description,
+      question: questionData.question,
       type: questionData.type,
+      categories: questionData.categories,
+      notes: questionData.notes,
+      level: questionData.level,
+      answers: questionData.answers,
     },
     resolver: yupResolver(createQuestionSchema),
   });
@@ -81,17 +91,26 @@ const ModifyQuestion = (props: ICreateQuestion) => {
   const questionType = watch('type');
 
   const previewHTMLAnswer = useMemo(() => {
+    const _answer = answerArray.find((ans) => ans.isCorrect)?.answer || '';
     return (
       <>
-        <div
+        {/* <div
           className="mt-4"
           dangerouslySetInnerHTML={{
             __html: answerArray.find((ans) => ans.isCorrect)?.answer || '',
           }}
+        /> */}
+        <EditorCode
+          language={questionData.categories}
+          value={_answer}
+          height={300}
+          width={900}
         />
       </>
     );
   }, [answerArray]);
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
     const isExistHTMLAnswer = answerArray.find((ans) =>
@@ -107,9 +126,14 @@ const ModifyQuestion = (props: ICreateQuestion) => {
       router.push(route);
     },
     handleModifiedQuestion: async (modifiedQuestion: IAddQuestion) => {
+      // Payload data:
       const formData = {
         question: modifiedQuestion.question,
         description: modifiedQuestion.description,
+        categories: modifiedQuestion.categories,
+        category: modifiedQuestion.categories[0],
+        level: modifiedQuestion.level,
+        type: modifiedQuestion.type,
         answer: answerArray
           .filter((answer) => answer.id)
           .map((answer, index) => (answer.isCorrect ? index : -1))
@@ -117,9 +141,10 @@ const ModifyQuestion = (props: ICreateQuestion) => {
         options: answerArray
           .filter((answer) => answer.id)
           .map((answer) => answer.answer),
-        category: 'React',
-        type: modifiedQuestion.type,
+        notes: modifiedQuestion.notes,
       };
+
+      // Executive handler data modified:
       if (formData.answer.length) {
         setIsSubmitLoading(true);
         const { error } = await (questionData.id
@@ -156,69 +181,11 @@ const ModifyQuestion = (props: ICreateQuestion) => {
   //#region : Create question form
   return (
     <Box>
-      <Box className="flex items-center justify-between">
-        <Typography component="h1" className={`mb-10 text-xl md:text-2xl`}>
-          {questionData.id ? 'Edit' : 'New'} Question
+      <Box className="mb-9 flex items-center justify-between">
+        <Typography component="h1" className={`w-full text-xl md:text-2xl`}>
+          {questionData.id ? 'Edit' : 'Create'} Question
         </Typography>
-      </Box>
-      <FormProvider {...form}>
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
-          className="flex flex-row"
-          onSubmit={form.handleSubmit(
-            HandleInteractions.handleModifiedQuestion,
-          )}
-        >
-          <Box className="grid basis-2/5">
-            <FormControl variant="standard" className="!w-11/12 pb-7">
-              <Typography className="font-semibold">Question</Typography>
-              <CustomTextField
-                name="question"
-                className="ring-offset-0"
-                multiline
-                maxRows={5}
-                onKeyDown={(event) => {
-                  if (event.keyCode === 13) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-            </FormControl>
-            <FormControl variant="standard" className="!w-11/12 pb-7">
-              <Typography className="font-semibold">Description</Typography>
-              <RichTextArea
-                name="description"
-                data={questionData?.description || getValues('description')}
-              />
-            </FormControl>
-          </Box>
-          <Stack className="basis-3/5 gap-7" flexDirection="column">
-            <RenderQuestionType />
-            {questionType === QuestionType.CODING ||
-            questionType === QuestionType.LOGIC ? (
-              HandleInteractions.handleRenderCoding()
-            ) : (
-              <Stack className="mx-2 my-2 gap-12" direction="row" spacing={2}>
-                <RenderQuestionAnswers
-                  questionType={questionType}
-                  renderAnswers={answerArray}
-                  handleAnswers={setAnswerArray}
-                />
-                {isExistHTMLAns ? (
-                  <Box className="w-[inherit] overflow-hidden text-ellipsis whitespace-normal">
-                    <Typography className="font-semibold">
-                      Preview Code:
-                    </Typography>
-                    {previewHTMLAnswer}
-                  </Box>
-                ) : null}
-              </Stack>
-            )}
-          </Stack>
-        </Box>
-        <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2 pt-12">
+        <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
           <Button
             color="primary"
             variant="contained"
@@ -242,6 +209,83 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             Cancel
           </Button>
         </ButtonGroup>
+      </Box>
+      <FormProvider {...form}>
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          className="flex flex-row"
+          onSubmit={form.handleSubmit(
+            HandleInteractions.handleModifiedQuestion,
+          )}
+        >
+          <Box className="basis-2/5">
+            <FormControl variant="standard" className="!w-11/12 pb-7">
+              <Typography className="font-semibold">Question</Typography>
+              <CustomTextField
+                name="question"
+                className="ring-offset-0"
+                multiline
+                maxRows={3}
+                onKeyDown={(event) => {
+                  if (event.keyCode === 13) {
+                    event.preventDefault();
+                  }
+                }}
+              />
+            </FormControl>
+            <FormControl variant="standard" className="!w-11/12 pb-7">
+              <Typography className="pb-4 font-semibold">
+                Description
+              </Typography>
+              <RichTextArea
+                name="description"
+                data={getValues('description') || questionData?.description}
+              />
+            </FormControl>
+            <FormControl variant="standard" className="!w-11/12 pb-7">
+              <Typography className="pb-4 font-semibold">
+                Notes / Explanation:
+              </Typography>
+              <RichTextArea
+                name="notes"
+                data={getValues('notes') || questionData?.notes}
+              />
+            </FormControl>
+          </Box>
+          <Stack
+            className="basis-3/5 gap-4"
+            flexDirection="column"
+            sx={{
+              borderLeft: 'solid 1px #00000024',
+              paddingLeft: 6,
+            }}
+          >
+            <QuestionStandard />
+            <QuestionKind />
+            {questionType === QuestionType.CODING ||
+            questionType === QuestionType.LOGIC ? (
+              HandleInteractions.handleRenderCoding()
+            ) : (
+              <Stack className="mx-2 my-2 gap-12" direction="row" spacing={2}>
+                <RenderQuestionAnswers
+                  questionType={questionType}
+                  renderAnswers={answerArray}
+                  handleAnswers={setAnswerArray}
+                />
+                {isExistHTMLAns ? (
+                  <Box className="w-[inherit] overflow-hidden text-ellipsis whitespace-normal">
+                    <Typography className="font-semibold">
+                      Preview Code:
+                    </Typography>
+                    {previewHTMLAnswer}
+                  </Box>
+                ) : null}
+              </Stack>
+            )}
+          </Stack>
+        </Box>
       </FormProvider>
     </Box>
   );

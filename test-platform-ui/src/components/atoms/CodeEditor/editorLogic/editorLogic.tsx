@@ -1,9 +1,57 @@
-import { Editor } from '@monaco-editor/react';
+import { Editor, useMonaco } from '@monaco-editor/react';
 import { Box } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CODE_SNIPPETS } from '../../../../constants/code-question-constants';
 import LanguageSelector from './languageSelector';
 import OutPut from './output';
+
+interface IEditorCode {
+  language?: string;
+  value: string;
+  onMount?: (editor: any) => void;
+  height?: number;
+  width?: number;
+}
+
+export const EditorCode = ({
+  language = 'javascript',
+  value,
+  onMount,
+  height = 300,
+  width = 400,
+}: IEditorCode) => {
+  const monaco = useMonaco();
+
+  useEffect(() => {
+    console.log('monaco: ', monaco?.editor);
+  }, [monaco]);
+
+  return (
+    <Box
+      className="editor-wrapper mt-4"
+      sx={{
+        width: width + 'px',
+        height: height + 'px',
+      }}
+    >
+      <Editor
+        height="100%"
+        width="inherit"
+        language={language}
+        value={value}
+        theme="vs-dark"
+        onMount={onMount}
+        options={{
+          fontSize: 14,
+          minimap: {
+            enabled: false,
+          },
+          contextmenu: false,
+        }}
+      />
+    </Box>
+  );
+};
 
 export default function EditorLogic() {
   const editorRef = useRef();
@@ -24,21 +72,7 @@ export default function EditorLogic() {
     <Box className="relative flex w-full flex-row gap-1">
       <Box className="m-4">
         <LanguageSelector language={language} onSelect={onSelect} />
-        <Editor
-          height="450px"
-          width="450px"
-          language={language}
-          value={value}
-          theme="vs-dark"
-          onMount={onMount}
-          options={{
-            fontSize: 14,
-            minimap: {
-              enabled: false,
-            },
-            contextmenu: false,
-          }}
-        />
+        <EditorCode language={language} value={value || ''} onMount={onMount} />
       </Box>
       <OutPut editorRef={editorRef} language={language} />
     </Box>

@@ -1,4 +1,4 @@
-import { QuestionType } from '@/constants/assessments';
+import { QuestionType } from '@/libs/definitions';
 import { isStringHTML } from '@/libs/utils';
 import { AddBox, Delete } from '@mui/icons-material';
 import {

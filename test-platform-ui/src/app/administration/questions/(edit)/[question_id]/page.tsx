@@ -25,9 +25,11 @@ const EditQuestion = () => {
         question: data?.question,
         description: data?.description,
         categories: new Array().concat(data?.category),
+        notes: data?.notes,
         answers: data?.answer,
         options: data?.options,
         type: data?.type,
+        level: data?.level,
       };
       setData(editQuestion);
     })();

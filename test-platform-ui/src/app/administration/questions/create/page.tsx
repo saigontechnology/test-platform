@@ -1,12 +1,6 @@
-'use client';
-
-import { QuestionType } from '@/constants/assessments';
+import { QuestionType } from '@/libs/definitions';
 import { Box } from '@mui/material';
-import dynamic from 'next/dynamic';
-
-const ModifyQuestion = dynamic(() => import('../(components)/modifyQuestion'), {
-  ssr: false,
-});
+import ModifyQuestion from '../(components)/modifyQuestion';
 
 const CreateQuestion = () => {
   return (
@@ -16,9 +10,11 @@ const CreateQuestion = () => {
           id: 0,
           question: '',
           description: '',
+          notes: '',
           categories: [],
           answers: [],
           options: [],
+          level: '',
           type: QuestionType.SINGLE_CHOICE,
         }}
       />
