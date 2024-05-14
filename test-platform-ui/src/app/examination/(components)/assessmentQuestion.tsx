@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 
-import { IQuestion, QuestionType } from '@/constants/assessments';
+import { IQuestion } from '@/constants/assessments';
+import { QuestionType } from '@/libs/definitions';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import MultipleChoice from './multipleChoice';
 import Question from './question';
