@@ -13,8 +13,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-console.log(process.env);
-
 export const inviteExamination = async (
   receiver: string,
   examinationId: number,
@@ -22,12 +20,12 @@ export const inviteExamination = async (
   await transporter.sendMail({
     from: process.env.SENDER_EMAIL,
     to: receiver,
-    subject: "Invite to do exam - via Brevo",
+    subject: "Invitation to do Technical Review Quiz",
     text: invitationTemplate(
       receiver,
       process.env.SENDER_EMAIL,
       "SaigonTechnology",
-      `${process.env.CLIENT_WEB_URL}/exam_invitation/${examinationId}`,
+      `${process.env.CLIENT_WEB_URL}/exam_invitation/${examinationId}/`,
     ),
   });
 };

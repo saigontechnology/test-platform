@@ -21,7 +21,6 @@ export class QuestionsService {
   }
 
   async update(id: number, updateQuestionDto: UpdateQuestionDto) {
-    console.log("update question: ", id, updateQuestionDto);
     return await this.prisma.question.update({
       where: { id },
       data: updateQuestionDto,

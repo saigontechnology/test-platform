@@ -13,12 +13,15 @@ model Question {
   updatedAt                 DateTime?                   @updatedAt
   question                  String
   category                  String
+  categories                String[]
   description               String
   answer                    Int[]
   options                   String[]
   type                      QuestionType                @default(SINGLE_CHOICE)
   assessmentQuestionMapping AssessmentQuestionMapping[]
   ExamAnswer                ExamAnswer[]
+  notes                     String?
+  level                     QuestionLevel               @default(JUNIOR)
 }
 
 model Assessment {
@@ -73,4 +76,11 @@ enum QuestionType {
   SINGLE_CHOICE
   MULTIPLE_CHOICE
   TRUE_FALSE
+}
+
+enum QuestionLevel {
+  JUNIOR
+  INTERMEDIATE
+  SENIOR
+  PRINCIPAL
 }

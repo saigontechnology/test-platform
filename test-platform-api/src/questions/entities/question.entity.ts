@@ -1,5 +1,5 @@
-import { Question, QuestionType } from "@prisma/client";
 import { ApiProperty } from "@nestjs/swagger";
+import { Question, QuestionLevel, QuestionType } from "@prisma/client";
 
 export class QuestionEntity implements Question {
   @ApiProperty()
@@ -8,11 +8,20 @@ export class QuestionEntity implements Question {
   @ApiProperty()
   question: string;
 
+  @ApiProperty({ enum: QuestionLevel })
+  level: QuestionLevel;
+
   @ApiProperty()
   description: string;
 
   @ApiProperty()
+  notes: string;
+
+  @ApiProperty()
   category: string;
+
+  @ApiProperty()
+  categories: string[];
 
   @ApiProperty()
   answer: number[];
