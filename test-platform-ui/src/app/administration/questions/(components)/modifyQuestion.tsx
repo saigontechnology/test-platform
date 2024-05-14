@@ -1,7 +1,5 @@
-/* eslint-disable @next/next/no-async-client-component */
 'use client';
 
-// import EditorUI from '@/components/atoms/CodeEditor/editorUI';
 import EditorLogic, {
   EditorCode,
 } from '@/components/atoms/CodeEditor/editorLogic/editorLogic';

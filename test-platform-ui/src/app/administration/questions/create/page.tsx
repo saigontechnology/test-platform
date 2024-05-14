@@ -1,3 +1,5 @@
+'use client';
+
 import { QuestionType } from '@/libs/definitions';
 import { Box } from '@mui/material';
 import ModifyQuestion from '../(components)/modifyQuestion';
