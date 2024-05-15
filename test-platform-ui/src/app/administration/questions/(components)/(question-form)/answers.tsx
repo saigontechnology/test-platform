@@ -32,7 +32,7 @@ interface IQuestionAnswers {
 
 const initialAnswer = { id: '', answer: '', isCorrect: false };
 const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
-  const { questionType, renderAnswers, handleAnswers, isModified } = props;
+  const { questionType, renderAnswers, handleAnswers } = props;
 
   const [answers, setAnswers] = useState<IAnswer[]>(
     renderAnswers.length ? renderAnswers : [initialAnswer],
