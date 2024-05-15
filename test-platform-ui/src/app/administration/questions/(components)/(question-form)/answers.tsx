@@ -19,11 +19,20 @@ interface IQuestionAnswers {
   questionType: string | undefined;
   renderAnswers: IAnswer[];
   handleAnswers: (answers: IAnswer[]) => void;
+  isModified: boolean;
 }
+
+const manualErrors = [
+  {
+    type: 'manual',
+    name: 'root',
+    message: 'Selected answer(s) is not correct',
+  },
+];
 
 const initialAnswer = { id: '', answer: '', isCorrect: false };
 const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
-  const { questionType, renderAnswers, handleAnswers } = props;
+  const { questionType, renderAnswers, handleAnswers, isModified } = props;
 
   const [answers, setAnswers] = useState<IAnswer[]>(
     renderAnswers.length ? renderAnswers : [initialAnswer],
@@ -32,6 +41,8 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   const firstTimeRender = useRef<boolean>(true);
 
   const {
+    clearErrors,
+    setError,
     formState: { errors },
   } = useFormContext();
 
@@ -79,19 +90,27 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       }
       HandleInteractions.updateStateAnswers(modifiedAnswers);
     },
-    handleSelectCorrect: (target: IAnswer) => {
-      const updatedAnswers = answers.map((answ: IAnswer) => {
-        if (answ.id === target.id) {
-          return {
-            ...answ,
-            isCorrect: !answ.isCorrect,
-          };
-        } else if (questionType === QuestionType.SINGLE_CHOICE) {
-          return { ...answ, isCorrect: false };
-        }
-        return answ;
-      });
-      HandleInteractions.updateStateAnswers(updatedAnswers);
+    handleSelectCorrect: async (target: IAnswer) => {
+      await clearErrors();
+      const correctAnsw = answers.find((answ) => answ.isCorrect);
+      console.log('correct answ: ', answers, correctAnsw, target);
+      if (correctAnsw === target) {
+        const updatedAnswers = answers.map((answ: IAnswer) => {
+          if (answ.id === target.id) {
+            return {
+              ...answ,
+              isCorrect: !answ.isCorrect,
+            };
+          } else if (questionType === QuestionType.SINGLE_CHOICE) {
+            return { ...answ, isCorrect: false };
+          }
+          return answ;
+        });
+        HandleInteractions.updateStateAnswers(updatedAnswers);
+      } else {
+        const { type, name, message } = manualErrors[0];
+        setError(name, { type, message });
+      }
     },
     handleResetAnswer: () => {
       const resetAnswersSelected = answers.map((answ) => ({
@@ -112,7 +131,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
         className="-ml-3 inline-flex w-full !flex-row items-center"
       >
         <Checkbox
-          checked={answ.isCorrect}
+          checked={isModified ? answ.isCorrect : false} // Handle question edit on the first time.
           disabled={!answ.id}
           onClick={() => HandleInteractions.handleSelectCorrect(answ)}
         />

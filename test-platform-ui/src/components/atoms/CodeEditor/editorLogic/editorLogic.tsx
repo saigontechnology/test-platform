@@ -1,3 +1,5 @@
+'use client';
+
 import { Editor, useMonaco } from '@monaco-editor/react';
 import { Box } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
@@ -14,7 +16,7 @@ interface IEditorCode {
 }
 
 export const EditorCode = ({
-  language = 'javascript',
+  language = 'html',
   value,
   onMount,
   height = 300,
@@ -23,7 +25,12 @@ export const EditorCode = ({
   const monaco = useMonaco();
 
   useEffect(() => {
-    console.log('monaco: ', monaco?.editor);
+    // do conditional chaining
+    // monaco?.languages.typescript.javascriptDefaults.setEagerModelSync(true);
+    // or make sure that it exists by other ways
+    if (monaco) {
+      console.log('here is the monaco instance:', monaco);
+    }
   }, [monaco]);
 
   return (

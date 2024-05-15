@@ -11,7 +11,7 @@ import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { QuestionType } from '@/libs/definitions';
 import { showNotification } from '@/libs/toast';
-import { isStringHTML } from '@/libs/utils';
+import { decodeHtml, isStringHTML } from '@/libs/utils';
 import { createQuestionSchema } from '@/validations/questions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -42,6 +42,7 @@ export interface IQuestionInfo {
   answers: number[];
   options: string[];
   type: string;
+  isModified: boolean;
 }
 
 interface ICreateQuestion {
@@ -90,6 +91,8 @@ const ModifyQuestion = (props: ICreateQuestion) => {
 
   const previewHTMLAnswer = useMemo(() => {
     const _answer = answerArray.find((ans) => ans.isCorrect)?.answer || '';
+    const decodedHTML = decodeHtml(_answer);
+
     return (
       <>
         {/* <div
@@ -99,8 +102,8 @@ const ModifyQuestion = (props: ICreateQuestion) => {
           }}
         /> */}
         <EditorCode
-          language={questionData.categories}
-          value={_answer}
+          language={'html'}
+          value={decodedHTML}
           height={300}
           width={900}
         />
@@ -140,6 +143,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
           .filter((answer) => answer.id)
           .map((answer) => answer.answer),
         notes: modifiedQuestion.notes,
+        isModified: true,
       };
 
       // Executive handler data modified:
@@ -271,6 +275,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
                   questionType={questionType}
                   renderAnswers={answerArray}
                   handleAnswers={setAnswerArray}
+                  isModified={questionData.isModified || false}
                 />
                 {isExistHTMLAns ? (
                   <Box className="w-[inherit] overflow-hidden text-ellipsis whitespace-normal">

@@ -5,22 +5,53 @@ import {
   convertBase64,
   resize_base64,
 } from '@/libs/utils';
-import React, { ElementRef, useMemo } from 'react';
+import hljs from 'highlight.js';
+import dynamic from 'next/dynamic';
+import React, { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
-
-import 'react-quill/dist/quill.snow.css';
 import { Editor, Modules } from './quillConfig';
+
+import 'highlight.js/styles/atom-one-dark-reasonable.css';
+import 'react-quill/dist/quill.snow.css';
 
 interface IRichTextArea extends ReactQuillProps {
   name: string;
   placeholder?: string;
   data?: string;
 }
+interface CustomQuillProps extends ReactQuill.ReactQuillProps {
+  hookRef: (ref: ReactQuill | null) => void;
+}
 
+/** Dynamic import ReactQuill, with Hightlight Js configuration: */
+const CustomReactQuill = dynamic(
+  async () => {
+    hljs.configure({
+      // optionally configure hljs
+      languages: ['javascript', 'typescript', 'html', 'css', 'python'],
+    });
+    // @ts-ignore
+    window.hljs = hljs;
+    const { default: RQ } = await import('react-quill');
+
+    return function ReactQuillHoc(props: CustomQuillProps) {
+      const { hookRef, ...rest } = props;
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      return <RQ ref={hookRef} {...{ ...rest }} />;
+    };
+  },
+  {
+    ssr: false,
+    loading: () => <div>Loading...</div>,
+  },
+);
+
+/** Main module content: */
 export default function RichTextArea(props: IRichTextArea) {
   const { placeholder, data, name } = props;
-  const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
+  // const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
+  let quillRef: ReactQuill | null = null;
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { setValue } = useFormContext();
 
@@ -56,11 +87,11 @@ export default function RichTextArea(props: IRichTextArea) {
       return result_resize;
     },
     handleEmbedImage: (compressedImage: string) => {
-      if (!quillRef.current) {
+      if (!quillRef) {
         return;
       }
-      const editor = quillRef.current?.getEditor() as ReturnType<
-          typeof quillRef.current.getEditor
+      const editor = quillRef?.getEditor() as ReturnType<
+          typeof quillRef.getEditor
         >,
         range = editor.getSelection(true);
 
@@ -90,15 +121,15 @@ export default function RichTextArea(props: IRichTextArea) {
 
   return (
     <>
-      <ReactQuill
-        ref={quillRef}
+      <CustomReactQuill
+        hookRef={(ref: ReactQuill | null) => ref && (quillRef = ref)}
         theme="snow"
-        onChange={(val) => Handlers.handleSetInputValues(val)}
         value={data}
         modules={QuillModules}
-        formats={Editor.formats}
+        onChange={(val) => Handlers.handleSetInputValues(val)}
         bounds={'.app'}
         placeholder={placeholder}
+        formats={Editor.formats}
       />
       <input
         ref={inputRef}

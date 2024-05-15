@@ -8,6 +8,7 @@ import { IResponseQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { DataContext } from '@/libs/contextStore';
+import { QuestionLevel } from '@/libs/definitions';
 import { showNotification } from '@/libs/toast';
 import { handleMappingImportData, isStringHTML } from '@/libs/utils';
 import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
@@ -161,22 +162,38 @@ const Page = () => {
       renderCell: (params) => multipleLinesTypo(params.row.title),
     },
     {
-      field: 'content',
-      headerName: 'Question Content',
-      flex: 0.8,
+      field: 'level',
+      headerName: 'Standard',
+      flex: 0.3,
       renderCell: (params) => {
-        if (isStringHTML(params.row.content)) {
-          return (
-            <Box
-              className="h-[150px] w-[350px] overflow-hidden text-ellipsis whitespace-normal"
-              dangerouslySetInnerHTML={{ __html: params.row.content }}
-            />
-          );
-        } else {
-          return multipleLinesTypo(params.row.content);
-        }
+        const level = QuestionLevel.find(
+          (lvl) => lvl.value === params.row.level,
+        );
+        console.log('level: ', level);
+        return (
+          <Box className="grid gap-1">
+            {level ? <Chip label={level?.label} /> : null}
+          </Box>
+        );
       },
     },
+    // {
+    //   field: 'content',
+    //   headerName: 'Question Content',
+    //   flex: 0.8,
+    //   renderCell: (params) => {
+    //     if (isStringHTML(params.row.content)) {
+    //       return (
+    //         <Box
+    //           className="h-[150px] w-[350px] overflow-hidden text-ellipsis whitespace-normal"
+    //           dangerouslySetInnerHTML={{ __html: params.row.content }}
+    //         />
+    //       );
+    //     } else {
+    //       return multipleLinesTypo(params.row.content);
+    //     }
+    //   },
+    // },
     {
       field: 'categories',
       headerName: 'Categories',
@@ -193,9 +210,9 @@ const Page = () => {
     },
     {
       field: 'answers',
-      headerName: 'Answers',
+      headerName: 'Correct answer',
       sortable: false,
-      flex: 1,
+      flex: 0.7,
       disableColumnMenu: true,
       renderCell: (params) => {
         return (
@@ -206,17 +223,21 @@ const Page = () => {
               ) : (
                 answ
               );
-              return (
-                <Chip
-                  className={clsx('w-fit max-w-sm', {
-                    'bg-blue-500 text-white':
-                      params.row.answers?.includes(indx),
-                  })}
-                  key={`answer-${indx}`}
-                  label={_answ}
-                  variant="outlined"
-                />
-              );
+              if (params.row.answers?.includes(indx)) {
+                return (
+                  <Chip
+                    className={clsx('w-fit max-w-sm', {
+                      'bg-blue-500 text-white':
+                        params.row.answers?.includes(indx),
+                    })}
+                    key={`answer-${indx}`}
+                    label={_answ}
+                    variant="outlined"
+                  />
+                );
+              } else {
+                return null;
+              }
             })}
           </Box>
         );
@@ -305,7 +326,7 @@ const Page = () => {
       <DataTable
         rows={questionList}
         columns={columns}
-        rowHeight={170}
+        // rowHeight={170}
         loading={loading}
       />
       <CustomModal ref={modalRef} title={''}>
