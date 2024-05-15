@@ -123,7 +123,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
         className="-ml-3 inline-flex w-full !flex-row items-center"
       >
         <Checkbox
-          checked={isModified ? answ.isCorrect : false} // Handle question edit on the first time.
+          checked={answ.isCorrect} // Handle question edit on the first time.
           disabled={!answ.id}
           onClick={() => HandleInteractions.handleSelectCorrect(answ)}
         />
