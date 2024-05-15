@@ -37,4 +37,7 @@ export class QuestionEntity implements Question {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty()
+  isModified: boolean;
 }

@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { QuestionLevel, QuestionType } from "@prisma/client";
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -51,4 +52,9 @@ export class UpdateQuestionDto {
   @ApiProperty({ required: true, enum: QuestionLevel })
   @IsEnum(QuestionLevel)
   level: QuestionLevel;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  @ApiProperty({ required: true, type: Boolean })
+  isModified: boolean;
 }
