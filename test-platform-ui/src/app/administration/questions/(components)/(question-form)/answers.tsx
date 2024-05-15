@@ -41,8 +41,8 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   const firstTimeRender = useRef<boolean>(true);
 
   const {
-    clearErrors,
-    setError,
+    // clearErrors,
+    // setError,
     formState: { errors },
   } = useFormContext();
 
@@ -91,26 +91,18 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       HandleInteractions.updateStateAnswers(modifiedAnswers);
     },
     handleSelectCorrect: async (target: IAnswer) => {
-      await clearErrors();
-      const correctAnsw = answers.find((answ) => answ.isCorrect);
-      console.log('correct answ: ', answers, correctAnsw, target);
-      if (correctAnsw === target) {
-        const updatedAnswers = answers.map((answ: IAnswer) => {
-          if (answ.id === target.id) {
-            return {
-              ...answ,
-              isCorrect: !answ.isCorrect,
-            };
-          } else if (questionType === QuestionType.SINGLE_CHOICE) {
-            return { ...answ, isCorrect: false };
-          }
-          return answ;
-        });
-        HandleInteractions.updateStateAnswers(updatedAnswers);
-      } else {
-        const { type, name, message } = manualErrors[0];
-        setError(name, { type, message });
-      }
+      const updatedAnswers = answers.map((answ: IAnswer) => {
+        if (answ.id === target.id) {
+          return {
+            ...answ,
+            isCorrect: !answ.isCorrect,
+          };
+        } else if (questionType === QuestionType.SINGLE_CHOICE) {
+          return { ...answ, isCorrect: false };
+        }
+        return answ;
+      });
+      HandleInteractions.updateStateAnswers(updatedAnswers);
     },
     handleResetAnswer: () => {
       const resetAnswersSelected = answers.map((answ) => ({
