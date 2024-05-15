@@ -22,13 +22,13 @@ interface IQuestionAnswers {
   isModified: boolean;
 }
 
-const manualErrors = [
-  {
-    type: 'manual',
-    name: 'root',
-    message: 'Selected answer(s) is not correct',
-  },
-];
+// const manualErrors = [
+//   {
+//     type: 'manual',
+//     name: 'root',
+//     message: 'Selected answer(s) is not correct',
+//   },
+// ];
 
 const initialAnswer = { id: '', answer: '', isCorrect: false };
 const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
