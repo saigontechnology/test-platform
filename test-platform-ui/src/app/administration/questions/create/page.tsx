@@ -22,6 +22,7 @@ const CreateQuestion = () => {
           answers: [],
           options: [],
           type: QuestionType.SINGLE_CHOICE,
+          isModified: true,
         }}
       />
     </Box>

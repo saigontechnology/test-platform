@@ -50,4 +50,5 @@ export interface IResponseQuestion {
   answer: number[];
   options: string[];
   type: string;
+  isModified: boolean;
 }

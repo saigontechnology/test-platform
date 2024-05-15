@@ -30,6 +30,7 @@ const EditQuestion = () => {
         options: data?.options,
         type: data?.type,
         level: data?.level,
+        isModified: data?.isModified,
       };
       setData(editQuestion);
     })();
