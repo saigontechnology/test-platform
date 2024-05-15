@@ -129,3 +129,9 @@ const MappingDataX = async (data: IMappingDataX, tempoTitle: string) => {
   return mappedQuestion;
 };
 //#endregion : Private functions
+
+export function decodeHtml(html: string) {
+  var txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+}

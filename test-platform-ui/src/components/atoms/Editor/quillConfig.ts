@@ -1,3 +1,5 @@
+import hljs from 'highlight.js';
+
 export const Editor = {
   /*
    * Quill editor formats
@@ -18,6 +20,7 @@ export const Editor = {
     'link',
     'image',
     'video',
+    'code-block',
   ],
 };
 //#endregion
@@ -26,7 +29,15 @@ export const Editor = {
  * @param customize is a objects of personal customize
  * @returns
  */
+
+hljs.configure({
+  languages: ['javascript', 'ruby', 'python', 'rust'],
+});
+
 export const Modules = {
+  syntax: {
+    highlight: (text: string) => hljs.highlightAuto(text).value,
+  },
   toolbar: {
     container: [
       [{ header: '1' }, { header: '2' }],
@@ -37,7 +48,7 @@ export const Modules = {
         { indent: '-1' },
         { indent: '+1' },
       ],
-      ['image'],
+      ['image', 'code-block'],
     ],
     handlers: {},
   },

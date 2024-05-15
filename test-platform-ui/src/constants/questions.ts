@@ -35,6 +35,7 @@ export interface IAddQuestion {
   type: string;
   question: string;
   notes: string;
+  isModified: boolean;
 }
 
 export interface IResponseQuestion {
