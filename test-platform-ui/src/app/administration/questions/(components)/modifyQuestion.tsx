@@ -8,15 +8,14 @@ import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
-import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { QuestionType } from '@/libs/definitions';
-import { showNotification } from '@/libs/toast';
 import { decodeHtml, isStringHTML } from '@/libs/utils';
 import { createQuestionSchema } from '@/validations/questions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import {
+  Alert,
   Box,
   Button,
   ButtonGroup,
@@ -55,20 +54,31 @@ export interface IAnswer {
   isCorrect: boolean;
 }
 
-const ModifyQuestion = (props: ICreateQuestion) => {
+const manualErrors = [
+  {
+    type: 'manual',
+    name: 'answers',
+    message:
+      'Selected answer(s) is not default correct answer(s). Please add explanation incase you ensure selected is correct answer(s) !',
+  },
+];
+
+export default function ModifyQuestion(props: ICreateQuestion) {
   const { questionData } = props;
   const router = useRouter();
   const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
   const [isExistHTMLAns, setIsExistHTMLAns] = useState<boolean>(false);
+  const [isValidAnswer, setIsValidAnswer] = useState<boolean>(false);
 
   const mapEditAnswer = () => {
     const { options, answers } = questionData;
-
-    return options.map((option: string, index: number) => ({
+    const mappedOpts = options.map((option: string, index: number) => ({
       id: uuidv4(),
       answer: option,
       isCorrect: answers.includes(index),
     }));
+
+    return mappedOpts;
   };
 
   const [answerArray, setAnswerArray] = useState<IAnswer[]>(mapEditAnswer());
@@ -86,8 +96,15 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     },
     resolver: yupResolver(createQuestionSchema),
   });
-  const { setError, watch, getValues } = form;
+  const {
+    clearErrors,
+    setError,
+    watch,
+    getValues,
+    formState: { isValid, errors },
+  } = form;
   const questionType = watch('type');
+  const notes = watch('notes');
 
   const previewHTMLAnswer = useMemo(() => {
     const _answer = answerArray.find((ans) => ans.isCorrect)?.answer || '';
@@ -111,18 +128,36 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     );
   }, [answerArray]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log('isValid: ', isValid, getValues(), errors);
+  });
 
   useEffect(() => {
     const isExistHTMLAnswer = answerArray.find((ans) =>
       isStringHTML(ans.answer),
     );
     setIsExistHTMLAns(isExistHTMLAnswer ? true : false);
+
+    // Validate selected answer(s):
+    const originalAnswers = questionData.answers.sort().join(',');
+
+    const selectedAnswers = answerArray
+      .map((a, i) => (a.isCorrect ? i : null))
+      .filter((a) => typeof a === 'number')
+      .sort()
+      .join(',');
+
+    console.log('answer change', originalAnswers, selectedAnswers);
+
+    setIsValidAnswer(originalAnswers === selectedAnswers);
   }, [answerArray]);
 
   //#region : Handle interactive functions
   const HandleInteractions = {
-    handleQuestionContentChange: () => {},
+    handleAnswerChange: (answers: IAnswer[]) => {
+      setAnswerArray(answers);
+    },
+    // handleQuestionContentChange: () => {},
     handleRedirect: (route: string) => {
       router.push(route);
     },
@@ -146,27 +181,29 @@ const ModifyQuestion = (props: ICreateQuestion) => {
         isModified: true,
       };
 
+      console.log('formData: ', formData);
+
       // Executive handler data modified:
-      if (formData.answer.length) {
-        setIsSubmitLoading(true);
-        const { error } = await (questionData.id
-          ? ApiHook(Methods.PUT, `/questions/${questionData.id}`, {
-              data: formData,
-            })
-          : ApiHook(Methods.POST, '/questions', {
-              data: formData,
-            }));
-        setIsSubmitLoading(false);
-        if (!error) {
-          showNotification('Upsert question successfully', 'success');
-          HandleInteractions.handleRedirect(ROUTE_KEY.ADMINISTRATION_QUESTIONS);
-        }
-      } else {
-        setError('root', {
-          type: 'minLength',
-          message: 'At least one checkbox has been checked',
-        });
-      }
+      // if (formData.answer.length) {
+      //   setIsSubmitLoading(true);
+      //   const { error } = await (questionData.id
+      //     ? ApiHook(Methods.PUT, `/questions/${questionData.id}`, {
+      //         data: formData,
+      //       })
+      //     : ApiHook(Methods.POST, '/questions', {
+      //         data: formData,
+      //       }));
+      //   setIsSubmitLoading(false);
+      //   if (!error) {
+      //     showNotification('Upsert question successfully', 'success');
+      //     HandleInteractions.handleRedirect(ROUTE_KEY.ADMINISTRATION_QUESTIONS);
+      //   }
+      // } else {
+      //   setError('root', {
+      //     type: 'minLength',
+      //     message: 'At least one checkbox has been checked',
+      //   });
+      // }
     },
     handleRenderCoding: (): JSX.Element => {
       if (questionType === QuestionType.CODING) {
@@ -179,6 +216,20 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     },
   };
   //#endregion
+
+  const isDisabledSubmit = (): boolean => {
+    const d = document.createElement('div');
+    d.innerHTML = notes;
+    const textContent = d.textContent || d.innerText;
+
+    console.log('isDisabledSubmit: ', textContent, textContent.length);
+    return (
+      !isValid ||
+      (!isValidAnswer && !textContent?.length) ||
+      isSubmitLoading ||
+      questionType == QuestionType.CODING
+    );
+  };
 
   //#region : Create question form
   return (
@@ -195,7 +246,7 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             onClick={form.handleSubmit(
               HandleInteractions.handleModifiedQuestion,
             )}
-            disabled={isSubmitLoading || questionType == QuestionType.CODING}
+            disabled={isDisabledSubmit()}
           >
             Submit
           </Button>
@@ -270,22 +321,27 @@ const ModifyQuestion = (props: ICreateQuestion) => {
             questionType === QuestionType.LOGIC ? (
               HandleInteractions.handleRenderCoding()
             ) : (
-              <Stack className="mx-2 my-2 gap-12" direction="row" spacing={2}>
-                <RenderQuestionAnswers
-                  questionType={questionType}
-                  renderAnswers={answerArray}
-                  handleAnswers={setAnswerArray}
-                  isModified={questionData.isModified || false}
-                />
-                {isExistHTMLAns ? (
-                  <Box className="w-[inherit] overflow-hidden text-ellipsis whitespace-normal">
-                    <Typography className="font-semibold">
-                      Preview Code:
-                    </Typography>
-                    {previewHTMLAnswer}
-                  </Box>
+              <>
+                <Stack className="mx-2 my-2 gap-12" direction="row" spacing={2}>
+                  <RenderQuestionAnswers
+                    questionType={questionType}
+                    renderAnswers={answerArray}
+                    handleAnswers={HandleInteractions.handleAnswerChange}
+                    error={errors['answers'] as any}
+                  />
+                  {isExistHTMLAns ? (
+                    <Box className="w-[inherit] overflow-hidden text-ellipsis whitespace-normal">
+                      <Typography className="font-semibold">
+                        Preview Code:
+                      </Typography>
+                      {previewHTMLAnswer}
+                    </Box>
+                  ) : null}
+                </Stack>
+                {!isValidAnswer ? (
+                  <Alert severity="error">{manualErrors[0]?.message}</Alert>
                 ) : null}
-              </Stack>
+              </>
             )}
           </Stack>
         </Box>
@@ -293,6 +349,4 @@ const ModifyQuestion = (props: ICreateQuestion) => {
     </Box>
   );
   //#endregion
-};
-
-export default ModifyQuestion;
+}

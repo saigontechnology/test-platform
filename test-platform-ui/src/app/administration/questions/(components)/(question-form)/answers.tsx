@@ -19,20 +19,17 @@ interface IQuestionAnswers {
   questionType: string | undefined;
   renderAnswers: IAnswer[];
   handleAnswers: (answers: IAnswer[]) => void;
-  isModified: boolean;
+  error?:
+    | {
+        type: string;
+        message: string;
+      }
+    | any;
 }
-
-// const manualErrors = [
-//   {
-//     type: 'manual',
-//     name: 'root',
-//     message: 'Selected answer(s) is not correct',
-//   },
-// ];
 
 const initialAnswer = { id: '', answer: '', isCorrect: false };
 const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
-  const { questionType, renderAnswers, handleAnswers } = props;
+  const { questionType, renderAnswers, handleAnswers, error } = props;
 
   const [answers, setAnswers] = useState<IAnswer[]>(
     renderAnswers.length ? renderAnswers : [initialAnswer],
@@ -41,8 +38,6 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   const firstTimeRender = useRef<boolean>(true);
 
   const {
-    // clearErrors,
-    // setError,
     formState: { errors },
   } = useFormContext();
 
@@ -90,7 +85,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       }
       HandleInteractions.updateStateAnswers(modifiedAnswers);
     },
-    handleSelectCorrect: async (target: IAnswer) => {
+    handleSelectCorrect: (target: IAnswer) => {
       const updatedAnswers = answers.map((answ: IAnswer) => {
         if (answ.id === target.id) {
           return {
@@ -123,7 +118,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
         className="-ml-3 inline-flex w-full !flex-row items-center"
       >
         <Checkbox
-          checked={answ.isCorrect} // Handle question edit on the first time.
+          checked={answ.isCorrect}
           disabled={!answ.id}
           onClick={() => HandleInteractions.handleSelectCorrect(answ)}
         />
@@ -165,8 +160,10 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
     <FormGroup className="gap-4">
       <Typography className="font-semibold">Options</Typography>
       {answers.map(renderAnswer)}
-      {errors.root ? (
-        <FormHelperText error>{errors.root.message}</FormHelperText>
+      {errors.root || error ? (
+        <FormHelperText error>
+          {errors?.root?.message || error?.message}
+        </FormHelperText>
       ) : null}
     </FormGroup>
   );
