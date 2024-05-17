@@ -66,7 +66,7 @@ const manualErrors = [
 export default function ModifyQuestion(props: ICreateQuestion) {
   const { questionData } = props;
   const router = useRouter();
-  const [isSubmitLoading] = useState<boolean>(false);
+  // const [isSubmitLoading] = useState<boolean>(false);
   const [isExistHTMLAns, setIsExistHTMLAns] = useState<boolean>(false);
   const [isValidAnswer, setIsValidAnswer] = useState<boolean>(false);
 
@@ -102,7 +102,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
     formState: { isValid, errors },
   } = form;
   const questionType = watch('type');
-  const notes = watch('notes');
+  // const notes = watch('notes');
 
   const previewHTMLAnswer = useMemo(() => {
     const _answer = answerArray.find((ans) => ans.isCorrect)?.answer || '';
@@ -216,17 +216,18 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   //#endregion
 
   const isDisabledSubmit = (): boolean => {
-    const d = document.createElement('div');
-    d.innerHTML = notes;
-    const textContent = d.textContent || d.innerText;
+    // const d = document.createElement('div');
+    // d.innerHTML = notes;
+    // const textContent = d.textContent || d.innerText;
 
-    console.log('isDisabledSubmit: ', textContent, textContent.length);
-    return (
-      !isValid ||
-      (!isValidAnswer && !textContent?.length) ||
-      isSubmitLoading ||
-      questionType == QuestionType.CODING
-    );
+    // console.log('isDisabledSubmit: ', textContent, textContent.length);
+    // return (
+    //   !isValid ||
+    //   (!isValidAnswer && !textContent?.length) ||
+    //   isSubmitLoading ||
+    //   questionType == QuestionType.CODING
+    // );
+    return true;
   };
 
   //#region : Create question form
