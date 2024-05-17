@@ -1,3 +1,5 @@
+'use client';
+
 export const calc_image_size_base64 = (image: string) => {
   let y = 1;
   if (image.endsWith('==')) {
