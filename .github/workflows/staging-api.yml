@@ -1,0 +1,16 @@
+on:
+  pull_request:
+  push:
+    branches: [staging]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy staging API
+        # Only run this step if the branch is staging
+        if: github.ref == 'refs/heads/staging'
+        env:
+          deploy_url: https://api.render.com/deploy/srv-cp3gc3o21fec73b6sjtg?key=XbJTYJGIaz0
+        run: |
+          curl "$deploy_url"
