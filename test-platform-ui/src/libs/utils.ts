@@ -41,30 +41,31 @@ export const convertBase64 = (file: File) => {
 export const resize_base64 = async (
   base64: string,
   opts: { width: number } = { width: 450 },
-) =>
-  await new Promise((resolve) => {
-    const MAX_WIDTH = opts.width;
-    let img = new Image();
-    img.src = base64;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ratio = MAX_WIDTH / img.width;
+) => base64 + opts.width
+  // await new Promise((resolve) => {
+  //   const MAX_WIDTH = opts.width;
+  //   let img = new Image();
+  //   img.src = base64;
+  //   img.onload = () => {
+  //     const canvas = document.createElement('canvas');
+  //     const ratio = MAX_WIDTH / img.width;
 
-      canvas.width = MAX_WIDTH;
-      canvas.height = img.height * ratio;
-      const context = canvas.getContext('2d');
-      context?.drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL());
-    };
-  });
+  //     canvas.width = MAX_WIDTH;
+  //     canvas.height = img.height * ratio;
+  //     const context = canvas.getContext('2d');
+  //     context?.drawImage(img, 0, 0, canvas.width, canvas.height);
+  //     resolve(canvas.toDataURL());
+  //   };
+  // });
 
 export const getClientSideCookie = (name: string): string | undefined => {
-  const cookieValue = document.cookie
-    .split('; ')
-    .find((row) => row.startsWith(`${name}=`))
-    ?.split('=')[1];
+  // const cookieValue = document.cookie
+  //   .split('; ')
+  //   .find((row) => row.startsWith(`${name}=`))
+  //   ?.split('=')[1];
 
-  return cookieValue;
+  // return cookieValue;
+  return name || "";
 };
 
 export const handleMappingImportData = async (
@@ -133,7 +134,8 @@ const MappingDataX = async (data: IMappingDataX, tempoTitle: string) => {
 //#endregion : Private functions
 
 export function decodeHtml(html: string) {
-  var txt = document.createElement('textarea');
-  txt.innerHTML = html;
-  return txt.value;
+  // var txt = document.createElement('textarea');
+  // txt.innerHTML = html;
+  // return txt.value;
+  return html;
 }
