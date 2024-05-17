@@ -27,6 +27,9 @@ export class QuestionEntity implements Question {
   answer: number[];
 
   @ApiProperty()
+  duration: number;
+
+  @ApiProperty()
   options: string[];
 
   @ApiProperty({ enum: QuestionType })
