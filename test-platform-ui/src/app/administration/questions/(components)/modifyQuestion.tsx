@@ -66,7 +66,7 @@ const manualErrors = [
 export default function ModifyQuestion(props: ICreateQuestion) {
   const { questionData } = props;
   const router = useRouter();
-  const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
+  const [isSubmitLoading] = useState<boolean>(false);
   const [isExistHTMLAns, setIsExistHTMLAns] = useState<boolean>(false);
   const [isValidAnswer, setIsValidAnswer] = useState<boolean>(false);
 
@@ -97,8 +97,6 @@ export default function ModifyQuestion(props: ICreateQuestion) {
     resolver: yupResolver(createQuestionSchema),
   });
   const {
-    clearErrors,
-    setError,
     watch,
     getValues,
     formState: { isValid, errors },

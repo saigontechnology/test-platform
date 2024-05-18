@@ -1,0 +1,16 @@
+on:
+  pull_request:
+  push:
+    branches: [dev]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy dev API
+        # Only run this step if the branch is dev
+        if: github.ref == 'refs/heads/dev'
+        env:
+          deploy_url: https://api.render.com/deploy/srv-cmie7gq1hbls738egn90?key=F1jpdkbneG0
+        run: |
+          curl "$deploy_url"
