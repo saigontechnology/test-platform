@@ -29,7 +29,6 @@
     "autoprefixer": "10.4.15",
     "axios": "^1.6.5",
     "axios-retry": "^4.0.0",
-    "canvas": "^2.11.2",
     "clsx": "^2.0.0",
     "code-execution-engine": "^0.4.6",
     "highlight.js": "^11.9.0",

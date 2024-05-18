@@ -187,4 +187,38 @@ export class ExaminationsService {
     });
     return;
   }
+
+  async findAllExaminationsByAssessmentId(assessmentId: number) {
+    return await this.prisma.examination.findMany({
+      select: {
+        id: true,
+        email: true,
+        score: true,
+        status: true,
+        createdAt: true,
+        active: true,
+        assessment: {
+          select: {
+            name: true,
+            level: true,
+          },
+        },
+        expireUtil: true,
+        submittedAnswers: {
+          select: {
+            question: {
+              select: {
+                question: true,
+                options: true,
+              },
+            },
+            selections: true,
+          },
+        },
+      },
+      where: {
+        assessmentId,
+      },
+    });
+  }
 }

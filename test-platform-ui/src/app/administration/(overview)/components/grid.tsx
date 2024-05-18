@@ -1,8 +1,9 @@
 'use client';
 
+import DashboardCard from '@/app/administration/(overview)/components/dashboardCard';
 import LinearProgressBar from '@/components/atoms/LinearProgressBar';
-import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
-import { IExamination } from '@/constants/assessments';
+import { multipleLinesTypo } from '@/components/molecules/Grid';
+import { IAssessment, IExamination } from '@/constants/assessments';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { Chip } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
@@ -26,6 +27,7 @@ interface IExamResults {
 export default function DashboardGrid() {
   const [isLoading, toggleLoading] = useState<boolean>(false);
   const [examsInfo, setExamsInfo] = useState<Array<IExamResults>>([]);
+  const [assessments, setAssessments] = useState<IAssessment[]>([]);
 
   const getStatus = (type: string) => {
     return {
@@ -35,7 +37,7 @@ export default function DashboardGrid() {
     }[type];
   };
 
-  const GetExaminations = async () => {
+  const getExaminations = async () => {
     toggleLoading(true);
     const response = await ApiHook(Methods.GET, '/examinations');
     const examinationsInfo: IExamResults[] = (
@@ -58,8 +60,8 @@ export default function DashboardGrid() {
             _status === 'Processing'
               ? 'warning'
               : _status === 'Completed'
-              ? 'info'
-              : 'error',
+                ? 'info'
+                : 'error',
         },
       };
     });
@@ -67,8 +69,17 @@ export default function DashboardGrid() {
     setExamsInfo(examinationsInfo);
   };
 
+  const getAssessement = async () => {
+    toggleLoading(true);
+    const response: any = await ApiHook(Methods.GET, '/assessments');
+    setAssessments(response.data);
+    console.log(response.data);
+    toggleLoading(false);
+  };
+
   useEffect(() => {
-    GetExaminations();
+    // getExaminations();
+    getAssessement();
   }, []);
 
   const columns: GridColDef[] = [
@@ -138,5 +149,20 @@ export default function DashboardGrid() {
     },
   ];
 
-  return <DataTable columns={columns} rows={examsInfo} loading={isLoading} />;
+  return (
+    <div className="col-span-2 grid grid-cols-2 gap-4 rounded">
+      {assessments.map((assessment) => {
+        return (
+          <DashboardCard
+            name={assessment.name}
+            level={assessment.level}
+            questions={assessment.assessmentQuestionMapping.length}
+            duration="25 mins"
+            status="active"
+          />
+        );
+      })}
+    </div>
+  );
+  // <DataTable columns={columns} rows={examsInfo} loading={isLoading} />;
 }

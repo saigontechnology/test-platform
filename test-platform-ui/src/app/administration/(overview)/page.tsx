@@ -3,13 +3,11 @@ import DashboardGrid from './components/grid';
 
 export default async function Page() {
   return (
-    <Box>
+    <Box className="bg-white p-4">
       <Box className="flex items-center justify-between">
-        <Typography component="h1" className={`text-xl md:text-2xl`}>
-          Dashboard
-        </Typography>
+        <Typography component="h1">Dashboard</Typography>
       </Box>
-      <Divider className="my-10" />
+      <Divider className="my-4" />
       <DashboardGrid />
     </Box>
   );

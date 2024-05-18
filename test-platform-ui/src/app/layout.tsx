@@ -1,4 +1,4 @@
-import { inter } from '@/styles/fonts';
+import { openSans } from '@/styles/fonts';
 import '@/styles/global.css';
 import { ThemeProvider } from '@mui/material';
 import { StyledEngineProvider } from '@mui/material/styles';
@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <title>Saigon Technology - Test Platform</title>
-      <body id="root" className={`${inter.className} antialiased`}>
+      <body id="root" className={`${openSans.className} antialiased`}>
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={themeCustom}>{children}</ThemeProvider>
           <ToastContainer />
