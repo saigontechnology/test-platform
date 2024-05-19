@@ -47,6 +47,7 @@ const links: IMainLink[] = [
 
 export default function NavLinks() {
   const pathname = usePathname();
+
   const handleRenderLink = (link: IMainLink, isShowSublinks?: boolean) => {
     const LinkIcon = link.icon;
     return (
@@ -54,8 +55,8 @@ export default function NavLinks() {
         key={link.name}
         href={link.href}
         className={clsx(
-          'hover:text-primary flex items-center justify-center gap-4 rounded-md p-4 text-sm',
-          pathname === link.href ? 'text-primary' : 'text-white',
+          'flex items-center justify-center gap-4 rounded-md p-4 text-sm hover:text-primary',
+          pathname.includes(link.href) ? 'text-primary' : 'text-white',
         )}
       >
         <LinkIcon className="w-6" />

@@ -95,4 +95,5 @@ export interface IExamination {
   assessment: IExamInfo;
   submittedAnswers: IExamAnswer[];
   expireUtil: string;
+  empCode: string;
 }

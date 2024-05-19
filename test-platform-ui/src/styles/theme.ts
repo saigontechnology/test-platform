@@ -66,11 +66,15 @@ const themeCustom = createTheme({
       white: '#FFFFFF',
       black: '#1C1C1C',
     },
+    info: {
+      main: '#3b82f6',
+      contrastText: '#fff',
+    },
   },
   components: {
     MuiDataGrid: {
       defaultProps: {
-        rowHeight: 70,
+        // rowHeight: 40,
       },
     },
     MuiInputBase: {

@@ -1,12 +1,13 @@
+import { ROUTE_KEY } from '@/constants/routePaths';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 import Brightness1Icon from '@mui/icons-material/Brightness1';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import Link from 'next/link';
 import { useEffect } from 'react';
 
 export default function DashboardCard(props: any) {
-  console.log(props);
-  const { name, level, questions, duration, status } = props;
+  const { name, level, questions, duration, status, id } = props;
 
   useEffect(() => {
     console.log('ahihi');
@@ -19,7 +20,10 @@ export default function DashboardCard(props: any) {
   };
 
   return (
-    <div className="cursor-pointer rounded border border-gray-200 p-4">
+    <Link
+      href={`${ROUTE_KEY.ADMINISTRATION_DASHBOARD_ASSESSMENT}/${id}`}
+      className="cursor-pointer rounded border border-gray-200 p-4"
+    >
       <p className="line-clamp-1 text-lg font-medium leading-8" title={name}>
         {name}
       </p>
@@ -63,6 +67,6 @@ export default function DashboardCard(props: any) {
           <span className="font-medium">{duration}</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

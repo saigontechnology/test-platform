@@ -189,14 +189,13 @@ export class ExaminationsService {
   }
 
   async findAllExaminationsByAssessmentId(assessmentId: number) {
-    return await this.prisma.examination.findMany({
+    const examinations = await this.prisma.examination.findMany({
       select: {
         id: true,
         email: true,
         score: true,
         status: true,
         createdAt: true,
-        active: true,
         assessment: {
           select: {
             name: true,
@@ -219,6 +218,14 @@ export class ExaminationsService {
       where: {
         assessmentId,
       },
+    });
+
+    return examinations.map((exam) => {
+      const empCode = exam.email.split("@")[0];
+      return {
+        empCode,
+        ...exam,
+      };
     });
   }
 }
