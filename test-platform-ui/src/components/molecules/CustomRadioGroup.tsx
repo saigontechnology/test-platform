@@ -9,7 +9,7 @@ import { ReactElement } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 interface IRadioGroup {
-  label: string;
+  label?: string;
   controlName: string;
   options: {
     label: string;
@@ -25,8 +25,10 @@ const CustomRadioGroup = ({
   const { control } = useFormContext();
 
   return (
-    <FormControl>
-      <Typography className="font-semibold">{label}</Typography>
+    <FormControl className="pb-6">
+      {label?.length ? (
+        <Typography className="font-semibold">{label}</Typography>
+      ) : null}
       <Controller
         name={controlName}
         control={control}

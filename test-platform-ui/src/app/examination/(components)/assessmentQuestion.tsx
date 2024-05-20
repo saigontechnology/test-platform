@@ -17,6 +17,31 @@ interface IProps {
   onNext: ({ currId, answers }: { currId: number; answers: number[] }) => void;
 }
 
+export const renderAnswers = (
+  type: QuestionType,
+  options: any[],
+  handleSelect: (evt: any) => void,
+  handleCheck: (evt: any) => void,
+  isChecked?: number,
+) => {
+  switch (type) {
+    case QuestionType.SINGLE_CHOICE:
+      return (
+        <SingleChoice
+          options={options}
+          onSelect={handleSelect}
+          onChecked={isChecked}
+        />
+      );
+    case QuestionType.MULTIPLE_CHOICE:
+      return <MultipleChoice options={options} onSelect={handleCheck} />;
+    case QuestionType.TRUE_FALSE:
+      return <>Missing Config TRUE_FALSE!!!</>;
+    default:
+      return <>Missing Config!!!</>;
+  }
+};
+
 const AssessmentQuestion: React.FC<IProps> = ({
   isLast,
   order,
@@ -47,32 +72,6 @@ const AssessmentQuestion: React.FC<IProps> = ({
     return null;
   }
 
-  const renderAnswers = () => {
-    switch (assessment.question.type) {
-      case QuestionType.SINGLE_CHOICE:
-        return (
-          <SingleChoice
-            options={assessment.question.options}
-            onSelect={handleSelect}
-          />
-        );
-
-      case QuestionType.MULTIPLE_CHOICE:
-        return (
-          <MultipleChoice
-            options={assessment.question.options}
-            onSelect={handleCheck}
-          />
-        );
-
-      case QuestionType.TRUE_FALSE:
-        return <>Missing Config TRUE_FALSE!!!</>;
-
-      default:
-        return <>Missing Config!!!</>;
-    }
-  };
-
   return (
     <>
       <Grid container spacing={4}>
@@ -92,7 +91,12 @@ const AssessmentQuestion: React.FC<IProps> = ({
             <Typography variant="h6" className="mb-6">
               Answer
             </Typography>
-            {renderAnswers()}
+            {renderAnswers(
+              assessment.question.type,
+              assessment.question.options,
+              handleSelect,
+              handleCheck,
+            )}
           </Box>
         </Grid>
       </Grid>

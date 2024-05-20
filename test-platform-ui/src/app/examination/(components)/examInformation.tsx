@@ -42,7 +42,6 @@ const ExaminationInfo: React.FC<IExaminationInfo> = ({
                 key={`answer-${indx}`}
                 label={cate}
                 variant="outlined"
-                // onDelete={() => console.log('handle delete: ', params)}
               />
             );
           })}
