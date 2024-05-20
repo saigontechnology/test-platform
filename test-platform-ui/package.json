@@ -14,8 +14,8 @@
     "seed": "node -r dotenv/config ./scripts/seed.js"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.3",
-    "@emotion/styled": "^11.11.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@hookform/devtools": "^4.3.1",
     "@hookform/resolvers": "^3.3.4",
     "@lexical/react": "^0.13.1",
@@ -24,6 +24,7 @@
     "@mui/x-data-grid": "^6.18.7",
     "@prisma/client": "^5.7.1",
     "@tailwindcss/forms": "^0.5.7",
+    "@tanstack/react-query": "^5.37.1",
     "@vercel/postgres": "^0.5.1",
     "@vercel/speed-insights": "^1.0.2",
     "autoprefixer": "10.4.15",
@@ -37,6 +38,7 @@
     "next": "^14.0.2",
     "postcss": "8.4.31",
     "react": "18.2.0",
+    "react-confetti": "^6.1.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.49.3",
     "react-lottie": "^1.2.4",

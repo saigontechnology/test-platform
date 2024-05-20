@@ -1,291 +1,224 @@
+/* eslint-disable react/jsx-no-undef */
 'use client';
 
-import { IAssessment, IExamination, IQuestion } from '@/constants/assessments';
-import { getClientSideCookie, regexEmail } from '@/libs/utils';
-import { Stack } from '@mui/material';
-import { Box } from '@mui/system';
-import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import CustomModal from '../../components/molecules/CustomModal';
-import Header from '../../components/organisms/Header';
-import ApiHook, { Methods } from '../../libs/apis/ApiHook';
-import CountdownTimer, {
-  CountdownTimerHandler,
-} from './(components)/countdownTimer';
-import { PaperContent } from './(components)/modalContents/paperContent';
+import React, { useMemo, useState } from 'react';
+import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
+import ViewStreamOutlinedIcon from '@mui/icons-material/ViewStreamOutlined';
+import ExaminationLayout from './(components)/examinationLayout';
+import {
+  useGetExamination,
+  useSubmitExamination,
+  useUpdateExaminationExpired,
+} from '@/hooks/examination/hooks';
+import KeyboardDoubleArrowUpOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowUpOutlined';
+import { CircularProgress } from '@mui/material';
+import { formatTimeString, getClientSideCookie } from '@/libs/utils';
+import { IExamAnswer } from '@/hooks/examination/types';
+import Confetti from 'react-confetti';
+import LinkExpired from './(components)/linkExpired';
+import LogoBanner from './(components)/logoBanner';
+import Loading from './(components)/loading';
+import useWindowSize from '@/hooks/common/useWindowSize';
 
-interface IExamAnswerPayload {
-  questionId: number;
-  selections: number[];
-}
+type Layout = 'overview' | 'examination' | 'result';
 
-interface IExamResult {
-  email: string;
+interface ISubmitExaminationResult {
+  correctQuestions: number;
   scored: number;
 }
 
-const ModalExpiredContent = dynamic(
-  () => import('./(components)/modalContents/modalExpired'),
-);
-const ModalTimeoutContent = dynamic(
-  () => import('./(components)/modalContents/modalTimeout'),
-);
-const AssessmentQuestions = dynamic(
-  () => import('./(components)/assessmentQuestion'),
-  {
-    ssr: false,
-  },
-);
-const ExaminationFinalResult = dynamic(() => import('./(components)/result'), {
-  ssr: false,
-});
+export default function Examination() {
+  const [layout, setLayout] = useState<Layout>('overview');
+  const { width, height } = useWindowSize();
+  const [examinationResult, setExaminationResult] =
+    useState<ISubmitExaminationResult>();
 
-export default function ExaminationPage() {
-  const router = useRouter();
-  const [examInfo, setExamInfo] = useState<IExamination | null>(null);
-  const [assessmentInfo, setAssessmentInfo] = useState<{
-    data: IAssessment | null;
-    error: Error | null;
-    retryTimes?: number;
-  } | null>(null);
-  const [assessments, setAssessments] = useState<IQuestion[]>([]);
-  const [currentQuestionId, setCurrentQuestionId] = useState<number>(0);
-  const [answers, setAnswers] = useState<Record<string, number[]>>();
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
-  const [examScored, setExamScored] = useState<number>(0);
-  const modalExaminationRef = useRef<any>(null);
-  const [candidateEmail, setCandidateEmail] = useState<string | null>(null);
-  const countdownTimerRef = useRef<CountdownTimerHandler>(null);
-  const [isExpired, setIsExpired] = useState<boolean>(false);
+  const examId = getClientSideCookie('examId');
+  const {
+    mutate: submitExaminationMutate,
+    isPending: isSubmitExaminationPending,
+  } = useSubmitExamination();
 
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = true;
-      // sessionStorage.setItem('finished', (+new Date()).toString(36));
-      sessionStorage.setItem(
-        'examination',
-        JSON.stringify({
-          timer: countdownTimerRef.current?.getTime() as any,
-          currentQ: currentQuestionId,
-        }),
-      );
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [currentQuestionId]);
+  const {
+    mutate: updateExaminationExpiredMutate,
+    isPending: isUpdateExaminationExpiredPending,
+  } = useUpdateExaminationExpired();
 
-  const Handlers = {
-    updateAssessmentExpired: async (examId: number) => {
-      await ApiHook(Methods.PUT, `/examinations/expired/${examId}`);
-    },
-    getExamInfo: async (examId: string) => {
-      if (candidateEmail) {
-        const resExam: { data: IExamination } = await ApiHook(
-          Methods.GET,
-          `/examinations/${examId}`,
-        );
-        return resExam.data.email === candidateEmail ? resExam.data : null;
-      }
-      return null;
-    },
-    getAssessment: async (examId: string, examData: IExamination) => {
-      const resAssess: { data: IAssessment } = await ApiHook(
-        Methods.GET,
-        `/assessments/${examData?.assessmentId}`,
-      );
-      if (resAssess.data.assessmentQuestionMapping.length) {
-        const cachedQuestion = JSON.parse(
-          sessionStorage.getItem('examination')!,
-        )?.currentQ;
-        try {
-          const currDate = new Date(),
-            expireDate = new Date(examData.expireUtil);
-          if (currDate <= expireDate) {
-            setExamInfo(examData);
-            setAssessmentInfo({ data: resAssess.data, error: null });
-            setAssessments(resAssess.data.assessmentQuestionMapping);
-            setCurrentQuestionId(
-              cachedQuestion ||
-                resAssess.data.assessmentQuestionMapping[0].question.id,
-            );
-            Handlers.updateAssessmentExpired(parseInt(examId));
-          } else {
-            setIsExpired(true);
-            modalExaminationRef.current?.open();
-          }
-        } finally {
-          /** Clear cookie of 'examId' */
-          // document.cookie =
-          //   'examId' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-          countdownTimerRef.current?.setTime(1800);
-        }
-      } else {
-        // TODO:
-      }
-    },
-    fetchExamination: async () => {
-      const examId = getClientSideCookie('examId');
-      if (!examId) {
-        setIsExpired(true);
-        return;
-      }
-      const examInformation = await Handlers.getExamInfo(examId).then(
-        (result) => result,
-      );
-      if (candidateEmail === examInformation?.email) {
-        Handlers.getAssessment(examId, examInformation);
-      } else {
-        let _retryTimes = assessmentInfo?.retryTimes || 3;
-        _retryTimes < 1
-          ? router.replace('/')
-          : setAssessmentInfo({
-              data: null,
-              retryTimes: _retryTimes,
-              error: new Error(
-                `Invalid candidate email, you have ${_retryTimes--} times to retry. ${
-                  _retryTimes < 2
-                    ? 'The last time it failed, it will automatically reroute and end the examination.'
-                    : null
-                }`,
-              ),
-            });
-      }
-    },
-    handleSubmit: async (finalAnswers: IExamAnswerPayload[]) => {
-      setIsSubmit(true);
-      const payload = {
-        email: examInfo?.email,
-        assessmentId: assessmentInfo?.data?.id,
+  const examination = useGetExamination(examId?.toString()!);
+
+  const isExpired = useMemo(
+    () => new Date() > new Date(examination?.data?.expireUtil!),
+    [examination],
+  );
+
+  const handleSubmitExamination = (finalAnswers: IExamAnswer[]) => {
+    setLayout('result');
+    submitExaminationMutate(
+      {
+        examId: examId!,
+        email: examination?.data?.email!,
+        assessmentId: examination?.data?.assessmentId!,
         selections: finalAnswers,
-      };
-      const result: { data: IExamResult; error: any } = await ApiHook(
-        Methods.PUT,
-        `/examinations/${examInfo?.id}`,
-        {
-          data: payload,
+      },
+      {
+        onSuccess: (data) => {
+          setLayout('result');
+          setExaminationResult(data as unknown as ISubmitExaminationResult);
         },
-      );
-      if (result.error) {
-        alert('Examination submit got error');
-      } else {
-        sessionStorage.removeItem('examination');
-        setExamScored(result.data.scored);
-      }
-    },
-    handleNext: ({
-      currId,
-      answers: currentAnswers,
-    }: {
-      currId: number;
-      answers: number[];
-    }) => {
-      const currIndex = assessments.findIndex(
-        (ass) => ass.question.id === currId,
-      );
-      if (currIndex > -1) {
-        const newAnswers = { ...answers, [currId]: currentAnswers };
-        setAnswers(newAnswers);
-        const nextCond = assessments?.[currIndex + 1]?.question?.id;
-        if (nextCond) {
-          setCurrentQuestionId(nextCond);
-        } else {
-          //submit
-          const _answers = Object.entries(newAnswers).map(([key, value]) => {
-            return {
-              questionId: parseInt(key),
-              selections: value,
-            };
-          });
-          Handlers.handleSubmit(_answers as IExamAnswerPayload[]);
-        }
-      }
-    },
-    handleExamTimeOut: () => {
-      // Todo: Show dialog notice timeout.
-      modalExaminationRef.current?.open();
-    },
+      },
+    );
   };
 
-  return (
-    <Box className="flex h-screen flex-col md:flex-row md:overflow-hidden">
-      <Box className="flex-grow bg-[#f9f9f9]">
-        {!isSubmit && (
-          <Header>
-            <Stack
-              className="justify-center"
-              direction="row"
-              spacing={4}
-              height={50}
-              width={500}
-            >
-              <Box width={50} bgcolor={'#c5c5c5'} />
-              <Stack>
-                <span>
-                  <b>Examination:</b>
-                </span>
-                <span>{examInfo?.assessment.name}</span>
-              </Stack>
-            </Stack>
-            <CountdownTimer
-              ref={countdownTimerRef}
-              isPause={!assessmentInfo}
-              handleTimeout={Handlers.handleExamTimeOut}
-            />
-            <Stack
-              className="items-center justify-center"
-              direction="row"
-              spacing={4}
-              height={50}
-              width={500}
-            >
-              <Box>{examInfo?.email}</Box>
-            </Stack>
-          </Header>
-        )}
-        <Box className="m-6 flex-grow rounded-[15px] p-6 md:overflow-y-auto">
-          {!examInfo ? (
-            <PaperContent
-              setStateEmail={setCandidateEmail}
-              isDisabled={!regexEmail(candidateEmail)}
-              onChanged={Boolean(candidateEmail?.length)}
-              gotoExam={() => {
-                Handlers.fetchExamination();
-              }}
-              error={assessmentInfo?.error?.message}
-            />
+  const renderLayoutExamination = () => {
+    switch (layout) {
+      case 'overview':
+        return !examination.isPending ? (
+          isExpired ? (
+            <LinkExpired />
           ) : (
-            <>
-              {!isSubmit &&
-                assessments?.map((ass, index) => (
-                  <AssessmentQuestions
-                    key={ass.question.id}
-                    order={index + 1}
-                    isLast={assessments.length - 1 === index}
-                    assessment={ass}
-                    active={currentQuestionId === ass.question.id}
-                    onNext={Handlers.handleNext}
-                  />
-                ))}
-              {isSubmit && (
-                <ExaminationFinalResult
-                  isDisabledExit={false}
-                  examResult={{
-                    information: assessmentInfo,
-                    scored: examScored,
-                  }}
-                />
-              )}
-            </>
-          )}
-        </Box>
-      </Box>
-      <CustomModal ref={modalExaminationRef}>
-        {isExpired ? <ModalExpiredContent /> : <ModalTimeoutContent />}
-      </CustomModal>
-    </Box>
-  );
+            <div className="grid h-screen grid-cols-2 gap-2 p-20">
+              <div className="mb-20 flex items-center">
+                <div className="flex flex-col gap-2">
+                  <p className="text-[32px] font-bold">
+                    {examination?.data?.assessment?.name}
+                  </p>
+                  {examination.isPending ? (
+                    <>
+                      <div className="flex animate-pulse gap-10">
+                        <div className="flex items-center gap-1">
+                          <div className="h-6 w-6 rounded-full bg-gray-200"></div>
+                          <div className="h-4 w-20 rounded bg-gray-200"></div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="h-6 w-6 rounded-full bg-gray-200"></div>
+                          <div className="h-4 w-20 rounded bg-gray-200"></div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="h-6 w-6 rounded-full bg-gray-200"></div>
+                          <div className="h-4 w-20 rounded bg-gray-200"></div>
+                        </div>
+                      </div>
+                      <div className="mt-10 h-12 w-40 rounded-xl bg-gray-200"></div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex gap-10">
+                        <div className="flex items-center gap-1">
+                          <AccessAlarmIcon fontSize="small" />
+                          <p className="mt-[2px] text-[14px] font-light">
+                            {formatTimeString(
+                              examination?.data?.durationTotal || 0,
+                            )}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <ViewStreamOutlinedIcon fontSize="small" />
+                          <p className="text-[14px] font-light">
+                            {examination?.data?.questionNumbers}{' '}
+                            {examination?.data?.questionNumbers === 1
+                              ? 'question'
+                              : 'questions'}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <KeyboardDoubleArrowUpOutlinedIcon fontSize="small" />
+                          <p className="text-[14px] font-light">
+                            {examination?.data?.assessment?.level}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setLayout('examination');
+                          updateExaminationExpiredMutate({ examId: examId! });
+                        }}
+                        disabled={isUpdateExaminationExpiredPending}
+                        className="item-center mt-10 flex h-12 w-40 justify-center rounded-xl bg-gradient-to-br from-purple-600 to-blue-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+                      >
+                        <div className="flex h-full items-center">
+                          {isUpdateExaminationExpiredPending ? (
+                            <div className="flex items-center gap-2">
+                              <CircularProgress
+                                size={16}
+                                className="text-white"
+                              />
+                              <span>Starting ...</span>
+                            </div>
+                          ) : (
+                            <span>Start Test</span>
+                          )}
+                        </div>
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="mb-20 flex items-center">
+                <LogoBanner />
+              </div>
+            </div>
+          )
+        ) : (
+          <div className="flex h-screen w-full items-center justify-center">
+            <Loading />
+          </div>
+        );
+
+      case 'examination':
+        return (
+          <ExaminationLayout
+            assessmentId={examination?.data?.assessmentId.toString()!}
+            onSubmitExam={(finalAnswers: IExamAnswer[]) =>
+              handleSubmitExamination(finalAnswers)
+            }
+          />
+        );
+
+      case 'result':
+        return (
+          <div className="grid h-screen grid-cols-2 gap-2 p-20">
+            <div className="mb-20 flex items-center">
+              <div className="flex flex-col gap-4">
+                <span className="text-[20px] font-light">Congratulations!</span>
+                <p className="text-[26px] font-bold text-slate-600">
+                  Your challenge has been completed successfully!
+                </p>
+                <div className="mt-10 h-[1px] w-full bg-slate-100" />
+                <span className="text-[16px] font-semibold">Test Results</span>
+                {isSubmitExaminationPending ? (
+                  <div className="flex animate-pulse flex-col gap-1">
+                    <div className="h-4 w-1/2 rounded bg-gray-200"></div>
+                    <div className="h-4 w-1/3 rounded bg-gray-200"></div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[14px]">
+                      - Correct questions:
+                      {` ${examinationResult?.correctQuestions}/${examination.data?.questionNumbers}`}
+                    </span>
+                    <span className="text-[14px]">
+                      - Score: {examinationResult?.scored}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="mb-20 flex items-center">
+              <LogoBanner />
+            </div>
+            <div className="flex h-full flex-col-reverse">
+              <span className="text-[14px] font-light">
+                *Note: You can close this page at this time.
+              </span>
+            </div>
+            <Confetti width={width} height={height} recycle={false} />
+          </div>
+        );
+
+      default:
+        break;
+    }
+  };
+
+  return renderLayoutExamination();
 }

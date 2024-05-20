@@ -49,6 +49,7 @@ export interface IQuestion {
     options: string[];
     question: string;
     type: QuestionType;
+    duration: number;
   };
 }
 
@@ -95,4 +96,6 @@ export interface IExamination {
   assessment: IExamInfo;
   submittedAnswers: IExamAnswer[];
   expireUtil: string;
+  durationTotal?: number;
+  questionNumbers?: number
 }
