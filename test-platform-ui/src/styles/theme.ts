@@ -1,7 +1,7 @@
 'use client';
-import { openSans } from '@/styles/fonts';
 import { createTheme } from '@mui/material/styles';
 import type {} from '@mui/x-data-grid/themeAugmentation';
+import { openSans } from './fonts';
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -100,7 +100,7 @@ const themeCustom = createTheme({
       },
       styleOverrides: {
         root: ({ theme, ownerState }) => ({
-          fontFamily: openSans,
+          fontFamily: openSans.style.fontFamily,
           borderRadius: 12,
           boxShadow: 'none',
           maxHeight: 48,
@@ -130,7 +130,7 @@ const themeCustom = createTheme({
     },
   },
   typography: {
-    fontFamily: openSans,
+    fontFamily: openSans.style.fontFamily,
     h1: {
       fontSize: '64px',
       lineHeight: '72px',
