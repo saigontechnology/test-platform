@@ -13,7 +13,7 @@ export default function DashboardCard(props: any) {
     console.log('ahihi');
   }, []);
 
-  const levelColor = {
+  const levelColor: any = {
     ['Junior']: 'text-green-500',
     ['Intermediate']: 'text-yellow-500',
     ['Senior']: 'text-red-500',
