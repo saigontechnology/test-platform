@@ -28,16 +28,25 @@ interface IExamResults {
   };
 }
 
+interface IStatistic {
+  invited: number;
+  completed: number;
+  participation: number;
+  processing: number;
+  completedPercent: number;
+  failed: number;
+  questions: number;
+}
+
 export default async function Page() {
   const pathname = usePathname().split('/');
   const assessmentId = pathname[pathname.length - 1];
-  const [isLoading, toggleLoading] = useState<boolean>(false);
+  const [isLoading, toggleLoading] = useState<boolean>(true);
   const [examsInfo, setExamsInfo] = useState<Array<IExamResults>>([]);
+  const [statistic, setStatistic] = useState<IStatistic>();
 
   useEffect(() => {
-    if (assessmentId) {
-      getExaminationByAssessment();
-    }
+    getExaminationByAssessment();
   }, []);
 
   const getStatus = (type: string) => {
@@ -49,13 +58,13 @@ export default async function Page() {
   };
 
   const getExaminationByAssessment = async () => {
-    toggleLoading(true);
-    const response = await ApiHook(
+    const response: any = await ApiHook(
       Methods.GET,
       `/examinations/assessments/${assessmentId}`,
     );
+    const { examination, statistic } = response.data;
     const examinationsInfo: IExamResults[] = (
-      response.data as Array<IExamination>
+      examination as Array<IExamination>
     ).map((ex: IExamination) => {
       const _status = getStatus(ex.status) || 'Processing';
       return {
@@ -80,8 +89,9 @@ export default async function Page() {
         },
       };
     });
-    toggleLoading(false);
+    setStatistic(statistic);
     setExamsInfo(examinationsInfo);
+    toggleLoading(false);
   };
 
   const columns: GridColDef[] = [
@@ -150,7 +160,7 @@ export default async function Page() {
           rows={examsInfo}
           loading={isLoading}
           getRowClassName={(params) =>
-            params.indexRelativeToCurrentPage % 2 === 0
+            params?.indexRelativeToCurrentPage % 2 === 0
               ? 'bg-gray-100'
               : 'bg-white'
           }
@@ -161,15 +171,17 @@ export default async function Page() {
           <div className="grid grid-cols-3 justify-between border-b border-gray-200 px-4 pb-4">
             <div>
               <div className="text-xs text-gray-500">Invited</div>
-              <div className="text-lg font-medium">0</div>
+              <div className="text-lg font-medium">{statistic?.invited}</div>
             </div>
             <div>
               <div className="text-xs text-gray-500">Completed</div>
-              <div className="text-lg font-medium">0</div>
+              <div className="text-lg font-medium">{statistic?.completed}</div>
             </div>
             <div>
               <div className="text-xs text-gray-500">Participation</div>
-              <div className="text-lg font-medium">0</div>
+              <div className="text-lg font-medium">
+                {statistic?.participation}
+              </div>
             </div>
           </div>
           <div className="px-4 pt-4">
@@ -183,7 +195,9 @@ export default async function Page() {
                   }}
                 />
                 <span className="ml-1 text-xs text-gray-500">Processing</span>
-                <span className="ml-2  text-xs font-medium">80%</span>
+                <span className="ml-2  text-xs font-medium">
+                  {statistic?.processing}%
+                </span>
               </div>
               <div>
                 <Brightness1Icon
@@ -193,7 +207,9 @@ export default async function Page() {
                   }}
                 />
                 <span className="ml-1 text-xs text-gray-500">Completed</span>
-                <span className="ml-2 text-xs font-medium">0%</span>
+                <span className="ml-2 text-xs font-medium">
+                  {statistic?.completedPercent}%
+                </span>
               </div>
               <div>
                 <Brightness1Icon
@@ -203,7 +219,9 @@ export default async function Page() {
                   }}
                 />
                 <span className="ml-1 text-xs text-gray-500">Failed</span>
-                <span className="ml-2 text-xs font-medium">20%</span>
+                <span className="ml-2 text-xs font-medium">
+                  {statistic?.failed}%
+                </span>
               </div>
             </div>
           </div>
@@ -229,7 +247,9 @@ export default async function Page() {
             </div>
             <div>
               <div className="text-sm font-medium">Assessment Questions</div>
-              <div className="text-xs text-gray-500">25 Questions added</div>
+              <div className="text-xs text-gray-500">
+                {statistic?.questions} Questions added
+              </div>
             </div>
           </div>
           <div className="flex items-center border-b border-gray-200 py-2">
