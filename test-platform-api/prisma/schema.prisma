@@ -23,6 +23,7 @@ model Question {
   notes                     String?
   level                     QuestionLevel               @default(JUNIOR)
   isModified                Boolean?
+  time                      Int                         @default(30)
 }
 
 model Assessment {
