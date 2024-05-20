@@ -1,6 +1,6 @@
 import { QuestionType } from '@/libs/definitions';
 
-const Level = {
+export const Level = {
   Junior: 'Junior',
   Intermediate: 'Intermediate',
   Senior: 'Senior',
@@ -59,6 +59,8 @@ export interface IAssessment {
   level: string;
   assessmentQuestionMapping: IQuestion[];
   error?: Error;
+  duration: number;
+  active?: boolean;
 }
 
 export interface ICreateAssessment {

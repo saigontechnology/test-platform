@@ -1,7 +1,6 @@
 'use client';
 
-import CustomModal from '@/components/molecules/CustomModal';
-import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
+import { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IAssessment } from '@/constants/assessments';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
@@ -9,16 +8,14 @@ import { DataContext } from '@/libs/contextStore';
 import { showNotification } from '@/libs/toast';
 import { sendAssessmentInvitationSchema } from '@/validations/assessment';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AddBox, Delete, ModeEdit, Send } from '@mui/icons-material';
-import { Chip, FormControl, IconButton, Typography } from '@mui/material';
+import { Delete, ModeEdit, Send } from '@mui/icons-material';
+import { Chip, IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import { GridColDef } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import AccordionExpandIcon from './(components)/autocompleteAddCandidate';
+import { useForm } from 'react-hook-form';
+import AssessmentCard from './(components)/assessmentCard';
 
 let externalRoute = null;
 
@@ -43,20 +40,8 @@ export default function EditAssessment() {
   const selectedEmails = sendInviteForm.watch('email');
 
   const getAssessments = async () => {
-    setLoading(true);
-    const resp = await ApiHook(Methods.GET, '/assessments');
-    const assessmentsData: any = (resp.data as Array<IAssessment>).map(
-      (q: IAssessment) => {
-        return {
-          id: q.id,
-          level: q.level,
-          name: q.name,
-          createdAt: q.createdAt,
-        };
-      },
-    );
-    setAssessments(assessmentsData);
-    setLoading(false);
+    const response: any = await ApiHook(Methods.GET, '/assessments');
+    setAssessments(response.data);
   };
 
   useEffect(() => {
@@ -97,6 +82,16 @@ export default function EditAssessment() {
       showNotification('Send assessment invitation successfully', 'success');
       sendInviteModalRef?.current.close();
     }
+  };
+
+  const goToCreate = (e) => {
+    updateData({
+      ...data,
+      pagination: {
+        pageNum: 1,
+      },
+    });
+    router.push(ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_CREATE);
   };
 
   const columns: GridColDef[] = [
@@ -163,50 +158,85 @@ export default function EditAssessment() {
   ];
 
   return (
-    <Box>
-      <Box className="flex items-center justify-between">
-        <Typography component="h1" className={`text-xl md:text-2xl`}>
-          Assessments
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={(evt: React.MouseEvent) => {
-            evt.preventDefault();
-            updateData({
-              ...data,
-              pagination: {
-                pageNum: 1,
-              },
-            });
-            router.push(ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_CREATE);
-          }}
-          startIcon={<AddBox />}
+    // <Box>
+    //   <Box className="flex items-center justify-between">
+    //     <Typography component="h1" className={`text-xl md:text-2xl`}>
+    //       Assessments
+    //     </Typography>
+    //     <Button
+    //       variant="contained"
+    //       onClick={(evt: React.MouseEvent) => {
+    //         evt.preventDefault();
+    //         updateData({
+    //           ...data,
+    //           pagination: {
+    //             pageNum: 1,
+    //           },
+    //         });
+    //         router.push(ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_CREATE);
+    //       }}
+    //       startIcon={<AddBox />}
+    //     >
+    //       New Assessment
+    //     </Button>
+    //   </Box>
+    //   <Divider className="my-10" />
+    //   <DataTable rows={assessments} columns={columns} loading={loading} />
+
+    //   {/* Send invitation modal */}
+    //   <CustomModal ref={sendInviteModalRef} title="Send Invitation">
+    //     <FormProvider {...sendInviteForm}>
+    //       <Box className="grid w-[500px]">
+    //         <FormControl variant="standard" className="my-4">
+    //           <AccordionExpandIcon />
+    //         </FormControl>
+    //         <Box className="text-right">
+    //           <Button
+    //             variant="contained"
+    //             onClick={sendInviteForm.handleSubmit(handleSendInvite)}
+    //             disabled={!selectedEmails.length}
+    //           >
+    //             Send
+    //           </Button>
+    //         </Box>
+    //       </Box>
+    //     </FormProvider>
+    //   </CustomModal>
+    // </Box>
+    <div className="bg-white p-4">
+      <div className="flex justify-end">
+        <button
+          onClick={goToCreate}
+          className="flex justify-end rounded bg-primary px-8 py-2 text-white"
         >
           New Assessment
-        </Button>
-      </Box>
-      <Divider className="my-10" />
-      <DataTable rows={assessments} columns={columns} loading={loading} />
+        </button>
+      </div>
 
-      {/* Send invitation modal */}
-      <CustomModal ref={sendInviteModalRef} title="Send Invitation">
-        <FormProvider {...sendInviteForm}>
-          <Box className="grid w-[500px]">
-            <FormControl variant="standard" className="my-4">
-              <AccordionExpandIcon />
-            </FormControl>
-            <Box className="text-right">
-              <Button
-                variant="contained"
-                onClick={sendInviteForm.handleSubmit(handleSendInvite)}
-                disabled={!selectedEmails.length}
-              >
-                Send
-              </Button>
-            </Box>
-          </Box>
-        </FormProvider>
-      </CustomModal>
-    </Box>
+      <div className="col-span-2 grid grid-cols-1 gap-4 rounded md:grid-cols-2 lg:grid-cols-3">
+        {assessments.map((assessment) => {
+          return (
+            // <DashboardCard
+            //   name={assessment.name}
+            //   level={assessment.level}
+            //   questions={assessment.assessmentQuestionMapping.length}
+            //   duration="25 mins"
+            //   status="active"
+            //   id={assessment.id}
+            //   key={assessment.id}
+            // />
+            <AssessmentCard
+              name={assessment.name}
+              level={assessment.level}
+              questions={assessment.assessmentQuestionMapping.length}
+              duration={assessment.duration}
+              status={assessment.active}
+              id={assessment.id}
+              key={assessment.id}
+            />
+          );
+        })}
+      </div>
+    </div>
   );
 }

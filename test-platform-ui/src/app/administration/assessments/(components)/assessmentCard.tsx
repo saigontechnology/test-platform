@@ -6,7 +6,7 @@ import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import Link from 'next/link';
 
-export default function DashboardCard(props: any) {
+export default function AssessmentCard(props: any) {
   const { name, level, questions, duration, status, id } = props;
 
   const levelColor: any = {
@@ -17,26 +17,12 @@ export default function DashboardCard(props: any) {
 
   return (
     <Link
-      href={`${ROUTE_KEY.ADMINISTRATION_DASHBOARD_ASSESSMENT}/${id}`}
+      href={`${ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_DETAIL}/${id}`}
       className="cursor-pointer rounded border border-gray-200 p-4"
     >
       <p className="line-clamp-1 text-lg font-medium leading-8" title={name}>
         {name}
       </p>
-      <div className="mt-4 flex justify-between">
-        <div className="text-sm leading-6">
-          <span className="text-gray-500">Invited: </span>
-          <span className="font-medium">4</span>
-        </div>
-        <div className="text-sm leading-6">
-          <span className="text-gray-500">Completed: </span>
-          <span className="font-medium">3</span>
-        </div>
-        <div className="text-sm leading-6">
-          <span className="text-gray-500">Participation: </span>
-          <span className="font-medium">75%</span>
-        </div>
-      </div>
       <div className="mt-4 grid grid-cols-2 gap-4">
         <div className="text-sm leading-6">
           <Brightness1Icon
