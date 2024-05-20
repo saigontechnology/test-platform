@@ -61,7 +61,6 @@ const themeCustom = createTheme({
       main: '#002a37',
       // salsify_grass: '#33b27f',
       cornflower_blue: '#2196f3',
-      cornflower_blue: '#2196f3',
     },
     base: {
       white: '#FFFFFF',
