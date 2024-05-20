@@ -187,4 +187,74 @@ export class ExaminationsService {
     });
     return;
   }
+
+  async findAllExaminationsByAssessmentId(assessmentId: number) {
+    const examinations = await this.prisma.examination.findMany({
+      select: {
+        id: true,
+        email: true,
+        score: true,
+        status: true,
+        createdAt: true,
+        assessment: {
+          select: {
+            name: true,
+            level: true,
+            assessmentQuestionMapping: {
+              select: {
+                questionId: true,
+              },
+            },
+          },
+        },
+        expireUtil: true,
+        submittedAnswers: {
+          select: {
+            question: {
+              select: {
+                question: true,
+                options: true,
+              },
+            },
+            selections: true,
+          },
+        },
+      },
+      where: {
+        assessmentId,
+      },
+    });
+    const invited = examinations.length;
+    const completed = examinations.filter(
+      (exam) => exam.status === ExaminationStatus.COMPLETED,
+    ).length;
+    const participation = invited - completed;
+    const processing = examinations.filter(
+      (exam) => exam.status === ExaminationStatus.IN_PROGRESS,
+    ).length;
+    const failed = examinations.filter(
+      (exam) => exam.status === ExaminationStatus.EVALUATED,
+    ).length;
+    const questions =
+      examinations[0].assessment.assessmentQuestionMapping.length;
+
+    return {
+      examination: examinations.map((exam) => {
+        const empCode = exam.email.split("@")[0];
+        return {
+          empCode,
+          ...exam,
+        };
+      }),
+      statistic: {
+        invited,
+        completed,
+        participation,
+        processing: Math.round((processing * 100) / invited),
+        completedPercent: Math.round((completed * 100) / invited),
+        failed: Math.round((failed * 100) / invited),
+        questions,
+      },
+    };
+  }
 }

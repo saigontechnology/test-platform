@@ -1,17 +1,13 @@
 {
-  "private": true,
   "version": "0.0.1",
-  "prisma": {
-    "seed": "ts-node --esm scripts/seed.js",
-    "migrate:dev": "npx prisma migrate dev --name init --schema=./scripts/prisma/schema.prisma"
-  },
+  "private": true,
   "scripts": {
     "build": "next build",
     "dev": "set PORT=5841 & next dev",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
-    "start": "next start",
-    "seed": "node -r dotenv/config ./scripts/seed.js"
+    "seed": "node -r dotenv/config ./scripts/seed.js ",
+    "start": "next start"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -70,5 +66,9 @@
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "prisma": {
+    "seed": "ts-node --esm scripts/seed.js",
+    "migrate:dev": "npx prisma migrate dev --name init --schema=./scripts/prisma/schema.prisma"
   }
 }

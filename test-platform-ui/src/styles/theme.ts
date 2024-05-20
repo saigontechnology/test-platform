@@ -1,6 +1,7 @@
 'use client';
+import { openSans } from '@/styles/fonts';
 import { createTheme } from '@mui/material/styles';
-import type { } from '@mui/x-data-grid/themeAugmentation';
+import type {} from '@mui/x-data-grid/themeAugmentation';
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -59,18 +60,22 @@ const themeCustom = createTheme({
     primary: {
       main: '#002a37',
       // salsify_grass: '#33b27f',
-      cornflower_blue: '#2196f3'
+      cornflower_blue: '#2196f3',
     },
     base: {
       white: '#FFFFFF',
       black: '#1C1C1C',
     },
+    info: {
+      main: '#3b82f6',
+      contrastText: '#fff',
+    },
   },
   components: {
     MuiDataGrid: {
       defaultProps: {
-        rowHeight: 70,
-      }
+        // rowHeight: 40,
+      },
     },
     MuiInputBase: {
       styleOverrides: {
@@ -95,7 +100,7 @@ const themeCustom = createTheme({
       },
       styleOverrides: {
         root: ({ theme, ownerState }) => ({
-          // fontFamily: lusitana.style.fontFamily,
+          fontFamily: openSans,
           borderRadius: 12,
           boxShadow: 'none',
           maxHeight: 48,
@@ -125,7 +130,7 @@ const themeCustom = createTheme({
     },
   },
   typography: {
-    // fontFamily: lusitana.style.fontFamily,
+    fontFamily: openSans,
     h1: {
       fontSize: '64px',
       lineHeight: '72px',
