@@ -181,7 +181,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
 
       // Executive handler data modified:
       if (formData.answer.length) {
-        // setIsSubmitLoading(true);
+        isSubmitLoading(true);
         const { error } = await (questionData.id
           ? ApiHook(Methods.PUT, `/questions/${questionData.id}`, {
               data: formData,
@@ -189,17 +189,17 @@ export default function ModifyQuestion(props: ICreateQuestion) {
           : ApiHook(Methods.POST, '/questions', {
               data: formData,
             }));
-        // setIsSubmitLoading(false);
+        isSubmitLoading(false);
         if (!error) {
           showNotification('Upsert question successfully', 'success');
           HandleInteractions.handleRedirect(ROUTE_KEY.ADMINISTRATION_QUESTIONS);
         }
       } else {
-        // const { type, name, message } = manualErrors[1];
-        // setError(name, {
-        //   type: type,
-        //   message: message,
-        // });
+        const { type, name, message } = manualErrors[1];
+        setError(name, {
+          type: type,
+          message: message,
+        });
       }
     },
     handleRenderCoding: (): JSX.Element => {

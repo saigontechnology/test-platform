@@ -118,7 +118,6 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
         <RichTextArea
           key="questionAnswersPreview"
           data={answ.answer}
-          isReadOnly={true}
           onChange={(_val: any) => {
             const answersModified = answers.map(
               (answ: IAnswer, indx: number) => {

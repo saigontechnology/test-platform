@@ -1,8 +1,11 @@
+'use client';
+
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { QuestionType } from '@/libs/definitions';
 import { AddBox, Delete } from '@mui/icons-material';
 import {
-  Box,
+  Accordion,
+  AccordionDetails,
   Checkbox,
   FormControl,
   FormGroup,
@@ -10,13 +13,12 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import { IAnswer } from '../../modifyQuestion';
+import { IAnswer } from '../modifyQuestion';
 
 interface IQuestionAnswers {
-  label?: string;
   questionType: string | undefined;
   renderAnswers: IAnswer[];
   error?:
@@ -25,36 +27,28 @@ interface IQuestionAnswers {
         message: string;
       }
     | any;
-  handleAnswers?: (answers: any) => void;
 }
 
 const initialAnswer = { id: '', answer: '', isCorrect: false };
 const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
-  const { questionType, renderAnswers, error, label, handleAnswers } = props;
+  const { questionType, renderAnswers, error } = props;
+
   const [answers, setAnswers] = useState<IAnswer[]>(
     renderAnswers.length ? renderAnswers : [initialAnswer],
   );
 
-  const answersRef = useRef<IAnswer[]>(
-    renderAnswers.length ? renderAnswers : [initialAnswer],
-  );
-
   const {
-    setValue,
     formState: { errors },
   } = useFormContext();
 
   useEffect(() => {
-    return () => {
-      HandleInteractions.updateStateAnswers(answersRef.current);
-    };
-  }, []);
+    HandleInteractions.updateStateAnswers(renderAnswers);
+  }, [renderAnswers]);
 
   //#region : Handle interaction functions
   const HandleInteractions = {
     updateStateAnswers: (updatedAnswers: IAnswer[]) => {
       setAnswers(updatedAnswers);
-      handleAnswers && handleAnswers(updatedAnswers);
     },
     handleAnswerChanges: (event: React.ChangeEvent<HTMLInputElement>) => {
       const modifiedAnswers = answers.map((answer: IAnswer) => {
@@ -107,7 +101,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       <FormControl
         key={`answer-${answ.id}`}
         variant="standard"
-        className="ml-3 inline-flex w-full !flex-row items-center"
+        className="-ml-3 inline-flex w-full !flex-row items-center"
       >
         <Checkbox
           checked={answ.isCorrect}
@@ -115,28 +109,11 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
           onClick={() => HandleInteractions.handleSelectCorrect(answ)}
         />
         {/** Notes: Specific cases answer include code patterns, simply envision the answer contents. */}
-        <RichTextArea
-          key="questionAnswersPreview"
-          data={answ.answer}
-          isReadOnly={true}
-          onChange={(_val: any) => {
-            const answersModified = answers.map(
-              (answ: IAnswer, indx: number) => {
-                if (index === indx) {
-                  return { ...answ, answer: _val };
-                }
-                return answ;
-              },
-            );
-            // HandleInteractions.updateStateAnswers(answersModified);
-            answersRef.current = answersModified;
-            setValue(
-              'options',
-              answersModified.map((answ) => answ.answer),
-            );
-          }}
-        />
-
+        <Accordion defaultExpanded className="grow">
+          <AccordionDetails>
+            <RichTextArea name="options" data={answ.answer} />
+          </AccordionDetails>
+        </Accordion>
         {answ.id ? (
           <IconButton
             color="error"
@@ -161,23 +138,11 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   //#endregion
 
   return (
-    <FormGroup className="gap-1">
-      {label?.length ? (
-        <Typography className="font-semibold">{label}</Typography>
-      ) : null}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          overflow: 'hidden',
-          paddingBottom: '20px',
-        }}
-      >
-        {answersRef.current.map(renderAnswer)}
-      </Box>
+    <FormGroup className="gap-4">
+      <Typography className="font-semibold">Options</Typography>
+      {answers.map(renderAnswer)}
       {errors.root || error ? (
-        <FormHelperText className="mt-4" error>
+        <FormHelperText error>
           {errors?.root?.message || error?.message}
         </FormHelperText>
       ) : null}

@@ -310,7 +310,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
               >
                 <Tab label="Details" {...a11yProps(0)} />
                 <Tab label="Description" {...a11yProps(1)} />
-                <Tab label="Options" {...a11yProps(2)} />
+                <Tab label="Answers" {...a11yProps(2)} />
                 <Tab label="Preview" {...a11yProps(3)} />
               </Tabs>
             </Box>
