@@ -96,7 +96,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   //#endregion
 
   //#region : Handle render answers
-  const renderAnswer = (answ: IAnswer, index: number): ReactElement => {
+  const renderAnswer = (answ: IAnswer, _index: number): ReactElement => {
     return (
       <FormControl
         key={`answer-${answ.id}`}

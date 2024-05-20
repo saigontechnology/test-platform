@@ -1,5 +1,9 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { AutocompleteGetTagProps, autocompleteClasses } from '@mui/material';
+import {
+  AutocompleteGetTagProps,
+  Typography,
+  autocompleteClasses,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 function Tag(props: TagProps) {
@@ -165,3 +169,28 @@ export const Listbox = styled('ul')(
 export const Item = styled('li')<{ isDisabled: boolean }>`
   pointer-events: ${({ isDisabled }) => (isDisabled ? 'none' : 'inherit')};
 `;
+
+export const TitleWLine = styled(Typography)(
+  () => `
+    position: relative;
+    z-index: 1;
+
+    &:before {
+        border-top: 2px solid #dfdfdf;
+        content:"";
+        /* this centers the line to the full width specified */
+        margin: 0 auto; 
+        /* positioning must be absolute here, and relative positioning must be applied to the parent */
+        position: absolute; 
+        top: 50%; left: 0; right: 0; bottom: 0;
+        width: 95%;
+        z-index: -1;
+    }
+
+    span { 
+        /* to hide the lines from behind the text, you have to set the background color the same as the container */ 
+        background: #fff; 
+        padding: 0 15px; 
+    }
+`,
+);

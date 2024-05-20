@@ -1,6 +1,9 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+'use client';
+
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { QuestionType } from '@/libs/definitions';
-import { AddBox, Delete } from '@mui/icons-material';
+import { AddBox, Delete, Done, ModeEditOutline } from '@mui/icons-material';
 import {
   Box,
   Checkbox,
@@ -103,11 +106,19 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
 
   //#region : Handle render answers
   const renderAnswer = (answ: IAnswer, index: number): ReactElement => {
+    const [isEditable, toggleEditable] = useState<boolean>(false);
     return (
       <FormControl
         key={`answer-${answ.id}`}
         variant="standard"
-        className="ml-3 inline-flex w-full !flex-row items-center"
+        className="ml-3 inline-flex !flex-row items-center"
+        sx={{
+          backgroundColor: 'white',
+          padding: '5px',
+          borderRadius: '10px',
+          border: 'solid 1px lightgrey',
+          width: 'calc(100% - 30px)',
+        }}
       >
         <Checkbox
           checked={answ.isCorrect}
@@ -118,7 +129,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
         <RichTextArea
           key="questionAnswersPreview"
           data={answ.answer}
-          isReadOnly={true}
+          isReadOnly={!isEditable}
           onChange={(_val: any) => {
             const answersModified = answers.map(
               (answ: IAnswer, indx: number) => {
@@ -138,13 +149,22 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
         />
 
         {answ.id ? (
-          <IconButton
-            color="error"
-            onClick={() => HandleInteractions.handleRemoveAnswer(answ)}
-            type="button"
-          >
-            <Delete />
-          </IconButton>
+          <div className="answer-actions-wrapper flex justify-around gap-2 p-2">
+            <IconButton
+              color={isEditable ? 'success' : 'default'}
+              onClick={() => toggleEditable(!isEditable)}
+              type="button"
+            >
+              {isEditable ? <Done /> : <ModeEditOutline />}
+            </IconButton>
+            <IconButton
+              color="error"
+              onClick={() => HandleInteractions.handleRemoveAnswer(answ)}
+              type="button"
+            >
+              <Delete />
+            </IconButton>
+          </div>
         ) : (
           <IconButton
             color="primary"
