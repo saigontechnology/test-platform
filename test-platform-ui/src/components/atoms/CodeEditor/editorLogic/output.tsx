@@ -19,7 +19,6 @@ export default function OutPut({ editorRef, language }: IOutPut) {
       const { run: result } = await executiveCode(language, sourceCode);
       setOutput(result.output);
     } catch (error: any) {
-      console.log('error: ', error.message);
       showNotification(`An error occurred. ${error.message}`, 'error');
     }
   };

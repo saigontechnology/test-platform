@@ -20,17 +20,17 @@ export const QuestionTypes = [
     label: 'Multiple choice',
     value: QuestionType.MULTIPLE_CHOICE,
   },
-  {
-    label: 'Logic',
-    value: QuestionType.LOGIC,
-  },
-  {
-    label: 'Coding',
-    value: QuestionType.CODING,
-  },
+  // {
+  //   label: 'Logic',
+  //   value: QuestionType.LOGIC,
+  // },
+  // {
+  //   label: 'Coding',
+  //   value: QuestionType.CODING,
+  // },
 ];
 
-export enum QuetionLevel {
+export enum QuestionLevels {
   JUNIOR = 'JUNIOR',
   INTERMEDIATE = 'INTERMEDIATE',
   SENIOR = 'SENIOR',
@@ -40,18 +40,18 @@ export enum QuetionLevel {
 export const QuestionLevel = [
   {
     label: 'Junior',
-    value: QuetionLevel.JUNIOR,
+    value: QuestionLevels.JUNIOR,
   },
   {
     label: 'Intermediate',
-    value: QuetionLevel.INTERMEDIATE,
+    value: QuestionLevels.INTERMEDIATE,
   },
   {
     label: 'Senior',
-    value: QuetionLevel.SENIOR,
+    value: QuestionLevels.SENIOR,
   },
   {
     label: 'Principal',
-    value: QuetionLevel.PRINCIPAL,
+    value: QuestionLevels.PRINCIPAL,
   },
 ];

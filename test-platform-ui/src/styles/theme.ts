@@ -1,6 +1,6 @@
 'use client';
 import { createTheme } from '@mui/material/styles';
-import type { } from '@mui/x-data-grid/themeAugmentation';
+import type {} from '@mui/x-data-grid/themeAugmentation';
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -59,7 +59,7 @@ const themeCustom = createTheme({
     primary: {
       main: '#002a37',
       // salsify_grass: '#33b27f',
-      cornflower_blue: '#2196f3'
+      cornflower_blue: '#2196f3',
     },
     base: {
       white: '#FFFFFF',
@@ -70,7 +70,7 @@ const themeCustom = createTheme({
     MuiDataGrid: {
       defaultProps: {
         rowHeight: 70,
-      }
+      },
     },
     MuiInputBase: {
       styleOverrides: {
@@ -99,7 +99,7 @@ const themeCustom = createTheme({
           borderRadius: 12,
           boxShadow: 'none',
           maxHeight: 48,
-          fontSize: 16,
+          fontSize: 13,
           borderColor: theme.palette.primary.cornflower_blue,
           color: theme.palette.base.black,
           textTransform: 'capitalize',
@@ -125,82 +125,82 @@ const themeCustom = createTheme({
     },
   },
   typography: {
-    // fontFamily: lusitana.style.fontFamily,
-    h1: {
-      fontSize: '64px',
-      lineHeight: '72px',
-      fontWeight: bold,
-    },
-    h2: {
-      fontSize: '56px',
-      lineHeight: '64px',
-      fontWeight: bold,
-    },
-    h3: {
-      fontSize: '48px',
-      lineHeight: '56px',
-      fontWeight: bold,
-    },
-    h4: {
-      fontSize: '40px',
-      lineHeight: '48px',
-      fontWeight: bold,
-    },
-    h5: {
-      fontSize: '32px',
-      lineHeight: '40px',
-      fontWeight: bold,
-    },
-    h6: {
-      fontSize: '24px',
-      lineHeight: '32px',
-      fontWeight: bold,
-    },
-    subtitle1: {
-      fontSize: '32px',
-      lineHeight: '24px',
-      fontWeight: medium,
-    },
-    subtitle2: {
-      fontSize: '28px',
-      lineHeight: '20px',
-      fontWeight: medium,
-    },
-    subtitle3: {
-      fontSize: '24px',
-      lineHeight: '16px',
-      fontWeight: medium,
-    },
-    subtitle4: {
-      fontSize: '20px',
-      lineHeight: '28px',
-      fontWeight: bold,
-    },
-    // body1: {
-    //   fontSize: '18px',
-    //   lineHeight: '26px',
+    // // fontFamily: lusitana.style.fontFamily,
+    // h1: {
+    //   fontSize: '31px',
+    //   lineHeight: '31px',
+    //   fontWeight: bold,
+    // },
+    // h2: {
+    //   fontSize: '27px',
+    //   lineHeight: '29px',
+    //   fontWeight: bold,
+    // },
+    // h3: {
+    //   fontSize: '21px',
+    //   lineHeight: '23px',
+    //   fontWeight: bold,
+    // },
+    // h4: {
+    //   fontSize: '17px',
+    //   lineHeight: '19px',
+    //   fontWeight: bold,
+    // },
+    // h5: {
+    //   fontSize: '15px',
+    //   lineHeight: '17px',
+    //   fontWeight: bold,
+    // },
+    // h6: {
+    //   fontSize: '13px',
+    //   lineHeight: '15px',
+    //   fontWeight: bold,
+    // },
+    // subtitle1: {
+    //   fontSize: '21px',
+    //   lineHeight: '23px',
+    //   fontWeight: medium,
+    // },
+    // subtitle2: {
+    //   fontSize: '17px',
+    //   lineHeight: '19px',
+    //   fontWeight: medium,
+    // },
+    // subtitle3: {
+    //   fontSize: '15px',
+    //   lineHeight: '17px',
+    //   fontWeight: medium,
+    // },
+    // subtitle4: {
+    //   fontSize: '13px',
+    //   lineHeight: '15px',
+    //   fontWeight: bold,
+    // },
+    // // body1: {
+    // //   fontSize: '18px',
+    // //   lineHeight: '26px',
+    // //   fontWeight: regular,
+    // // },
+    // body2: {
+    //   fontSize: '16px',
+    //   lineHeight: '24px',
     //   fontWeight: regular,
     // },
-    body2: {
-      fontSize: '16px',
-      lineHeight: '24px',
-      fontWeight: regular,
-    },
-    body3: {
-      fontSize: '14px',
-      lineHeight: '20px',
-      fontWeight: regular,
-    },
-    caption1: {
-      fontSize: '12px',
-      lineHeight: '18px',
-      fontWeight: regular,
-    },
-    caption2: {
-      fontSize: '10px',
-      lineHeight: '16px',
-      fontWeight: regular,
-    },
+    // body3: {
+    //   fontSize: '14px',
+    //   lineHeight: '20px',
+    //   fontWeight: regular,
+    // },
+    // caption1: {
+    //   fontSize: '12px',
+    //   lineHeight: '18px',
+    //   fontWeight: regular,
+    // },
+    // caption2: {
+    //   fontSize: '10px',
+    //   lineHeight: '16px',
+    //   fontWeight: regular,
+    // },
   },
 });
 export default themeCustom;

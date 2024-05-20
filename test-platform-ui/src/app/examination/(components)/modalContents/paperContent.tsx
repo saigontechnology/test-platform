@@ -18,10 +18,6 @@ export const PaperContent = <T,>({
   onChanged,
   error,
 }: IPaperContent<T>) => {
-  useEffect(() => {
-    console.log('Error: ', error);
-  });
-
   return (
     <Box
       sx={{
