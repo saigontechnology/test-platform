@@ -28,7 +28,7 @@ input:focus, input:focus-visible, input:focus-within, textarea {
 }
 
 .ql-container {
-  min-height: 200px;
-  max-height: 400px;
+  min-height: 10rem;
+  max-height: 24rem;
   overflow: auto;
 }
