@@ -12,7 +12,11 @@ export const multipleLinesTypo = (content: string) => {
   );
 };
 
-export default function CustomGrid(props: DataGridProps) {
+interface ICustomGrid extends DataGridProps {
+  height?: string;
+}
+
+export default function CustomGrid(props: ICustomGrid) {
   const { height } = props;
   const { data } = useContext(DataContext);
 
