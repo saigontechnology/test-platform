@@ -19,7 +19,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { IQuestionInfo } from '../../modifyQuestion';
+import { IQuestionInfo } from '../../models';
 
 interface IQuestionInterview {
   values: IQuestionInfo;
@@ -158,7 +158,7 @@ export function QuestionPreview({ values }: IQuestionInterview) {
                   height: '16px',
                 }}
               />
-              {millisToMinutesAndSeconds(values.time) || '30s'}
+              {millisToMinutesAndSeconds(values.duration)}
             </Typography>
           </Stack>
           <Box className="pt-6">
