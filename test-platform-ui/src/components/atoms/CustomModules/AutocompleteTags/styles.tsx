@@ -14,11 +14,12 @@ export interface TagProps extends ReturnType<AutocompleteGetTagProps> {
 
 function Tag(props: TagProps) {
   const { label, onDelete, removeItems, isSingle, ...other } = props;
-  console.log('Tag isSingle: ', isSingle);
   return (
     <div {...other}>
       <span>{label}</span>
-      <CloseIcon onClick={() => removeItems(other['data-tag-index'])} />
+      {isSingle ? null : (
+        <CloseIcon onClick={() => removeItems(other['data-tag-index'])} />
+      )}
     </div>
   );
 }
