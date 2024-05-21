@@ -89,6 +89,7 @@ export class AssessmentsService {
                 type: true,
                 answer: true,
                 category: true,
+                duration: true,
               },
             },
           },
