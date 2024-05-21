@@ -104,7 +104,7 @@ const themeCustom = createTheme({
           borderRadius: 12,
           boxShadow: 'none',
           maxHeight: 48,
-          fontSize: 16,
+          fontSize: 13,
           borderColor: theme.palette.primary.cornflower_blue,
           color: theme.palette.base.black,
           textTransform: 'capitalize',
@@ -186,26 +186,6 @@ const themeCustom = createTheme({
     //   lineHeight: '26px',
     //   fontWeight: regular,
     // },
-    body2: {
-      fontSize: '16px',
-      lineHeight: '24px',
-      fontWeight: regular,
-    },
-    body3: {
-      fontSize: '14px',
-      lineHeight: '20px',
-      fontWeight: regular,
-    },
-    caption1: {
-      fontSize: '12px',
-      lineHeight: '18px',
-      fontWeight: regular,
-    },
-    caption2: {
-      fontSize: '10px',
-      lineHeight: '16px',
-      fontWeight: regular,
-    },
   },
 });
 export default themeCustom;

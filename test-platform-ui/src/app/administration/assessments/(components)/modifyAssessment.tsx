@@ -4,15 +4,24 @@ import RichTextArea from '@/components/atoms/Editor/richtext';
 import { ICreateAssessment } from '@/constants/assessments';
 import { IResponseQuestion } from '@/constants/questions';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
+import { QuestionLevels, QuestionType } from '@/libs/definitions';
 import { showNotification } from '@/libs/toast';
 import { createAssessmentSchema } from '@/validations/assessment';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AddIcon from '@mui/icons-material/Add';
+import AlarmOnIcon from '@mui/icons-material/AlarmOn';
+import CategoryIcon from '@mui/icons-material/Category';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import Drawer from '@mui/material/Drawer';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { IQuestion } from '../../questions/page';
+
 interface IModifyAssessment {
   detail?: any;
 }
@@ -22,6 +31,8 @@ export default function ModifyAssessment(props: IModifyAssessment) {
   const router = useRouter();
   const [questionList, setQuestionList] = useState<IQuestion[]>([]);
   const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
+  const [selectedQuestion, setSelectedQuestion] = useState<IQuestion>();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     getQuestionsList();
@@ -40,9 +51,14 @@ export default function ModifyAssessment(props: IModifyAssessment) {
         answers: q.answer,
         options: q.options,
         type: q.type,
+        level: q.level,
+        duration: q.duration,
+        category: q.category,
+        question: q.question,
       };
     });
-    setQuestionList(_questionList);
+    setQuestionList(_questionList.slice(0, 5));
+    setSelectedQuestion(_questionList[0]);
   };
 
   const form = useForm<ICreateAssessment>({
@@ -111,12 +127,32 @@ export default function ModifyAssessment(props: IModifyAssessment) {
     }
   };
 
+  const handleSelect = (index: number) => {
+    setSelectedQuestion(questionList[index]);
+  };
+
+  const handleOpenDrawer = () => {
+    setIsDrawerOpen(true);
+  };
+
   const questionOptions = useMemo(() => {
     return questionList.map((item) => ({
       label: item.title,
       value: item.id,
     }));
   }, [questionList]);
+
+  const questionType: any = {
+    [QuestionType.SINGLE_CHOICE]: 'Single Choice',
+    [QuestionType.MULTIPLE_CHOICE]: 'Multiple Choice',
+  };
+
+  const questionLevel: any = {
+    [QuestionLevels.JUNIOR]: 'Junior',
+    [QuestionLevels.INTERMEDIATE]: 'Intermediate',
+    [QuestionLevels.SENIOR]: 'Senior',
+    [QuestionLevels.PRINCIPAL]: 'Principal',
+  };
 
   return (
     // <Box sx={{ overflow: 'auto' }}>
@@ -213,54 +249,161 @@ export default function ModifyAssessment(props: IModifyAssessment) {
     //     <DevTool control={control} />
     //   </FormProvider>
     // </Box>`
-    <div className="grid grid-cols-2 gap-4">
-      <div className="rounded-lg border border-gray-200 bg-white p-4">
-        <div className="border-b border-gray-200 pb-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="mr-2 font-medium">Assessment Name</span>
-              <EditIcon sx={{ fontSize: 18 }} />
+    <>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <div className="border-b border-gray-200 pb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="mr-2 font-medium">Assessment Name</span>
+                <EditIcon sx={{ fontSize: 18 }} />
+              </div>
+              <button onClick={handleOpenDrawer}>
+                <AddIcon sx={{ fontSize: 20 }} />
+                <span className="ml-2 text-sm">Add questions</span>
+              </button>
             </div>
-            <button>
-              <AddIcon sx={{ fontSize: 20 }} />
-              <span className="ml-2 text-sm">Add questions</span>
-            </button>
-          </div>
 
-          <div className="mt-2 flex items-center justify-between">
-            <div>
-              <span className="text-sm text-gray-400">Level</span>
-              <span className="ml-2 text-sm">Intermediate</span>
+            <div className="mt-2 flex items-center justify-between">
+              <div>
+                <span className="text-sm text-gray-400">Level</span>
+                <span className="ml-2 text-sm">Intermediate</span>
+              </div>
+              <div>
+                <span className="text-sm text-gray-400">
+                  Number of questions
+                </span>
+                <span className="ml-2 text-sm">0</span>
+              </div>
             </div>
-            <div>
-              <span className="text-sm text-gray-400">Number of questions</span>
-              <span className="ml-2 text-sm">0</span>
-            </div>
+          </div>
+          <div className="h-[calc(100vh_-_201px)] overflow-y-scroll pt-4">
+            <div className="text-sm text-gray-400">Question</div>
+            {questionList.map((question: IQuestion, index: number) => {
+              return (
+                <div className="mt-4 flex items-center pr-4" key={question.id}>
+                  <div className="px-4 text-sm text-gray-400">#{index + 1}</div>
+                  <div
+                    className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white p-4 text-sm"
+                    onClick={() => {
+                      handleSelect(index);
+                    }}
+                  >
+                    <div>
+                      <RichTextArea
+                        key={index}
+                        name={question.content}
+                        data={question.content}
+                        isReadOnly={true}
+                      />
+                      <div className="flex">
+                        <div className="text-xs font-medium text-gray-500">
+                          <CategoryIcon sx={{ fontSize: 14 }} />
+                          <span className="ml-1">{question.category}</span>
+                        </div>
+                        <div className="ml-4 text-xs font-medium text-gray-500">
+                          <KeyboardDoubleArrowUpIcon sx={{ fontSize: 14 }} />
+                          <span className="ml-1">
+                            {questionLevel[question.level]}
+                          </span>
+                        </div>
+                        <div className="ml-4 text-xs font-medium text-gray-500">
+                          <DescriptionIcon sx={{ fontSize: 14 }} />
+                          <span className="ml-1">
+                            {questionType[question.type]}
+                          </span>
+                        </div>
+                        <div className="ml-4 text-xs font-medium text-gray-500">
+                          <AlarmOnIcon sx={{ fontSize: 14 }} />
+                          <span className="ml-1">{question.duration}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="cursor-pointer p-4 text-gray-500">
+                      <DeleteOutlineIcon sx={{ fontSize: 18 }} />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            <div></div>
           </div>
         </div>
-        <div className="h-[calc(100vh_-_201px)] overflow-y-scroll pt-4">
-          <div className="text-sm text-gray-400">Question</div>
-          {questionList.map((question, index) => {
-            return (
-              <div className="mt-4 flex items-center pr-4">
-                <div className="px-4 text-sm text-gray-400">#{index + 1}</div>
-                <div className="w-full rounded-lg border border-gray-200 bg-white p-4 text-sm">
-                  <RichTextArea
-                    key="questionDescriptionPreview"
-                    name="notes"
-                    data={question.content}
-                    isReadOnly={true}
-                  />
+        <div>
+          {/* <div>Invitation</div> */}
+          <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <div className="border-b border-gray-200 pb-4 text-sm">Preview</div>
+            <div className="h-[calc(100vh_-_165px)] overflow-y-scroll pt-4 ">
+              <div className="text-lg">{selectedQuestion?.question}</div>
+              <div className="mt-4">
+                <div className="flex">
+                  <div className="text-xs font-medium text-gray-500">
+                    <CategoryIcon sx={{ fontSize: 14 }} />
+                    <span className="ml-1">{selectedQuestion?.category}</span>
+                  </div>
+                  <div className="ml-4 text-xs font-medium text-gray-500">
+                    <KeyboardDoubleArrowUpIcon sx={{ fontSize: 14 }} />
+                    <span className="ml-1">
+                      {questionLevel[selectedQuestion?.level]}
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-4 flex">
+                  <div className="text-xs font-medium text-gray-500">
+                    <DescriptionIcon sx={{ fontSize: 14 }} />
+                    <span className="ml-1">
+                      {questionType[selectedQuestion?.type]}
+                    </span>
+                  </div>
+                  <div className="ml-4 text-xs font-medium text-gray-500">
+                    <AlarmOnIcon sx={{ fontSize: 14 }} />
+                    <span className="ml-1">{selectedQuestion?.duration}</span>
+                  </div>
                 </div>
               </div>
-            );
-          })}
-          <div></div>
+              <div className="mt-4">
+                <RichTextArea
+                  name={selectedQuestion?.content}
+                  data={selectedQuestion?.content}
+                  isReadOnly={true}
+                />
+              </div>
+              <div className="mt-4 border-t border-gray-200 p-4">
+                <div className="text-center text-sm font-medium">Answers</div>
+                <div className="mt-4">
+                  <RadioGroup value={selectedQuestion?.answers[0] || null}>
+                    {selectedQuestion?.options?.map((item, index) => {
+                      return (
+                        <div key={index} className="mt-5">
+                          <div className="flex items-center rounded-md border-[1px] border-[#64748b] p-5">
+                            <FormControlLabel
+                              value={index}
+                              control={<Radio disabled />}
+                            />
+                            <RichTextArea
+                              key={index}
+                              name={item}
+                              data={item}
+                              isReadOnly={true}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </RadioGroup>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="rounded-lg border border-gray-200 bg-white p-4">
-        Preview
-      </div>
-    </div>
+      <Drawer
+        open={isDrawerOpen}
+        anchor="right"
+        onClose={() => setIsDrawerOpen(false)}
+      >
+        <div className="">Ahihi</div>
+      </Drawer>
+    </>
   );
 }

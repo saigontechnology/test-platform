@@ -31,6 +31,11 @@ export interface IQuestion {
   categories: string[];
   answers: number[];
   options: string[];
+  level: string;
+  type: string;
+  duration: number;
+  category: string;
+  question: string;
 }
 
 const VisuallyHiddenInput = styled('input')({
@@ -98,7 +103,6 @@ const Page = () => {
     fileReader.readAsText(file, 'UTF-8');
     fileReader.onload = async (e: any) => {
       let importQuestions = JSON.parse(e.target.result);
-      console.log(importQuestions);
       const mappedQuestions = await handleMappingImportData(
         'X',
         importQuestions,
@@ -169,7 +173,6 @@ const Page = () => {
         const level = QuestionLevel.find(
           (lvl) => lvl.value === params.row.level,
         );
-        console.log('level: ', level);
         return (
           <Box className="grid gap-1">
             {level ? <Chip label={level?.label} /> : null}
@@ -177,23 +180,6 @@ const Page = () => {
         );
       },
     },
-    // {
-    //   field: 'content',
-    //   headerName: 'Question Content',
-    //   flex: 0.8,
-    //   renderCell: (params) => {
-    //     if (isStringHTML(params.row.content)) {
-    //       return (
-    //         <Box
-    //           className="h-[150px] w-[350px] overflow-hidden text-ellipsis whitespace-normal"
-    //           dangerouslySetInnerHTML={{ __html: params.row.content }}
-    //         />
-    //       );
-    //     } else {
-    //       return multipleLinesTypo(params.row.content);
-    //     }
-    //   },
-    // },
     {
       field: 'categories',
       headerName: 'Categories',

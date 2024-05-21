@@ -5,10 +5,11 @@ import { FieldError, useController, useFormContext } from 'react-hook-form';
 interface ICustomTextField extends StandardTextFieldProps {
   name: string;
   customClass?: string;
+  isReadOnly?: boolean;
 }
 
 export default function CustomTextField(props: ICustomTextField) {
-  const { name, customClass } = props;
+  const { name, customClass, isReadOnly = false } = props;
   const { control } = useFormContext();
 
   const {
@@ -21,8 +22,12 @@ export default function CustomTextField(props: ICustomTextField) {
   return (
     <TextField
       className={customClass}
-      {...inputProps}
       {...props}
+      InputProps={{
+        ...inputProps,
+        readOnly: isReadOnly,
+        disableUnderline: isReadOnly,
+      }}
       error={invalid}
       helperText={invalid ? (error as FieldError)?.message : ''}
       variant="standard"

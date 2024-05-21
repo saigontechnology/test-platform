@@ -137,3 +137,15 @@ export function decodeHtml(html: string) {
   txt.innerHTML = html;
   return txt.value;
 }
+
+export function capitalizeFirstLetter(s: string) {
+  return s && s[0].toUpperCase() + s.slice(1).toLowerCase();
+}
+
+export function millisToMinutesAndSeconds(millis: number) {
+  const minutes = Math.floor(millis / 60000);
+  const seconds: any = ((millis % 60000) / 1000).toFixed(0);
+  return isNaN(minutes)
+    ? '0:00'
+    : minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+}

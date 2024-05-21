@@ -1,15 +1,15 @@
 'use client';
 
-import EditorLogic, {
-  EditorCode,
-} from '@/components/atoms/CodeEditor/editorLogic/editorLogic';
+import EditorLogic from '@/components/atoms/CodeEditor/editorLogic/editorLogic';
 import EditorUI from '@/components/atoms/CodeEditor/editorUI';
 import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
+import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { QuestionType } from '@/libs/definitions';
-import { decodeHtml, isStringHTML } from '@/libs/utils';
+import { showNotification } from '@/libs/toast';
+import { isStringHTML } from '@/libs/utils';
 import { createQuestionSchema } from '@/validations/questions';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -24,13 +24,15 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import RenderQuestionAnswers from './(question-form)/answers';
 import QuestionStandard from './(question-form)/questionLevel';
 import QuestionKind from './(question-form)/questionType';
-
+interface ICreateQuestion {
+  questionData: IQuestionInfo;
+}
 export interface IQuestionInfo {
   id: number;
   question: string;
@@ -42,10 +44,7 @@ export interface IQuestionInfo {
   options: string[];
   type: string;
   isModified: boolean;
-}
-
-interface ICreateQuestion {
-  questionData: IQuestionInfo;
+  time: number;
 }
 
 export interface IAnswer {
@@ -58,8 +57,15 @@ const manualErrors = [
   {
     type: 'manual',
     name: 'answers',
+    description: 'Error incase selected answers',
     message:
       'Selected answer(s) is not default correct answer(s). Please add explanation incase you ensure selected is correct answer(s) !',
+  },
+  {
+    type: 'minLength',
+    name: 'root',
+    description: 'Error incase none selected answers',
+    message: 'At least one checkbox has been checked',
   },
 ];
 
@@ -72,7 +78,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
 
   const mapEditAnswer = () => {
     const { options, answers } = questionData;
-    const mappedOpts = options.map((option: string, index: number) => ({
+    const mappedOpts = options?.map((option: string, index: number) => ({
       id: uuidv4(),
       answer: option,
       isCorrect: answers.includes(index),
@@ -104,31 +110,21 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   const questionType = watch('type');
   const notes = watch('notes');
 
-  const previewHTMLAnswer = useMemo(() => {
-    const _answer = answerArray.find((ans) => ans.isCorrect)?.answer || '';
-    const decodedHTML = decodeHtml(_answer);
+  // const previewHTMLAnswer = useMemo(() => {
+  //   const _answer = answerArray.find((ans) => ans.isCorrect)?.answer || '';
+  //   const decodedHTML = decodeHtml(_answer);
 
-    return (
-      <>
-        {/* <div
-          className="mt-4"
-          dangerouslySetInnerHTML={{
-            __html: answerArray.find((ans) => ans.isCorrect)?.answer || '',
-          }}
-        /> */}
-        <EditorCode
-          language={'html'}
-          value={decodedHTML}
-          height={300}
-          width={900}
-        />
-      </>
-    );
-  }, [answerArray]);
-
-  useEffect(() => {
-    console.log('isValid: ', isValid, getValues(), errors);
-  });
+  //   return (
+  //     <>
+  //       <EditorCode
+  //         language={'html'}
+  //         value={decodedHTML}
+  //         height={300}
+  //         width={900}
+  //       />
+  //     </>
+  //   );
+  // }, [answerArray]);
 
   useEffect(() => {
     const isExistHTMLAnswer = answerArray.find((ans) =>
@@ -138,23 +134,27 @@ export default function ModifyQuestion(props: ICreateQuestion) {
 
     // Validate selected answer(s):
     const originalAnswers = questionData.answers.sort().join(',');
-
     const selectedAnswers = answerArray
       .map((a, i) => (a.isCorrect ? i : null))
       .filter((a) => typeof a === 'number')
       .sort()
       .join(',');
 
-    console.log('answer change', originalAnswers, selectedAnswers);
-
     setIsValidAnswer(originalAnswers === selectedAnswers);
   }, [answerArray]);
 
+  useEffect(() => {
+    (() => {
+      const resetAnswersSelected = answerArray.map((answ) => ({
+        ...answ,
+        isCorrect: false,
+      }));
+      setAnswerArray(resetAnswersSelected);
+    })();
+  }, [questionType]);
+
   //#region : Handle interactive functions
   const HandleInteractions = {
-    handleAnswerChange: (answers: IAnswer[]) => {
-      setAnswerArray(answers);
-    },
     // handleQuestionContentChange: () => {},
     handleRedirect: (route: string) => {
       router.push(route);
@@ -179,29 +179,28 @@ export default function ModifyQuestion(props: ICreateQuestion) {
         isModified: true,
       };
 
-      console.log('formData: ', formData);
-
       // Executive handler data modified:
-      // if (formData.answer.length) {
-      //   setIsSubmitLoading(true);
-      //   const { error } = await (questionData.id
-      //     ? ApiHook(Methods.PUT, `/questions/${questionData.id}`, {
-      //         data: formData,
-      //       })
-      //     : ApiHook(Methods.POST, '/questions', {
-      //         data: formData,
-      //       }));
-      //   setIsSubmitLoading(false);
-      //   if (!error) {
-      //     showNotification('Upsert question successfully', 'success');
-      //     HandleInteractions.handleRedirect(ROUTE_KEY.ADMINISTRATION_QUESTIONS);
-      //   }
-      // } else {
-      //   setError('root', {
-      //     type: 'minLength',
-      //     message: 'At least one checkbox has been checked',
-      //   });
-      // }
+      if (formData.answer.length) {
+        // setIsSubmitLoading(true);
+        const { error } = await (questionData.id
+          ? ApiHook(Methods.PUT, `/questions/${questionData.id}`, {
+              data: formData,
+            })
+          : ApiHook(Methods.POST, '/questions', {
+              data: formData,
+            }));
+        // setIsSubmitLoading(false);
+        if (!error) {
+          showNotification('Upsert question successfully', 'success');
+          HandleInteractions.handleRedirect(ROUTE_KEY.ADMINISTRATION_QUESTIONS);
+        }
+      } else {
+        // const { type, name, message } = manualErrors[1];
+        // setError(name, {
+        //   type: type,
+        //   message: message,
+        // });
+      }
     },
     handleRenderCoding: (): JSX.Element => {
       if (questionType === QuestionType.CODING) {
@@ -219,8 +218,6 @@ export default function ModifyQuestion(props: ICreateQuestion) {
     const d = document.createElement('div');
     d.innerHTML = notes;
     const textContent = d.textContent || d.innerText;
-
-    console.log('isDisabledSubmit: ', textContent, textContent.length);
     return (
       !isValid ||
       (!isValidAnswer && !textContent?.length) ||
@@ -238,6 +235,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
         </Typography>
         <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
           <Button
+            className="font-semibold"
             color="primary"
             variant="contained"
             startIcon={<LibraryAddIcon />}
@@ -273,7 +271,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
         >
           <Box className="basis-2/5">
             <FormControl variant="standard" className="!w-11/12 pb-7">
-              <Typography className="font-semibold">Question</Typography>
+              <Typography className="font-semibold">Question Title</Typography>
               <CustomTextField
                 name="question"
                 className="ring-offset-0"
@@ -305,6 +303,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
               />
             </FormControl>
           </Box>
+          {/* Question information */}
           <Stack
             className="basis-3/5 gap-4"
             flexDirection="column"
@@ -320,22 +319,11 @@ export default function ModifyQuestion(props: ICreateQuestion) {
               HandleInteractions.handleRenderCoding()
             ) : (
               <>
-                <Stack className="mx-2 my-2 gap-12" direction="row" spacing={2}>
-                  <RenderQuestionAnswers
-                    questionType={questionType}
-                    renderAnswers={answerArray}
-                    handleAnswers={HandleInteractions.handleAnswerChange}
-                    error={errors['answers'] as any}
-                  />
-                  {isExistHTMLAns ? (
-                    <Box className="w-[inherit] overflow-hidden text-ellipsis whitespace-normal">
-                      <Typography className="font-semibold">
-                        Preview Code:
-                      </Typography>
-                      {previewHTMLAnswer}
-                    </Box>
-                  ) : null}
-                </Stack>
+                <RenderQuestionAnswers
+                  questionType={questionType}
+                  renderAnswers={answerArray}
+                  error={errors['answers'] as any}
+                />
                 {!isValidAnswer ? (
                   <Alert severity="error">{manualErrors[0]?.message}</Alert>
                 ) : null}
