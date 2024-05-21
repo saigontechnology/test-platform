@@ -8,12 +8,12 @@ import {
   useUpdateExaminationExpired,
 } from '@/hooks/examination/hooks';
 import { IExamAnswer } from '@/hooks/examination/types';
-import { formatTimeString, getClientSideCookie } from '@/libs/utils';
+import { formatTimeString } from '@/libs/utils';
 import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 import KeyboardDoubleArrowUpOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowUpOutlined';
 import ViewStreamOutlinedIcon from '@mui/icons-material/ViewStreamOutlined';
 import { CircularProgress } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Confetti from 'react-confetti';
 import ExaminationLayout from './(components)/examinationLayout';
 import LinkExpired from './(components)/linkExpired';
@@ -27,13 +27,30 @@ interface ISubmitExaminationResult {
   scored: number;
 }
 
+const getClientSideCookie = (name: string): string | undefined => {
+  if (typeof document !== 'undefined') {
+    const cookieValue = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith(`${name}=`))
+      ?.split('=')[1];
+
+    return cookieValue;
+  }
+  return undefined;
+};
+
 export default function Examination() {
   const [layout, setLayout] = useState<Layout>('overview');
   const { width, height } = useWindowSize();
   const [examinationResult, setExaminationResult] =
     useState<ISubmitExaminationResult>();
+  const [examId, setExamId] = useState<string | undefined>(undefined);
 
-  const examId = getClientSideCookie('examId');
+  useEffect(() => {
+    const id = getClientSideCookie('examId');
+    setExamId(id);
+  }, []);
+
   const {
     mutate: submitExaminationMutate,
     isPending: isSubmitExaminationPending,
@@ -73,7 +90,7 @@ export default function Examination() {
     switch (layout) {
       case 'overview':
         return !examination.isPending ? (
-          isExpired ? (
+          !isExpired ? (
             <LinkExpired />
           ) : (
             <div className="grid h-screen grid-cols-2 gap-2 p-20">
