@@ -2,6 +2,7 @@
 /* eslint-disable react/display-name */
 'use client';
 
+import RichTextArea from '@/components/atoms/Editor/richtext';
 import { IQuestion } from '@/constants/assessments';
 import { useGetAssessmentById } from '@/hooks/assessment/hooks';
 import { IExamAnswer } from '@/hooks/examination/types';
@@ -25,7 +26,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import Countdown from './countdown';
 import Loading from './loading';
@@ -156,16 +156,11 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
                       control={<Radio />}
                       label=""
                     />
-                    <ReactQuill
-                      theme="snow"
-                      style={{
-                        width: '100%',
-                        height: 'auto',
-                        borderRadius: 20,
-                      }}
-                      value={item}
-                      readOnly
-                      modules={{ toolbar: false }}
+                    <RichTextArea
+                      key={`${index}`}
+                      name="answer"
+                      data={item}
+                      isReadOnly={true}
                     />
                   </div>
                 </div>
@@ -185,16 +180,11 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
                       control={<Checkbox value={index} />}
                       label=""
                     />
-                    <ReactQuill
-                      theme="snow"
-                      style={{
-                        width: '100%',
-                        height: 'auto',
-                        borderRadius: 20,
-                      }}
-                      value={item}
-                      readOnly
-                      modules={{ toolbar: false }}
+                    <RichTextArea
+                      key={`${index}`}
+                      name="answer"
+                      data={item}
+                      isReadOnly={true}
                     />
                   </div>
                 </div>
@@ -237,7 +227,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
         <div className="flex items-center justify-center">
           <button
             onClick={() => dialogLeaveRef?.current?.openDialog()}
-            className="mb-2 me-2 rounded-lg border-[2px] border-blue-700 px-5 py-2.5 text-center text-sm font-medium text-blue-700 hover:bg-blue-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-500 dark:hover:text-white dark:focus:ring-blue-800"
+            className="mb-2 me-2 rounded-lg border-[2px] border-[#6c6e69] px-5 py-2.5 text-center text-sm font-medium text-[#6c6e69]"
           >
             <div className="flex items-center justify-center gap-2">
               <LogoutOutlinedIcon fontSize="small" />
@@ -257,7 +247,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
           )}
           <button
             onClick={() => handleManualNextQuestion()}
-            className="inline-flex items-center rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            className="inline-flex items-center rounded-lg bg-[#7bbd1e] px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-[#7bbd1e] focus:bg-[#7bbd1e] dark:bg-[#7bbd1e] dark:hover:bg-[#7bbd1e] dark:focus:bg-[#7bbd1e]"
           >
             {isLastQuestion ? 'Submit' : 'Next'}
             <svg
@@ -281,11 +271,17 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
           {assessment.isLoading ? (
             <SkeletonQuestion />
           ) : (
-            <ReactQuill
-              theme="snow"
-              value={currentQuestion?.question?.description!}
-              readOnly
-              modules={{ toolbar: false }}
+            // <ReactQuill
+            //   theme="snow"
+            //   value={currentQuestion?.question?.description!}
+            //   readOnly
+            //   modules={{ toolbar: false }}
+            // />
+            <RichTextArea
+              key="questionDescriptionPreview"
+              name="description"
+              data={currentQuestion?.question?.description!}
+              isReadOnly={true}
             />
           )}
         </div>
