@@ -149,7 +149,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
           .map((answer) => answer.answer),
         notes: modifiedQuestion.notes,
         isModified: true,
-        time: modifiedQuestion.time,
+        duration: modifiedQuestion.duration,
       };
 
       console.log('formData: ', formData, modifiedQuestion);
@@ -316,7 +316,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                   width={'60vw'}
                 >
                   <AutocompleteDifficult controlName="level" />
-                  <AutocompleteDuration controlName="time" />
+                  <AutocompleteDuration controlName="duration" />
                   <AutocompleteSkill controlName="category" />
                 </Stack>
               </Stack>

@@ -16,7 +16,7 @@ import {
 import { ReactElement, useEffect, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import { IAnswer } from '../../modifyQuestion';
+import { IAnswer } from '../../models';
 
 interface IQuestionAnswers {
   label?: string;

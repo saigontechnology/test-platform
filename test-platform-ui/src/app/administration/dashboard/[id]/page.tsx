@@ -39,7 +39,7 @@ interface IStatistic {
   questions: number;
   duration: number;
   active: boolean;
-  level: string;
+  level?: string;
 }
 
 export default async function Page() {
@@ -272,7 +272,7 @@ export default async function Page() {
             <div>
               <div className="text-sm font-medium">Assessment Level</div>
               <div
-                className={`text-xs text-gray-500 ${levelColor[statistic?.level]}`}
+                className={`text-xs text-gray-500 ${levelColor[statistic?.level || Level.Junior]}`}
               >
                 {statistic?.level}
               </div>
@@ -285,7 +285,7 @@ export default async function Page() {
             <div>
               <div className="text-sm font-medium">Assessment Duration</div>
               <div className="text-xs text-gray-500">
-                {formatTimeString(statistic?.duration)}
+                {formatTimeString(statistic?.duration || 30)}
               </div>
             </div>
           </div>

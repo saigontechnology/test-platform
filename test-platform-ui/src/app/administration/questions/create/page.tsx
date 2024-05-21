@@ -24,7 +24,7 @@ const CreateQuestion = () => {
           options: [],
           type: QuestionType.SINGLE_CHOICE,
           isModified: true,
-          time: 0,
+          duration: 0,
         }}
       />
     </Box>

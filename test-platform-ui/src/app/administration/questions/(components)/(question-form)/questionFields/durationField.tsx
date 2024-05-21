@@ -1,4 +1,5 @@
 import { IOptions } from '@/components/atoms/CustomModules/AutocompleteTags';
+import { formatTimeString } from '@/libs/utils';
 import AutocompleteQFields from './autocompleteCommonFields';
 
 interface IDuration extends IOptions {
@@ -8,32 +9,32 @@ interface IDuration extends IOptions {
 
 const Durations: IDuration[] = [
   {
-    name: '30s',
-    value: 30000,
+    name: formatTimeString(30),
+    value: 30,
   },
   {
-    name: '60s',
-    value: 60000,
+    name: formatTimeString(60),
+    value: 60,
   },
   {
-    name: '1 min, 30s',
-    value: 90000,
+    name: formatTimeString(90),
+    value: 90,
   },
   {
-    name: '2 mins',
-    value: 120000,
+    name: formatTimeString(120),
+    value: 120,
   },
   {
-    name: '3 mins',
-    value: 180000,
+    name: formatTimeString(180),
+    value: 180,
   },
   {
-    name: '5 mins',
-    value: 300000,
+    name: formatTimeString(300),
+    value: 300,
   },
   {
-    name: '10 mins',
-    value: 600000,
+    name: formatTimeString(600),
+    value: 600,
   },
 ];
 

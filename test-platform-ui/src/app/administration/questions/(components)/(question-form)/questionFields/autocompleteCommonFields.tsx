@@ -60,6 +60,7 @@ export default function AutocompleteQFields({
         name={controlName}
         control={control}
         render={({ field }) => {
+          console.log(`${controlName}: `, getValues(controlName));
           return (
             <AutocompleteTags
               {...field}
