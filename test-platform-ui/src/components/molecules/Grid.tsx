@@ -12,11 +12,16 @@ export const multipleLinesTypo = (content: string) => {
   );
 };
 
-export default function CustomGrid(props: DataGridProps) {
+interface ICustomGrid extends DataGridProps {
+  height?: string;
+}
+
+export default function CustomGrid(props: ICustomGrid) {
+  const { height } = props;
   const { data } = useContext(DataContext);
 
   return (
-    <Box className="h-[calc(100vh_-_96px)] w-full overflow-y-auto">
+    <Box className={`${height} w-full overflow-y-auto`}>
       <DataGrid
         sx={{
           '.MuiDataGrid-cell:focus, .MuiDataGrid-cell:focus-within': {
