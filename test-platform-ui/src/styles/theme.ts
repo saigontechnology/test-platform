@@ -51,7 +51,6 @@ declare module '@mui/material/Typography' {
   }
 }
 
-const regular = 400;
 const medium = 500;
 const bold = 700;
 
