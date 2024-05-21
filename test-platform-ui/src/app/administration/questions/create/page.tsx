@@ -19,10 +19,12 @@ const CreateQuestion = () => {
           notes: '',
           level: '',
           categories: [],
+          category: '',
           answers: [],
           options: [],
           type: QuestionType.SINGLE_CHOICE,
           isModified: true,
+          time: 0,
         }}
       />
     </Box>

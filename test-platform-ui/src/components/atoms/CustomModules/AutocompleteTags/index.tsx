@@ -18,21 +18,21 @@ export interface IOptions {
   [k: string]: any;
 }
 
-interface IAutocompleteTags {
+interface IAutocompleteTags<T> {
   options?: IOptions[];
   label?: string;
   selectedItems: IOptions[];
-  addItem: (item: IOptions) => void;
-  removeItem: (items: IOptions[]) => void;
+  addItem: (item: T | IOptions) => void;
+  removeItem: (items: T[] | IOptions[]) => void;
 }
 
-export default function AutocompleteTags({
+export default function AutocompleteTags<T>({
   options,
   label,
   selectedItems,
   addItem,
   removeItem,
-}: IAutocompleteTags) {
+}: IAutocompleteTags<T>) {
   const {
     getRootProps,
     getInputLabelProps,

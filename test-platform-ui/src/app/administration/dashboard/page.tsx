@@ -1,9 +1,10 @@
 'use client';
 
+import { Box } from '@mui/material';
+
 import DashboardCard from '@/app/administration/dashboard/(components)/dashboardCard';
 import { IAssessment } from '@/constants/assessments';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
-import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 
 export default async function Page() {
@@ -27,8 +28,8 @@ export default async function Page() {
               name={assessment.name}
               level={assessment.level}
               questions={assessment.assessmentQuestionMapping.length}
-              duration="25 mins"
-              status="active"
+              duration={assessment.duration}
+              active={assessment.active}
               id={assessment.id}
               key={assessment.id}
             />

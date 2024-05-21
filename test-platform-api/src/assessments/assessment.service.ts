@@ -30,6 +30,7 @@ export class AssessmentsService {
         level: true,
         name: true,
         createdAt: true,
+        active: true,
         assessmentQuestionMapping: {
           select: {
             createdAt: true,
@@ -88,6 +89,7 @@ export class AssessmentsService {
                 type: true,
                 answer: true,
                 category: true,
+                duration: true,
               },
             },
           },
