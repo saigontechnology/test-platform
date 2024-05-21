@@ -38,7 +38,7 @@ export interface IAddQuestion {
   question: string;
   notes: string;
   isModified: boolean;
-  time: number;
+  duration: number;
 }
 
 export interface IResponseQuestion {
