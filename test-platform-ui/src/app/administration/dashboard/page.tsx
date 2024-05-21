@@ -3,7 +3,7 @@
 
 import { Box } from '@mui/material';
 
-import DashboardCard from '@/app/administration/dashboard/(components)/dashboardCard';
+import DashboardCard from '@/components/molecules/DashboardCard';
 import { IAssessment } from '@/constants/assessments';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { useEffect, useState } from 'react';

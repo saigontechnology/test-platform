@@ -1,5 +1,6 @@
 'use client';
 
+import DashboardCard from '@/components/molecules/DashboardCard';
 import { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IAssessment } from '@/constants/assessments';
 import { ROUTE_KEY } from '@/constants/routePaths';
@@ -15,7 +16,6 @@ import { GridColDef } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import AssessmentCard from './(components)/assessmentCard';
 
 let externalRoute = null;
 
@@ -216,21 +216,12 @@ export default function EditAssessment() {
       <div className="col-span-2 grid grid-cols-1 gap-4 rounded md:grid-cols-2 lg:grid-cols-3">
         {assessments.map((assessment) => {
           return (
-            // <DashboardCard
-            //   name={assessment.name}
-            //   level={assessment.level}
-            //   questions={assessment.assessmentQuestionMapping.length}
-            //   duration="25 mins"
-            //   status="active"
-            //   id={assessment.id}
-            //   key={assessment.id}
-            // />
-            <AssessmentCard
+            <DashboardCard
               name={assessment.name}
               level={assessment.level}
               questions={assessment.assessmentQuestionMapping.length}
               duration={assessment.duration}
-              status={assessment.active}
+              active={assessment.active}
               id={assessment.id}
               key={assessment.id}
             />
