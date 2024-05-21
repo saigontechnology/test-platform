@@ -211,47 +211,54 @@ export class ExaminationsService {
   }
 
   async findAllExaminationsByAssessmentId(assessmentId: number) {
-    const examinations = await this.prisma.examination.findMany({
-      select: {
-        id: true,
-        email: true,
-        score: true,
-        status: true,
-        createdAt: true,
-        assessment: {
-          select: {
-            name: true,
-            level: true,
-            active: true,
-            assessmentQuestionMapping: {
-              select: {
-                questionId: true,
-                question: {
-                  select: {
-                    duration: true,
+    const response = await Promise.all([
+      this.assessment.findOne(assessmentId),
+      this.prisma.examination.findMany({
+        select: {
+          id: true,
+          email: true,
+          score: true,
+          status: true,
+          createdAt: true,
+          assessment: {
+            select: {
+              name: true,
+              level: true,
+              active: true,
+              assessmentQuestionMapping: {
+                select: {
+                  questionId: true,
+                  question: {
+                    select: {
+                      duration: true,
+                    },
                   },
                 },
               },
             },
           },
-        },
-        expireUtil: true,
-        submittedAnswers: {
-          select: {
-            question: {
-              select: {
-                question: true,
-                options: true,
+          expireUtil: true,
+          submittedAnswers: {
+            select: {
+              question: {
+                select: {
+                  question: true,
+                  options: true,
+                },
               },
+              selections: true,
             },
-            selections: true,
           },
         },
-      },
-      where: {
-        assessmentId,
-      },
-    });
+        where: {
+          assessmentId,
+        },
+      }),
+    ]);
+
+    const assessment = response[0];
+    const examinations = response[1];
+
     const invited = examinations.length;
     const completed = examinations.filter(
       (exam) => exam.status === ExaminationStatus.COMPLETED,
@@ -263,17 +270,7 @@ export class ExaminationsService {
     const failed = examinations.filter(
       (exam) => exam.status === ExaminationStatus.EVALUATED,
     ).length;
-    const questions =
-      examinations[0].assessment.assessmentQuestionMapping.length;
-    const duration =
-      examinations[0].assessment.assessmentQuestionMapping.reduce(
-        (accumulator, currentValue) => {
-          return accumulator + currentValue.question.duration;
-        },
-        0,
-      );
-    const active = examinations[0].assessment.active;
-    const level = examinations[0].assessment.level;
+
     return {
       examination: examinations.map((exam) => {
         const empCode = exam.email.split("@")[0];
@@ -289,10 +286,12 @@ export class ExaminationsService {
         processing: Math.round((processing * 100) / invited),
         completedPercent: Math.round((completed * 100) / invited),
         failed: Math.round((failed * 100) / invited),
-        questions,
-        duration,
-        active,
-        level,
+      },
+      assessment: {
+        questions: assessment.questions,
+        duration: assessment.duration,
+        active: assessment.active,
+        level: assessment.level,
       },
     };
   }

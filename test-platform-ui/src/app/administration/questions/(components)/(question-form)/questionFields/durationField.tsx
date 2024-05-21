@@ -48,6 +48,7 @@ export default function AutocompleteDuration({
       controlName={controlName}
       options={Durations}
       label="Expected duration (in minus.)"
+      singleMode={true}
     />
   );
 }

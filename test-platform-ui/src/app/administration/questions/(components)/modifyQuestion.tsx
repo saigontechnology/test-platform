@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import { QuestionPreview } from './(question-form)/preview';
@@ -55,8 +55,8 @@ const EditorUIQuestion = dynamic(
 export default function ModifyQuestion(props: ICreateQuestion) {
   const { questionData } = props;
   const router = useRouter();
-  const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
-  const [isValidAnswer, setIsValidAnswer] = useState<boolean>(false);
+  const [_isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
+  const [_isValidAnswer, setIsValidAnswer] = useState<boolean>(false);
   const [tab, setTabValue] = useState(0);
   const tempNotes = useRef<string | null>(null);
 
@@ -94,10 +94,9 @@ export default function ModifyQuestion(props: ICreateQuestion) {
     watch,
     getValues,
     setValue,
-    formState: { isValid, errors },
+    formState: { errors },
   } = form;
   const questionType = watch('type');
-  const notes = watch('notes');
 
   useEffect(() => {
     // Validate selected answer(s):
@@ -192,19 +191,19 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   };
   //#endregion
 
-  const isDisabledSubmit = useMemo((): boolean => {
-    const d = document.createElement('div');
-    d.innerHTML = notes;
-    const textContent = d.textContent || d.innerText;
+  // const isDisabledSubmit = useMemo((): boolean => {
+  //   const d = document.createElement('div');
+  //   d.innerHTML = notes;
+  //   const textContent = d.textContent || d.innerText;
 
-    const _isValidated =
-      !isValid ||
-      (!isValidAnswer && !textContent?.length) ||
-      isSubmitLoading ||
-      questionType == QuestionType.CODING;
+  //   const _isValidated =
+  //     !isValid ||
+  //     (!isValidAnswer && !textContent?.length) ||
+  //     isSubmitLoading ||
+  //     questionType == QuestionType.CODING;
 
-    return _isValidated;
-  }, []);
+  //   return _isValidated;
+  // }, []);
 
   //#region : Create question form
   function CustomTabPanel(props: TabPanelProps) {

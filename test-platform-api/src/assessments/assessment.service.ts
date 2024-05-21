@@ -68,7 +68,7 @@ export class AssessmentsService {
   }
 
   async findOne(id: number) {
-    return await this.prisma.assessment.findUnique({
+    const assessment = await this.prisma.assessment.findUnique({
       where: {
         id,
       },
@@ -77,6 +77,7 @@ export class AssessmentsService {
         level: true,
         name: true,
         createdAt: true,
+        active: true,
         assessmentQuestionMapping: {
           select: {
             createdAt: true,
@@ -96,6 +97,19 @@ export class AssessmentsService {
         },
       },
     });
+    const questions = assessment.assessmentQuestionMapping.length;
+    const duration = assessment.assessmentQuestionMapping.reduce(
+      (accumulator, currentValue) => {
+        return accumulator + currentValue.question.duration;
+      },
+      0,
+    );
+
+    return {
+      ...assessment,
+      questions,
+      duration,
+    };
   }
 
   async update(id: number, updateAssessmentDto: UpdateAssessmentDto) {
