@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { UpdateAssessmentDto } from "./dto/update-assessment.dto";
 import { CreateAssessmentDto } from "./dto/create-assessment.dto";
+import { UpdateAssessmentDto } from "./dto/update-assessment.dto";
 
 @Injectable()
 export class AssessmentsService {
@@ -42,6 +42,7 @@ export class AssessmentsService {
                 type: true,
                 answer: true,
                 category: true,
+                duration: true,
               },
             },
           },
