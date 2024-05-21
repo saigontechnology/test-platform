@@ -24,6 +24,7 @@ interface IAutocompleteTags<T> {
   selectedItems: IOptions[];
   addItem: (item: T | IOptions) => void;
   removeItem: (items: T[] | IOptions[]) => void;
+  single?: boolean;
 }
 
 export default function AutocompleteTags<T>({
@@ -32,6 +33,7 @@ export default function AutocompleteTags<T>({
   selectedItems,
   addItem,
   removeItem,
+  single,
 }: IAutocompleteTags<T>) {
   const {
     getRootProps,
@@ -76,6 +78,7 @@ export default function AutocompleteTags<T>({
                   _tempItems.splice(index, 1);
                   removeItem(_tempItems);
                 }}
+                isSingle={single}
               />
             );
           })}

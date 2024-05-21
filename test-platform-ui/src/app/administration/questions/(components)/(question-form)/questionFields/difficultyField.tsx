@@ -38,6 +38,7 @@ export default function AutocompleteDifficult({
       controlName={controlName}
       options={Difficulty}
       label="Difficult"
+      singleMode={true}
     />
   );
 }
