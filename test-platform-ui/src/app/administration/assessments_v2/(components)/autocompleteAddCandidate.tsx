@@ -1,11 +1,13 @@
-import AutocompleteTags from '@/components/atoms/CustomModules/AutocompleteTags';
+import AutocompleteTags, {
+  IOptions,
+} from '@/components/atoms/CustomModules/AutocompleteTags';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-export interface IEmployee {
+export interface IEmployee extends IOptions {
   name: string;
-  empCode: string;
-  email: string;
+  empCode?: string;
+  email?: string;
 }
 
 const EmployeeEmails: IEmployee[] = [
@@ -71,9 +73,9 @@ export default function AccordionExpandIcon() {
   return (
     <AutocompleteTags
       options={EmployeeEmails}
-      selectedCandidates={candidates}
-      addCandidate={handleAddCandidate}
-      removeCandidate={handleRemoveCandidate}
+      selectedItems={candidates}
+      addItem={handleAddCandidate}
+      removeItem={handleRemoveCandidate}
       label="Employee Email(s) :"
     />
   );

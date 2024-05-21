@@ -25,7 +25,7 @@ const CustomRadioGroup = ({
   const { control } = useFormContext();
 
   return (
-    <FormControl className="pb-6">
+    <FormControl className="gap-4 pb-4">
       {label?.length ? (
         <Typography className="font-semibold">{label}</Typography>
       ) : null}
