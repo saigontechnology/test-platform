@@ -36,10 +36,13 @@ interface IStatistic {
   processing: number;
   completedPercent: number;
   failed: number;
-  questions: number;
-  duration: number;
+}
+
+interface IAssessment {
   active: boolean;
-  level?: string;
+  duration: number;
+  level: string;
+  questions: number;
 }
 
 export default async function Page() {
@@ -48,6 +51,7 @@ export default async function Page() {
   const [isLoading, toggleLoading] = useState<boolean>(true);
   const [examsInfo, setExamsInfo] = useState<Array<IExamResults>>([]);
   const [statistic, setStatistic] = useState<IStatistic>();
+  const [assessment, setAssessment] = useState<IAssessment>();
 
   useEffect(() => {
     getExaminationByAssessment();
@@ -66,7 +70,7 @@ export default async function Page() {
       Methods.GET,
       `/examinations/assessments/${assessmentId}`,
     );
-    const { examination, statistic } = response.data;
+    const { examination, statistic, assessment } = response.data;
     const examinationsInfo: IExamResults[] = (
       examination as Array<IExamination>
     ).map((ex: IExamination) => {
@@ -95,6 +99,7 @@ export default async function Page() {
     });
     setStatistic(statistic);
     setExamsInfo(examinationsInfo);
+    setAssessment(assessment);
     toggleLoading(false);
   };
 
@@ -242,7 +247,7 @@ export default async function Page() {
             <div className="mr-4 ">
               <Brightness1Icon
                 sx={{
-                  color: statistic?.active ? '#7bbd1e' : '#d1d5db',
+                  color: assessment?.active ? '#7bbd1e' : '#d1d5db',
                   fontSize: 16,
                 }}
               />
@@ -250,7 +255,7 @@ export default async function Page() {
             <div>
               <div className="text-sm font-medium">Assessment Status</div>
               <div className="text-xs text-gray-500">
-                {statistic?.active ? 'Active' : 'Inactive'}
+                {assessment?.active ? 'Active' : 'Inactive'}
               </div>
             </div>
           </div>
@@ -261,7 +266,7 @@ export default async function Page() {
             <div>
               <div className="text-sm font-medium">Assessment Questions</div>
               <div className="text-xs text-gray-500">
-                {statistic?.questions} Questions added
+                {assessment?.questions} Questions added
               </div>
             </div>
           </div>
@@ -272,9 +277,9 @@ export default async function Page() {
             <div>
               <div className="text-sm font-medium">Assessment Level</div>
               <div
-                className={`text-xs text-gray-500 ${levelColor[statistic?.level || Level.Junior]}`}
+                className={`text-xs text-gray-500 ${levelColor[assessment?.level || Level.Junior]}`}
               >
-                {statistic?.level}
+                {assessment?.level}
               </div>
             </div>
           </div>
@@ -285,7 +290,7 @@ export default async function Page() {
             <div>
               <div className="text-sm font-medium">Assessment Duration</div>
               <div className="text-xs text-gray-500">
-                {formatTimeString(statistic?.duration || 30)}
+                {formatTimeString(assessment?.duration || 30)}
               </div>
             </div>
           </div>
