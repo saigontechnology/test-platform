@@ -175,6 +175,7 @@ export default async function Page() {
           columns={columns}
           rows={examsInfo}
           loading={isLoading}
+          height="h-[calc(100vh_-_96px)]"
           getRowClassName={(params) =>
             params?.indexRelativeToCurrentPage % 2 === 0
               ? 'bg-gray-100'

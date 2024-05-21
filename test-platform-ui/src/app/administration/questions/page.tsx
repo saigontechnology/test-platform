@@ -304,7 +304,12 @@ const Page = () => {
         </Box>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={questionList} columns={columns} loading={loading} />
+      <DataTable
+        rows={questionList}
+        columns={columns}
+        loading={loading}
+        height="h-[calc(100vh_-_215px)]"
+      />
       <CustomModal ref={modalRef} title={''}>
         <ModalContent />
       </CustomModal>
