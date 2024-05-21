@@ -16,10 +16,12 @@ export default function AutocompleteQFields({
   controlName,
   options,
   label,
+  singleMode,
 }: {
   controlName: string;
   options: any;
   label?: string;
+  singleMode?: boolean;
 }) {
   const { control, watch } = useFormContext();
   const { setValue, getValues } = useFormContext();
@@ -60,7 +62,6 @@ export default function AutocompleteQFields({
         name={controlName}
         control={control}
         render={({ field }) => {
-          console.log(`${controlName}: `, getValues(controlName));
           return (
             <AutocompleteTags
               {...field}
@@ -68,6 +69,7 @@ export default function AutocompleteQFields({
               selectedItems={selectedDifficult ? selectedDifficult : []}
               addItem={(item) => handleAddItem(item as IDifficulty)}
               removeItem={(items) => handleRemoveItem(items as IDifficulty[])}
+              single={singleMode}
             />
           );
         }}

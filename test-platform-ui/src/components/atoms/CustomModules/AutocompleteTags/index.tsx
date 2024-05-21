@@ -24,6 +24,7 @@ interface IAutocompleteTags<T> {
   selectedItems: IOptions[];
   addItem: (item: T | IOptions) => void;
   removeItem: (items: T[] | IOptions[]) => void;
+  single?: boolean;
 }
 
 export default function AutocompleteTags<T>({
@@ -32,6 +33,7 @@ export default function AutocompleteTags<T>({
   selectedItems,
   addItem,
   removeItem,
+  single,
 }: IAutocompleteTags<T>) {
   const {
     getRootProps,
@@ -61,6 +63,26 @@ export default function AutocompleteTags<T>({
     },
   });
 
+  const ListItem = ({ option, index }: { option: IOptions; index: number }) => {
+    const isSelected = selectedItems?.includes(option);
+    return (
+      <Item
+        isDisabled={isSelected}
+        {...getOptionProps({ option, index })}
+        value={option.subName}
+      >
+        <span
+          dangerouslySetInnerHTML={{
+            __html: `<p><b>${option.name}</b>${
+              option.subName ? `- <i></i>${option.subName}</p>` : ''
+            }`,
+          }}
+        />
+        {isSelected ? <CheckIcon fontSize="small" /> : null}
+      </Item>
+    );
+  };
+
   return (
     <Wrapper>
       <div {...getRootProps()}>
@@ -76,6 +98,7 @@ export default function AutocompleteTags<T>({
                   _tempItems.splice(index, 1);
                   removeItem(_tempItems);
                 }}
+                isSingle={single}
               />
             );
           })}
@@ -85,20 +108,7 @@ export default function AutocompleteTags<T>({
       {groupedOptions.length > 0 && options?.length ? (
         <Listbox {...getListboxProps()}>
           {(groupedOptions as typeof options).map((option, index) => (
-            <Item
-              isDisabled={selectedItems?.includes(option)}
-              {...getOptionProps({ option, index })}
-              value={option.subName}
-            >
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: `<p><b>${option.name}</b>${
-                    option.subName ? `- <i></i>${option.subName}</p>` : ''
-                  }`,
-                }}
-              />
-              <CheckIcon fontSize="small" />
-            </Item>
+            <ListItem option={option} index={index} />
           ))}
         </Listbox>
       ) : null}

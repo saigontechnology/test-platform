@@ -39,6 +39,7 @@ export default function AutocompleteSkill({
       controlName={controlName}
       options={ArraySkills}
       label="Skill"
+      singleMode={true}
     />
   );
 }

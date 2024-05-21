@@ -6,12 +6,20 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+export interface TagProps extends ReturnType<AutocompleteGetTagProps> {
+  label: string;
+  removeItems: (index: number) => void;
+  isSingle?: boolean;
+}
+
 function Tag(props: TagProps) {
-  const { label, onDelete, removeItems, ...other } = props;
+  const { label, onDelete, removeItems, isSingle, ...other } = props;
   return (
     <div {...other}>
       <span>{label}</span>
-      <CloseIcon onClick={() => removeItems(other['data-tag-index'])} />
+      {isSingle ? null : (
+        <CloseIcon onClick={() => removeItems(other['data-tag-index'])} />
+      )}
     </div>
   );
 }
@@ -71,11 +79,6 @@ export const InputWrapper = styled('div')(
     }
   `,
 );
-
-export interface TagProps extends ReturnType<AutocompleteGetTagProps> {
-  label: string;
-  removeItems: (index: number) => void;
-}
 
 export const StyledTag = styled(Tag)<TagProps>(
   ({ theme }) => `
