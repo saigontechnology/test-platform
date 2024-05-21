@@ -9,5 +9,5 @@ export const createQuestionSchema = Yup.object({
   //   .min(1),
   level: Yup.string().required(VALIDATE_MESSAGE.REQUIRE_MESSAGE),
   type: Yup.string().required(VALIDATE_MESSAGE.REQUIRE_MESSAGE),
-  time: Yup.number().required(VALIDATE_MESSAGE.REQUIRE_MESSAGE),
+  duration: Yup.number().required(VALIDATE_MESSAGE.REQUIRE_MESSAGE),
 });

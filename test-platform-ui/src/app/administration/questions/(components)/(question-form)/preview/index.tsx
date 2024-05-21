@@ -4,7 +4,7 @@ import { TitleWLine } from '@/components/atoms/CustomModules/AutocompleteTags/st
 import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { QuestionLevels, QuestionType } from '@/libs/definitions';
-import { capitalizeFirstLetter, millisToMinutesAndSeconds } from '@/libs/utils';
+import { capitalizeFirstLetter, formatTimeString } from '@/libs/utils';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CollectionsBookmarkOutlinedIcon from '@mui/icons-material/CollectionsBookmarkOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
@@ -19,6 +19,7 @@ import {
   Typography,
   styled,
 } from '@mui/material';
+import { useEffect } from 'react';
 import { IQuestionInfo } from '../../models';
 
 interface IQuestionInterview {
@@ -78,6 +79,10 @@ export function QuestionPreview({ values }: IQuestionInterview) {
       </TitleWLine>
     );
   };
+
+  useEffect(() => {
+    console.log('values: ', values);
+  });
 
   return (
     <Stack
@@ -158,7 +163,7 @@ export function QuestionPreview({ values }: IQuestionInterview) {
                   height: '16px',
                 }}
               />
-              {millisToMinutesAndSeconds(values.duration)}
+              {formatTimeString(values.duration)}
             </Typography>
           </Stack>
           <Box className="pt-6">

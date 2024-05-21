@@ -121,6 +121,8 @@ export default function ModifyQuestion(props: ICreateQuestion) {
 
   useEffect(() => {
     if (tempNotes.current) {
+      console.log('tempNotes: ', tempNotes);
+      setValue('notes', tempNotes.current);
       tempNotes.current = null;
     }
   });
@@ -135,7 +137,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
       const formData = {
         question: modifiedQuestion.question,
         description: modifiedQuestion.description,
-        categories: modifiedQuestion.categories,
+        categories: modifiedQuestion.categories.concat(getValues('category')),
         category: getValues('category'),
         level: modifiedQuestion.level,
         type: modifiedQuestion.type,

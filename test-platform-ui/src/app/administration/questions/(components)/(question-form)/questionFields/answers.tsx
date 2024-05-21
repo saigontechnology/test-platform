@@ -56,7 +56,16 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
   //#region : Handle interaction functions
   const HandleInteractions = {
     updateStateAnswers: (updatedAnswers: IAnswer[]) => {
+      console.log('updateStateAnswers: ', updatedAnswers);
       setAnswers(updatedAnswers);
+      setValue(
+        'options',
+        updatedAnswers
+          .map((answ) => {
+            if (answ.answer.length) return answ.answer;
+          })
+          .filter(Boolean),
+      );
       handleAnswers && handleAnswers(updatedAnswers);
     },
     handleAnswerChanges: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,6 +82,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
     },
     handleRemoveAnswer: (answer: IAnswer) => {
       const minusAnswers = [...answers];
+      console.log('handleRemoveAnswer: ', minusAnswers);
       minusAnswers.splice(minusAnswers.indexOf(answer), 1);
       if (minusAnswers.length < 4 && !minusAnswers.find((answ) => !answ.id)) {
         minusAnswers.push(initialAnswer);
@@ -80,7 +90,8 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       HandleInteractions.updateStateAnswers(minusAnswers);
     },
     handleAddAnswer: () => {
-      const modifiedAnswers = [...answers];
+      const modifiedAnswers = [...answersRef.current];
+      console.log('modified answers: ', modifiedAnswers);
       modifiedAnswers[modifiedAnswers.length - 1].id = uuidv4();
       if (modifiedAnswers.length < 4) {
         modifiedAnswers.push(initialAnswer);
@@ -122,7 +133,7 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
       >
         <Checkbox
           checked={answ.isCorrect}
-          disabled={!answ.id}
+          disabled={!answ.answer}
           onClick={() => HandleInteractions.handleSelectCorrect(answ)}
         />
         {/** Notes: Specific cases answer include code patterns, simply envision the answer contents. */}
@@ -141,10 +152,11 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
             );
             // HandleInteractions.updateStateAnswers(answersModified);
             answersRef.current = answersModified;
-            setValue(
-              'options',
-              answersModified.map((answ) => answ.answer),
-            );
+            isEditable &&
+              setValue(
+                'options',
+                answersModified.map((answ) => answ.answer),
+              );
           }}
         />
 
@@ -166,14 +178,28 @@ const RenderQuestionAnswers = (props: IQuestionAnswers): ReactElement => {
             </IconButton>
           </div>
         ) : (
-          <IconButton
-            color="primary"
-            disabled={!answ.answer.trim().length}
-            onClick={HandleInteractions.handleAddAnswer}
-            type="button"
-          >
-            <AddBox />
-          </IconButton>
+          <Box>
+            {isEditable ? (
+              <IconButton
+                color="success"
+                onClick={() => {
+                  toggleEditable(false);
+                  HandleInteractions.handleAddAnswer();
+                }}
+                type="button"
+              >
+                <Done />
+              </IconButton>
+            ) : (
+              <IconButton
+                color="primary"
+                onClick={() => toggleEditable(true)}
+                type="button"
+              >
+                <AddBox />
+              </IconButton>
+            )}
+          </Box>
         )}
       </FormControl>
     );
