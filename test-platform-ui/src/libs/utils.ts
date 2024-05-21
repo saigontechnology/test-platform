@@ -149,3 +149,16 @@ export function millisToMinutesAndSeconds(millis: number) {
     ? '0:00'
     : minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 }
+export function formatTimeString(seconds: number): string {
+  if (seconds < 60) {
+      return `${seconds} seconds`;
+  } else {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      if (remainingSeconds === 0) {
+          return `${minutes} mins`;
+      } else {
+          return `${minutes} mins ${remainingSeconds} seconds`;
+      }
+  }
+}

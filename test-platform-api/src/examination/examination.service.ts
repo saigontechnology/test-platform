@@ -68,7 +68,7 @@ export class ExaminationsService {
   }
 
   async findOne(id: number) {
-    return await this.prisma.examination.findUnique({
+    let result = await this.prisma.examination.findUnique({
       where: { id },
       select: {
         id: true,
@@ -81,6 +81,11 @@ export class ExaminationsService {
           select: {
             name: true,
             level: true,
+            assessmentQuestionMapping: {
+              select: {
+                question: true,
+              },
+            },
           },
         },
         expireUtil: true,
@@ -97,6 +102,22 @@ export class ExaminationsService {
         },
       },
     });
+
+    const durationTotal = result?.assessment?.assessmentQuestionMapping?.reduce(
+      (total, item) => {
+        const duration = item?.question?.duration ?? 0;
+        return total + duration;
+      },
+      0,
+    );
+
+    let resultFormat: any = { ...result };
+    resultFormat.durationTotal = durationTotal;
+    resultFormat.questionNumbers = result?.assessment?.assessmentQuestionMapping.length;
+
+    delete resultFormat.assessment.assessmentQuestionMapping;
+
+    return { ...resultFormat };
   }
 
   async update(id: number, updateExaminationDto: UpdateExaminationDto) {
@@ -117,7 +138,7 @@ export class ExaminationsService {
     const assessmentInfo = await this.assessment.findOne(
       updateExaminationDto.assessmentId,
     );
-    const { email, scored } = calculateExamScored(
+    const { email, scored, correctQuestions } = calculateExamScored(
       assessmentInfo,
       updateExaminationDto.selections,
       updateExaminationDto.email,
@@ -134,7 +155,7 @@ export class ExaminationsService {
       },
     });
     await sendResult(email, assessmentInfo.name, scored);
-    return { email, scored };
+    return { email, scored, correctQuestions };
   }
 
   async remove(id: number) {
