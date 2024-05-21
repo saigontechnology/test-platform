@@ -113,7 +113,8 @@ export class ExaminationsService {
 
     let resultFormat: any = { ...result };
     resultFormat.durationTotal = durationTotal;
-    resultFormat.questionNumbers = result?.assessment?.assessmentQuestionMapping.length;
+    resultFormat.questionNumbers =
+      result?.assessment?.assessmentQuestionMapping.length;
 
     delete resultFormat.assessment.assessmentQuestionMapping;
 
@@ -221,9 +222,15 @@ export class ExaminationsService {
           select: {
             name: true,
             level: true,
+            active: true,
             assessmentQuestionMapping: {
               select: {
                 questionId: true,
+                question: {
+                  select: {
+                    duration: true,
+                  },
+                },
               },
             },
           },
@@ -258,7 +265,15 @@ export class ExaminationsService {
     ).length;
     const questions =
       examinations[0].assessment.assessmentQuestionMapping.length;
-
+    const duration =
+      examinations[0].assessment.assessmentQuestionMapping.reduce(
+        (accumulator, currentValue) => {
+          return accumulator + currentValue.question.duration;
+        },
+        0,
+      );
+    const active = examinations[0].assessment.active;
+    const level = examinations[0].assessment.level;
     return {
       examination: examinations.map((exam) => {
         const empCode = exam.email.split("@")[0];
@@ -275,6 +290,9 @@ export class ExaminationsService {
         completedPercent: Math.round((completed * 100) / invited),
         failed: Math.round((failed * 100) / invited),
         questions,
+        duration,
+        active,
+        level,
       },
     };
   }

@@ -1,6 +1,6 @@
 import { QuestionType } from '@/libs/definitions';
 
-const Level = {
+export const Level = {
   Junior: 'Junior',
   Intermediate: 'Intermediate',
   Senior: 'Senior',
@@ -100,5 +100,5 @@ export interface IExamination {
   expireUtil: string;
   empCode: string;
   durationTotal?: number;
-  questionNumbers?: number
+  questionNumbers?: number;
 }
