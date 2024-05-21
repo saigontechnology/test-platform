@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { UpdateAssessmentDto } from "./dto/update-assessment.dto";
 import { CreateAssessmentDto } from "./dto/create-assessment.dto";
+import { UpdateAssessmentDto } from "./dto/update-assessment.dto";
 
 @Injectable()
 export class AssessmentsService {
@@ -24,12 +24,13 @@ export class AssessmentsService {
   }
 
   async findAll() {
-    return await this.prisma.assessment.findMany({
+    const assessments = await this.prisma.assessment.findMany({
       select: {
         id: true,
         level: true,
         name: true,
         createdAt: true,
+        active: true,
         assessmentQuestionMapping: {
           select: {
             createdAt: true,
@@ -48,6 +49,21 @@ export class AssessmentsService {
           },
         },
       },
+    });
+
+    return assessments.map((assessment) => {
+      const questions = assessment.assessmentQuestionMapping.length;
+      const duration = assessment.assessmentQuestionMapping.reduce(
+        (accumulator, currentValue) => {
+          return accumulator + currentValue.question.duration;
+        },
+        0,
+      );
+      return {
+        ...assessment,
+        questions,
+        duration,
+      };
     });
   }
 
