@@ -149,3 +149,30 @@ export function millisToMinutesAndSeconds(millis: number) {
     ? '0:00'
     : minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 }
+export function formatTimeString(value: number): string {
+  if (value === 0) {
+    return '0 second';
+  }
+
+  const hours = Math.floor(value / 3600);
+  const minutes = Math.floor((value % 3600) / 60);
+  const seconds = value % 60;
+
+  let result = '';
+
+  if (hours > 0) {
+    result += `${hours} ${hours > 1 ? 'hours' : 'hour'}`;
+  }
+
+  if (minutes > 0) {
+    if (result) result += ' ';
+    result += `${minutes} ${minutes > 1 ? 'mins' : 'min'}`;
+  }
+
+  if (seconds > 0) {
+    if (result) result += ' ';
+    result += `${seconds} ${seconds > 1 ? 'seconds' : 'second'}`;
+  }
+
+  return result;
+}
