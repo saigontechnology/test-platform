@@ -1,22 +1,19 @@
+import { Level } from '@/constants/assessments';
 import { ROUTE_KEY } from '@/constants/routePaths';
+import { formatTimeString } from '@/libs/utils';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 import Brightness1Icon from '@mui/icons-material/Brightness1';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import Link from 'next/link';
-import { useEffect } from 'react';
 
 export default function DashboardCard(props: any) {
-  const { name, level, questions, duration, status, id } = props;
-
-  useEffect(() => {
-    console.log('ahihi');
-  }, []);
+  const { name, level, questions, duration, active, id } = props;
 
   const levelColor: any = {
-    ['Junior']: 'text-green-500',
-    ['Intermediate']: 'text-yellow-500',
-    ['Senior']: 'text-red-500',
+    [Level.Junior]: 'text-green-500',
+    [Level.Intermediate]: 'text-yellow-500',
+    [Level.Senior]: 'text-red-500',
   };
 
   return (
@@ -45,11 +42,13 @@ export default function DashboardCard(props: any) {
         <div className="text-sm leading-6">
           <Brightness1Icon
             sx={{
-              color: status === 'active' ? '#7bbd1e' : '#d1d5db',
+              color: active ? '#7bbd1e' : '#d1d5db',
               fontSize: 20,
             }}
           />
-          <span className="ml-2 font-medium capitalize">{status}</span>
+          <span className="ml-2 font-medium capitalize">
+            {active ? 'Active' : 'Inactive'}
+          </span>
         </div>
         <div className="text-sm leading-6">
           <KeyboardDoubleArrowUpIcon sx={{ fontSize: 20 }} />
@@ -64,7 +63,7 @@ export default function DashboardCard(props: any) {
         <div className="text-sm leading-6">
           <AlarmOnIcon sx={{ fontSize: 20 }} />
           <span className="ml-2 text-gray-500">Duration: </span>
-          <span className="font-medium">{duration}</span>
+          <span className="font-medium">{formatTimeString(duration)}</span>
         </div>
       </div>
     </Link>

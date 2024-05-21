@@ -2,8 +2,9 @@
 
 import LinearProgressBar from '@/components/atoms/LinearProgressBar';
 import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
-import { IExamination } from '@/constants/assessments';
+import { IExamination, Level } from '@/constants/assessments';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
+import { formatTimeString } from '@/libs/utils';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 import Brightness1Icon from '@mui/icons-material/Brightness1';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
@@ -36,6 +37,9 @@ interface IStatistic {
   completedPercent: number;
   failed: number;
   questions: number;
+  duration: number;
+  active: boolean;
+  level?: string;
 }
 
 export default async function Page() {
@@ -152,6 +156,13 @@ export default async function Page() {
       },
     },
   ];
+
+  const levelColor: any = {
+    [Level.Junior]: 'text-green-500',
+    [Level.Intermediate]: 'text-yellow-500',
+    [Level.Senior]: 'text-red-500',
+  };
+
   return (
     <div className="grid grid-cols-3 gap-4">
       <div className=" col-span-2 bg-white">
@@ -231,14 +242,16 @@ export default async function Page() {
             <div className="mr-4 ">
               <Brightness1Icon
                 sx={{
-                  color: '#7bbd1e',
+                  color: statistic?.active ? '#7bbd1e' : '#d1d5db',
                   fontSize: 16,
                 }}
               />
             </div>
             <div>
               <div className="text-sm font-medium">Assessment Status</div>
-              <div className="text-xs text-gray-500">Active</div>
+              <div className="text-xs text-gray-500">
+                {statistic?.active ? 'Active' : 'Inactive'}
+              </div>
             </div>
           </div>
           <div className="flex items-center border-b border-gray-200 py-2">
@@ -258,7 +271,11 @@ export default async function Page() {
             </div>
             <div>
               <div className="text-sm font-medium">Assessment Level</div>
-              <div className="text-xs text-gray-500">Intermediate</div>
+              <div
+                className={`text-xs text-gray-500 ${levelColor[statistic?.level || Level.Junior]}`}
+              >
+                {statistic?.level}
+              </div>
             </div>
           </div>
           <div className="flex items-center border-b border-gray-200 py-2">
@@ -267,7 +284,9 @@ export default async function Page() {
             </div>
             <div>
               <div className="text-sm font-medium">Assessment Duration</div>
-              <div className="text-xs text-gray-500">25 mins</div>
+              <div className="text-xs text-gray-500">
+                {formatTimeString(statistic?.duration || 30)}
+              </div>
             </div>
           </div>
         </div>
