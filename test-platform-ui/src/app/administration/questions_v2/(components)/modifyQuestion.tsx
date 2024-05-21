@@ -266,9 +266,6 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   return (
     <Box>
       <Box className="mb-4 flex items-center justify-between">
-        <Typography variant="h5" className={`w-full`}>
-          {questionData.id ? 'Edit' : 'Create'} Question
-        </Typography>
         <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
           <Button
             color="primary"
@@ -316,7 +313,16 @@ export default function ModifyQuestion(props: ICreateQuestion) {
             </Box>
             {/* Details */}
             <CustomTabPanel value={tab} index={0}>
-              <Stack gridTemplateColumns={'1fr'} display={'grid'}>
+              <Stack
+                gridTemplateColumns={'1fr'}
+                display={'grid'}
+                sx={{
+                  backgroundColor: 'white',
+                  padding: '20px',
+                  borderRadius: '10px',
+                  border: 'solid 1px lightgrey',
+                }}
+              >
                 <QuestionKind />
                 <FormControl variant="standard" className="!w-9/12 pb-8">
                   <Typography className="mb-4 font-semibold">Title</Typography>
