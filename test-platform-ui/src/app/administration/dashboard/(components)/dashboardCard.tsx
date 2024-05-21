@@ -24,20 +24,6 @@ export default function DashboardCard(props: any) {
       <p className="line-clamp-1 text-lg font-medium leading-8" title={name}>
         {name}
       </p>
-      <div className="mt-4 flex justify-between">
-        <div className="text-sm leading-6">
-          <span className="text-gray-500">Invited: </span>
-          <span className="font-medium">4</span>
-        </div>
-        <div className="text-sm leading-6">
-          <span className="text-gray-500">Completed: </span>
-          <span className="font-medium">3</span>
-        </div>
-        <div className="text-sm leading-6">
-          <span className="text-gray-500">Participation: </span>
-          <span className="font-medium">75%</span>
-        </div>
-      </div>
       <div className="mt-4 grid grid-cols-2 gap-4">
         <div className="text-sm leading-6">
           <Brightness1Icon
