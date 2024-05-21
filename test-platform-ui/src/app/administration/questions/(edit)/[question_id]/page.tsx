@@ -6,9 +6,8 @@ import { Suspense, useEffect, useState } from 'react';
 
 import { IResponseQuestion } from '@/constants/questions';
 import { Box } from '@mui/material';
-import ModifyQuestion, {
-  IQuestionInfo,
-} from '../../(components)/modifyQuestion';
+import { IQuestionInfo } from '../../(components)/models';
+import ModifyQuestion from '../../(components)/modifyQuestion';
 
 const EditQuestion = () => {
   const [data, setData] = useState<IQuestionInfo | null>(null);
@@ -24,14 +23,17 @@ const EditQuestion = () => {
         id: data?.id,
         question: data?.question,
         description: data?.description,
-        categories: new Array().concat(data?.category),
+        categories: new Array().concat(data?.categories),
+        category: data?.category,
         notes: data?.notes,
         answers: data?.answer,
         options: data?.options,
         type: data?.type,
         level: data?.level,
         isModified: data?.isModified,
+        duration: data?.duration,
       };
+      console.log('editQuestion: ', editQuestion);
       setData(editQuestion);
     })();
   }, []);

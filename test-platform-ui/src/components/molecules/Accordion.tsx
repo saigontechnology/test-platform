@@ -3,7 +3,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import CustomTextField from '../atoms/CustomModules/CustomTextField';
 
@@ -54,10 +54,6 @@ export default function AccordionExpandIcon() {
   const handleAccordionChange = useCallback((_accordion: string) => {
     setExpanded(_accordion);
   }, []);
-
-  useEffect(() => {
-    console.log('invitation person: ', invitationEmail);
-  }, [invitationEmail]);
 
   return (
     <div>

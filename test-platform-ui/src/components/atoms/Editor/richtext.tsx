@@ -8,17 +8,19 @@ import {
 import hljs from 'highlight.js';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
-import { useFormContext } from 'react-hook-form';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
 import { Editor, Modules } from './quillConfig';
 
+import clsx from 'clsx';
 import 'highlight.js/styles/atom-one-dark-reasonable.css';
 import 'react-quill/dist/quill.snow.css';
 
 interface IRichTextArea extends ReactQuillProps {
-  name: string;
+  name?: string;
   placeholder?: string;
   data?: string;
+  isReadOnly?: boolean;
+  onChange?: (e: any, ref: any) => void;
 }
 interface CustomQuillProps extends ReactQuill.ReactQuillProps {
   hookRef: (ref: ReactQuill | null) => void;
@@ -49,11 +51,10 @@ const CustomReactQuill = dynamic(
 
 /** Main module content: */
 export default function RichTextArea(props: IRichTextArea) {
-  const { placeholder, data, name } = props;
+  const { placeholder, data, isReadOnly, onChange } = props;
   // const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
   let quillRef: ReactQuill | null = null;
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const { setValue } = useFormContext();
 
   const Handlers = {
     imageHandlers: async () => {
@@ -104,7 +105,7 @@ export default function RichTextArea(props: IRichTextArea) {
       }
     },
     handleSetInputValues: (editorHtml: string) => {
-      setValue(name, editorHtml);
+      onChange && onChange(editorHtml, quillRef);
     },
   };
 
@@ -116,20 +117,27 @@ export default function RichTextArea(props: IRichTextArea) {
     Modules.toolbar.handlers = {
       image: Handlers.imageHandlers,
     };
-    return Modules || {};
+    return Modules;
   }, []);
 
   return (
     <>
       <CustomReactQuill
+        className={clsx('!h-fit grow', {
+          '[&_.ql-container]:border-0 [&_.ql-editor]:px-0 [&_.ql-toolbar]:hidden':
+            isReadOnly,
+        })}
         hookRef={(ref: ReactQuill | null) => ref && (quillRef = ref)}
         theme="snow"
         value={data}
         modules={QuillModules}
-        onChange={(val) => Handlers.handleSetInputValues(val)}
+        onChange={(val) => {
+          Handlers.handleSetInputValues(val);
+        }}
         bounds={'.app'}
         placeholder={placeholder}
         formats={Editor.formats}
+        readOnly={isReadOnly}
       />
       <input
         ref={inputRef}

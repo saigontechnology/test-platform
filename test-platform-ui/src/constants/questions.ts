@@ -1,3 +1,5 @@
+import { QuestionType } from '@/libs/definitions';
+
 enum Category {
   React,
   Typescript,
@@ -36,6 +38,7 @@ export interface IAddQuestion {
   question: string;
   notes: string;
   isModified: boolean;
+  duration: number;
 }
 
 export interface IResponseQuestion {
@@ -43,12 +46,14 @@ export interface IResponseQuestion {
   createdAt: Date;
   updatedAt: Date;
   question: string;
-  category: string[];
+  categories: string[];
+  category: string;
   notes?: string;
   level: string;
   description: string;
   answer: number[];
   options: string[];
-  type: string;
+  type: QuestionType;
   isModified: boolean;
+  duration: number;
 }

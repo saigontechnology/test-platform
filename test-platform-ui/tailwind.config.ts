@@ -4,6 +4,7 @@ const config: Config = {
   // corePlugins: {
   //   preflight: false,
   // },
+  mode: 'JIT',
   content: [
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -16,6 +17,7 @@ const config: Config = {
         '13': 'repeat(13, minmax(0, 1fr))',
       },
       colors: {
+        primary: '#7bbd1e',
         blue: {
           400: '#2589FE',
           500: '#0070F3',

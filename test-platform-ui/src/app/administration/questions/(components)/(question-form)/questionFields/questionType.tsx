@@ -2,11 +2,15 @@ import CustomRadioGroup from '@/components/molecules/CustomRadioGroup';
 import { QuestionTypes } from '@/libs/definitions';
 import { ReactElement } from 'react';
 
-const QuestionKind = (): ReactElement => {
+interface IQuestionKind {
+  label?: string;
+}
+
+const QuestionKind = ({ label }: IQuestionKind): ReactElement => {
   return (
     <CustomRadioGroup
-      label={'Type'}
-      controlName={'type'}  
+      label={label}
+      controlName={'type'}
       options={QuestionTypes}
     />
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react';
 
 // Define interface for the context data
 interface IData {
@@ -28,10 +28,6 @@ const DataProvider: React.FC<any> = ({ children }: any) => {
   const [data, setData] = useState<IData>({ examId: 0 });
 
   const updateData = (newData: IData) => setData(newData);
-
-  useEffect(() => {
-    console.log('updateData: ', data);
-  }, [data]);
 
   return (
     <DataContext.Provider value={{ data, updateData }}>

@@ -65,4 +65,12 @@ export class ExaminationsController {
     console.log("updateExpireDate id: ", id);
     return await this.examinationService.updateExpireDate(id);
   }
+
+  @Get("/assessments/:id")
+  @ApiOkResponse({ type: ExaminationEntity, isArray: true })
+  async findAllExaminationsByAssessmentId(
+    @Param("id", ParseIntPipe) id: number,
+  ) {
+    return await this.examinationService.findAllExaminationsByAssessmentId(id);
+  }
 }

@@ -1,6 +1,7 @@
 'use client';
 import { createTheme } from '@mui/material/styles';
-import type { } from '@mui/x-data-grid/themeAugmentation';
+import type {} from '@mui/x-data-grid/themeAugmentation';
+import { openSans } from './fonts';
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -50,7 +51,6 @@ declare module '@mui/material/Typography' {
   }
 }
 
-const regular = 400;
 const medium = 500;
 const bold = 700;
 
@@ -59,18 +59,22 @@ const themeCustom = createTheme({
     primary: {
       main: '#002a37',
       // salsify_grass: '#33b27f',
-      cornflower_blue: '#2196f3'
+      cornflower_blue: '#2196f3',
     },
     base: {
       white: '#FFFFFF',
       black: '#1C1C1C',
     },
+    info: {
+      main: '#3b82f6',
+      contrastText: '#fff',
+    },
   },
   components: {
     MuiDataGrid: {
       defaultProps: {
-        rowHeight: 70,
-      }
+        // rowHeight: 40,
+      },
     },
     MuiInputBase: {
       styleOverrides: {
@@ -95,11 +99,11 @@ const themeCustom = createTheme({
       },
       styleOverrides: {
         root: ({ theme, ownerState }) => ({
-          // fontFamily: lusitana.style.fontFamily,
+          fontFamily: openSans.style.fontFamily,
           borderRadius: 12,
           boxShadow: 'none',
           maxHeight: 48,
-          fontSize: 16,
+          fontSize: 13,
           borderColor: theme.palette.primary.cornflower_blue,
           color: theme.palette.base.black,
           textTransform: 'capitalize',
@@ -125,7 +129,7 @@ const themeCustom = createTheme({
     },
   },
   typography: {
-    // fontFamily: lusitana.style.fontFamily,
+    fontFamily: openSans.style.fontFamily,
     h1: {
       fontSize: '64px',
       lineHeight: '72px',
@@ -181,26 +185,6 @@ const themeCustom = createTheme({
     //   lineHeight: '26px',
     //   fontWeight: regular,
     // },
-    body2: {
-      fontSize: '16px',
-      lineHeight: '24px',
-      fontWeight: regular,
-    },
-    body3: {
-      fontSize: '14px',
-      lineHeight: '20px',
-      fontWeight: regular,
-    },
-    caption1: {
-      fontSize: '12px',
-      lineHeight: '18px',
-      fontWeight: regular,
-    },
-    caption2: {
-      fontSize: '10px',
-      lineHeight: '16px',
-      fontWeight: regular,
-    },
   },
 });
 export default themeCustom;

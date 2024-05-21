@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { CSButton } from '@/components/organisms/Button';
 import { Alert, Box, Input, Paper, Stack, Typography } from '@mui/material';
-import { Dispatch, useEffect } from 'react';
+import { Dispatch } from 'react';
 
 interface IPaperContent<T> {
   isDisabled: boolean;
@@ -18,10 +18,6 @@ export const PaperContent = <T,>({
   onChanged,
   error,
 }: IPaperContent<T>) => {
-  useEffect(() => {
-    console.log('Error: ', error);
-  });
-
   return (
     <Box
       sx={{

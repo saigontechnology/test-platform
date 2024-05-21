@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from "class-validator";
@@ -57,4 +58,9 @@ export class UpdateQuestionDto {
   @IsNotEmpty()
   @ApiProperty({ required: true, type: Boolean })
   isModified: boolean;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({ required: true, type: Number })
+  time: number;
 }
