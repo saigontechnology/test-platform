@@ -59,6 +59,8 @@ export interface IAssessment {
   level: string;
   assessmentQuestionMapping: IQuestion[];
   error?: Error;
+  duration: number;
+  active: boolean;
 }
 
 export interface ICreateAssessment {

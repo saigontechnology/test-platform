@@ -25,8 +25,8 @@ export default function DashboardGrid() {
             name={assessment.name}
             level={assessment.level}
             questions={assessment.assessmentQuestionMapping.length}
-            duration="25 mins"
-            status="active"
+            duration={assessment.duration}
+            active={assessment.active}
             id={assessment.id}
             key={assessment.id}
           />

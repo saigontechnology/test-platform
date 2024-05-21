@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 
 export default function DashboardCard(props: any) {
-  const { name, level, questions, duration, status, id } = props;
+  const { name, level, questions, duration, active, id } = props;
 
   useEffect(() => {
     console.log('ahihi');
@@ -45,11 +45,13 @@ export default function DashboardCard(props: any) {
         <div className="text-sm leading-6">
           <Brightness1Icon
             sx={{
-              color: status === 'active' ? '#7bbd1e' : '#d1d5db',
+              color: active ? '#7bbd1e' : '#d1d5db',
               fontSize: 20,
             }}
           />
-          <span className="ml-2 font-medium capitalize">{status}</span>
+          <span className="ml-2 font-medium capitalize">
+            {active ? 'Active' : 'Inactive'}
+          </span>
         </div>
         <div className="text-sm leading-6">
           <KeyboardDoubleArrowUpIcon sx={{ fontSize: 20 }} />
