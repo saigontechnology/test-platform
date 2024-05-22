@@ -213,7 +213,7 @@ export default function EditAssessment() {
         </button>
       </div>
 
-      <div className="col-span-2 grid grid-cols-1 gap-4 rounded md:grid-cols-2 lg:grid-cols-3">
+      <div className="col-span-2 mt-4 grid grid-cols-1 gap-4 rounded md:grid-cols-2 lg:grid-cols-3">
         {assessments.map((assessment) => {
           return (
             <DashboardCard

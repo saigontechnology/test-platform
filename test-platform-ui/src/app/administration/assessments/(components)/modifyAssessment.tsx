@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { IQuestion } from '../../questions/page';
+import QuestionList from './questionList';
 
 interface IModifyAssessment {
   detail?: any;
@@ -344,7 +345,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
                   <div className="ml-4 text-xs font-medium text-gray-500">
                     <KeyboardDoubleArrowUpIcon sx={{ fontSize: 14 }} />
                     <span className="ml-1">
-                      {questionLevel[selectedQuestion?.level]}
+                      {questionLevel[selectedQuestion?.level || '']}
                     </span>
                   </div>
                 </div>
@@ -352,7 +353,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
                   <div className="text-xs font-medium text-gray-500">
                     <DescriptionIcon sx={{ fontSize: 14 }} />
                     <span className="ml-1">
-                      {questionType[selectedQuestion?.type]}
+                      {questionType[selectedQuestion?.type || '']}
                     </span>
                   </div>
                   <div className="ml-4 text-xs font-medium text-gray-500">
@@ -402,7 +403,9 @@ export default function ModifyAssessment(props: IModifyAssessment) {
         anchor="right"
         onClose={() => setIsDrawerOpen(false)}
       >
-        <div className="">Ahihi</div>
+        <div className="w-[75vw]">
+          <QuestionList />
+        </div>
       </Drawer>
     </>
   );
