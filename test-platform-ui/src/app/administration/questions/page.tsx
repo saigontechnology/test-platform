@@ -69,6 +69,7 @@ const Page = () => {
         answers: q.answer,
         options: q.options,
         type: q.type,
+        level: q.level,
       };
     });
     setQuestionList(_questionList);
@@ -170,7 +171,7 @@ const Page = () => {
         );
         return (
           <Box className="grid gap-1">
-            {level ? <Chip label={level?.label} /> : null}
+            {level ? <Chip label={params.row.level} /> : null}
           </Box>
         );
       },
@@ -304,7 +305,12 @@ const Page = () => {
         </Box>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={questionList} columns={columns} loading={loading} />
+      <DataTable
+        rows={questionList}
+        columns={columns}
+        loading={loading}
+        height="h-[calc(100vh_-_215px)]"
+      />
       <CustomModal ref={modalRef} title={''}>
         <ModalContent />
       </CustomModal>

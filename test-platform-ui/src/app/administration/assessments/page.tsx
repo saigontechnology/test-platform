@@ -186,7 +186,12 @@ export default function EditAssessment() {
         </Button>
       </Box>
       <Divider className="my-10" />
-      <DataTable rows={assessments} columns={columns} loading={loading} />
+      <DataTable
+        rows={assessments}
+        columns={columns}
+        loading={loading}
+        height="h-[calc(100vh_-_215px)]"
+      />
 
       {/* Send invitation modal */}
       <CustomModal ref={sendInviteModalRef} title="Send Invitation">
