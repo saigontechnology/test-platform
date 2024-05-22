@@ -21,7 +21,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import RenderQuestionAnswers2 from './(question-form)/answers/answers_v2';
 import { QuestionPreview } from './(question-form)/preview';
@@ -61,9 +61,8 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   const { questionData } = props;
   const router = useRouter();
   const [_isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
-  const [_isValidAnswer, setIsValidAnswer] = useState<boolean>(false);
+  const [_isValidAnswer, _setIsValidAnswer] = useState<boolean>(false);
   const [tab, setTabValue] = useState(0);
-  const tempNotes = useRef<string | null>(null);
 
   const form = useForm<any>({
     // interface: IAddQuestion

@@ -124,7 +124,7 @@ export default function RichTextArea(props: IRichTextArea) {
     <>
       <ReactQuillCS
         className={clsx('!h-fit grow', {
-          '[&_.ql-container]:border-0 [&_.ql-editor]:px-0,h-4 [&_.ql-toolbar]:hidden':
+          '[&_.ql-container]:border-0 [&_.ql-editor]:px-0 [&_.ql-toolbar]:hidden':
             isReadOnly,
         })}
         hookRef={(ref: ReactQuill | null) => ref && (quillRef = ref)}
