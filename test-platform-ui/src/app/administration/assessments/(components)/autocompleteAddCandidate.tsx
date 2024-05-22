@@ -60,6 +60,12 @@ const EmployeeEmails: IEmployee[] = [
     empCode: 'dat.ngo',
     email: 'dat.ngo@saigontechnology.com',
   },
+  {
+    name: 'Tan Vo',
+    subName: 'tan.vo',
+    empCode: 'tan.vo',
+    email: 'tan.vo@saigontechnology.com',
+  },
 ];
 
 export default function AccordionExpandIcon() {

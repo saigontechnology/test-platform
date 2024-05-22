@@ -242,8 +242,9 @@ export class ExaminationsService {
             select: {
               question: {
                 select: {
-                  question: true,
-                  options: true,
+                  id: true,
+                  answer: true,
+                  level: true,
                 },
               },
               selections: true,
@@ -271,14 +272,40 @@ export class ExaminationsService {
       (exam) => exam.status === ExaminationStatus.EVALUATED,
     ).length;
 
+    const examination = examinations.map((exam) => {
+      const empCode = exam.email.split("@")[0];
+
+      const submittedAnswers = exam.submittedAnswers;
+      const summary = submittedAnswers.reduce((acc: any, curr) => {
+        const level = curr.question?.level;
+        const score = curr.question?.answer[0] === curr.selections[0];
+
+        if (!acc[level]) {
+          acc[level] = [];
+        }
+
+        acc[level].push(score);
+        return acc;
+      }, {});
+
+      const correctByLevel = [];
+      Object.keys(summary).forEach((level) => {
+        correctByLevel.push({
+          level,
+          scored: summary[level].filter((i: boolean) => i === true).length,
+          total: summary[level].length,
+        });
+      });
+
+      return {
+        empCode,
+        correctByLevel,
+        ...exam,
+      };
+    });
+
     return {
-      examination: examinations.map((exam) => {
-        const empCode = exam.email.split("@")[0];
-        return {
-          empCode,
-          ...exam,
-        };
-      }),
+      examination,
       statistic: {
         invited,
         completed,
