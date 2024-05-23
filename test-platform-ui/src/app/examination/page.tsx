@@ -89,7 +89,7 @@ export default function Examination() {
     switch (layout) {
       case 'overview':
         return !examination.isPending ? (
-          !isExpired ? (
+          isExpired ? (
             <LinkExpired />
           ) : (
             <div className="grid h-screen grid-cols-2 gap-2 p-20">
