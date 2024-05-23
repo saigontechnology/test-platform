@@ -89,7 +89,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
 
   useEffect(() => {
     console.log('questionData: ', questionData);
-  }, [])
+  }, []);
 
   //#region : Handle interactive functions
   const HandleInteractions = {
@@ -219,7 +219,10 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                     }}
                   />
                 </FormControl>
-                <QuestionKind label="Question Type" />
+                <QuestionKind
+                  label="Question Type"
+                  handleOnChange={() => setValue('answers', new Array())}
+                />
                 <Stack
                   gridTemplateColumns={'1fr 1fr 1fr'}
                   display={'grid'}
@@ -256,11 +259,11 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                     padding: '20px',
                   }}
                 >
-                    <RenderQuestionAnswers2
-                      renderAnswers={getValues('options')}
-                      correctAnswers={getValues('answers')}
-                      error={errors['answers'] as any}
-                    />
+                  <RenderQuestionAnswers2
+                    renderAnswers={getValues('options')}
+                    correctAnswers={getValues('answers')}
+                    error={errors['answers'] as any}
+                  />
                 </Stack>
                 <FormControl variant="standard" className="!w-11/12 pb-7">
                   <Typography className="pb-4 font-semibold">

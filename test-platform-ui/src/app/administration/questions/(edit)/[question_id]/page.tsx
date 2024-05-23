@@ -33,7 +33,6 @@ const EditQuestion = () => {
         isModified: data?.isModified,
         duration: data?.duration,
       };
-      console.log('editQuestion: ', editQuestion);
       setData(editQuestion);
     })();
   }, []);
