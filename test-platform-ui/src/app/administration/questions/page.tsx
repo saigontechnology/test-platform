@@ -69,6 +69,7 @@ const Page = () => {
         answers: q.answer,
         options: q.options,
         type: q.type,
+        level: q.level,
       };
     });
     setQuestionList(_questionList);
@@ -170,7 +171,7 @@ const Page = () => {
         );
         return (
           <Box className="grid gap-1">
-            {level ? <Chip label={level?.label} /> : null}
+            {level ? <Chip label={params.row.level} /> : null}
           </Box>
         );
       },

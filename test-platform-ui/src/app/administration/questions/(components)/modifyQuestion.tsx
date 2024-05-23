@@ -5,7 +5,6 @@ import RichTextArea from '@/components/atoms/Editor/richtext';
 import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
-import { QuestionType } from '@/libs/definitions';
 import { showNotification } from '@/libs/toast';
 import { createQuestionSchema } from '@/validations/questions';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,57 +20,49 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { v4 as uuidv4 } from 'uuid';
+import RenderQuestionAnswers2 from './(question-form)/answers/answers_v2';
 import { QuestionPreview } from './(question-form)/preview';
-import RenderQuestionAnswers from './(question-form)/questionFields/answers';
 import AutocompleteDifficult from './(question-form)/questionFields/difficultyField';
 import AutocompleteDuration from './(question-form)/questionFields/durationField';
 import QuestionKind from './(question-form)/questionFields/questionType';
 import AutocompleteSkill from './(question-form)/questionFields/skillField';
-import {
-  IAnswer,
-  ICreateQuestion,
-  TabPanelProps,
-  manualErrors,
-} from './models';
+import { ICreateQuestion, TabPanelProps, manualErrors } from './models';
 
-const EditorLogicQuestion = dynamic(
-  () => import('@/components/atoms/CodeEditor/editorLogic/editorLogic'),
-  {
-    ssr: false,
-  },
-);
-const EditorUIQuestion = dynamic(
-  () => import('@/components/atoms/CodeEditor/editorUI'),
-  {
-    ssr: false,
-  },
-);
+function CustomTabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      className="h-[calc(100vh_-_250px)]"
+      {...other}
+    >
+      <Box sx={{ px: 1, py: 4 }}>
+        <Typography>{children}</Typography>
+      </Box>
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
 
 export default function ModifyQuestion(props: ICreateQuestion) {
   const { questionData } = props;
   const router = useRouter();
   const [_isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
-  const [_isValidAnswer, setIsValidAnswer] = useState<boolean>(false);
+  const [_isValidAnswer, _setIsValidAnswer] = useState<boolean>(false);
   const [tab, setTabValue] = useState(0);
-  const tempNotes = useRef<string | null>(null);
-
-  const mapEditAnswer = () => {
-    const { options, answers } = questionData;
-    const mappedOpts = options?.map((option: string, index: number) => ({
-      id: uuidv4(),
-      answer: option,
-      isCorrect: answers.includes(index),
-    }));
-
-    return mappedOpts;
-  };
-
-  const [answerArray, setAnswerArray] = useState<IAnswer[]>(mapEditAnswer());
 
   const form = useForm<any>({
     // interface: IAddQuestion
@@ -91,41 +82,10 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   });
   const {
     setError,
-    watch,
     getValues,
     setValue,
     formState: { errors },
   } = form;
-  const questionType = watch('type');
-
-  useEffect(() => {
-    // Validate selected answer(s):
-    const originalAnswers = questionData.answers?.sort().join(',');
-    const selectedAnswers = answerArray
-      ?.map((a, i) => (a.isCorrect ? i : null))
-      .filter((a) => typeof a === 'number')
-      .sort()
-      .join(',');
-    setIsValidAnswer(originalAnswers === selectedAnswers);
-  }, [answerArray]);
-
-  useEffect(() => {
-    (() => {
-      const resetAnswersSelected = answerArray?.map((answ) => ({
-        ...answ,
-        isCorrect: false,
-      }));
-      setAnswerArray(resetAnswersSelected);
-    })();
-  }, [questionType]);
-
-  useEffect(() => {
-    if (tempNotes.current) {
-      console.log('tempNotes: ', tempNotes);
-      setValue('notes', tempNotes.current);
-      tempNotes.current = null;
-    }
-  });
 
   //#region : Handle interactive functions
   const HandleInteractions = {
@@ -141,19 +101,12 @@ export default function ModifyQuestion(props: ICreateQuestion) {
         category: getValues('category'),
         level: modifiedQuestion.level,
         type: modifiedQuestion.type,
-        answer: answerArray
-          .filter((answer) => answer.id)
-          .map((answer, index) => (answer.isCorrect ? index : -1))
-          .filter((index) => index > -1),
-        options: answerArray
-          .filter((answer) => answer.id)
-          .map((answer) => answer.answer),
+        answer: getValues('answers'),
+        options: getValues('options'),
         notes: modifiedQuestion.notes,
         isModified: true,
         duration: modifiedQuestion.duration,
       };
-
-      console.log('formData: ', formData, modifiedQuestion);
 
       // Executive handler data modified:
       if (formData.answer.length) {
@@ -178,63 +131,13 @@ export default function ModifyQuestion(props: ICreateQuestion) {
         });
       }
     },
-    handleRenderCoding: (): JSX.Element => {
-      if (questionType === QuestionType.CODING) {
-        return <EditorUIQuestion customClass="mt-4" />;
-      }
-      if (questionType === QuestionType.LOGIC) {
-        return <EditorLogicQuestion />;
-      }
-      return <></>;
-    },
     handleChange: (_event: React.SyntheticEvent, newValue: number) => {
       setTabValue(newValue);
     },
   };
   //#endregion
 
-  // const isDisabledSubmit = useMemo((): boolean => {
-  //   const d = document.createElement('div');
-  //   d.innerHTML = notes;
-  //   const textContent = d.textContent || d.innerText;
-
-  //   const _isValidated =
-  //     !isValid ||
-  //     (!isValidAnswer && !textContent?.length) ||
-  //     isSubmitLoading ||
-  //     questionType == QuestionType.CODING;
-
-  //   return _isValidated;
-  // }, []);
-
   //#region : Create question form
-  function CustomTabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        className="h-[calc(100vh_-_250px)]"
-        {...other}
-      >
-        {value === index && (
-          <Box sx={{ px: 1, py: 4 }}>
-            <Typography>{children}</Typography>
-          </Box>
-        )}
-      </div>
-    );
-  }
-
-  function a11yProps(index: number) {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-  }
 
   return (
     <Box>
@@ -275,7 +178,9 @@ export default function ModifyQuestion(props: ICreateQuestion) {
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs
                 value={tab}
-                onChange={HandleInteractions.handleChange}
+                onChange={(event: any, value: any) =>
+                  HandleInteractions.handleChange(event, value)
+                }
                 aria-label="basic tabs example"
               >
                 <Tab label="Details" {...a11yProps(0)} />
@@ -347,27 +252,12 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                     padding: '20px',
                   }}
                 >
-                  {questionType === QuestionType.CODING ||
-                  questionType === QuestionType.LOGIC ? (
-                    HandleInteractions.handleRenderCoding()
-                  ) : (
-                    <Box>
-                      <RenderQuestionAnswers
-                        questionType={questionType}
-                        renderAnswers={answerArray}
-                        error={errors['answers'] as any}
-                        handleAnswers={(answers: IAnswer[]) => {
-                          const correctIndx = answers.findIndex(
-                            (answ: IAnswer) => answ.isCorrect,
-                          );
-                          setAnswerArray(answers);
-                          setValue('answers', [correctIndx]);
-                        }}
-                      />
-                    </Box>
-                  )}
+                  <RenderQuestionAnswers2
+                    renderAnswers={getValues('options')}
+                    correctAnswers={getValues('answers')}
+                    error={errors['answers'] as any}
+                  />
                 </Stack>
-                {/* <Divider orientation="vertical" variant="middle" flexItem /> */}
                 <FormControl variant="standard" className="!w-11/12 pb-7">
                   <Typography className="pb-4 font-semibold">
                     Notes / Explanation:
@@ -376,7 +266,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                     name="notes"
                     data={getValues('notes') || questionData?.notes}
                     onChange={(val: string) => {
-                      tempNotes.current = val;
+                      setValue('notes', val);
                     }}
                   />
                 </FormControl>
@@ -384,7 +274,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
             </CustomTabPanel>
             {/* Preview */}
             <CustomTabPanel value={tab} index={3}>
-              <QuestionPreview values={getValues()} />
+              {tab === 3 ? <QuestionPreview /> : null}
             </CustomTabPanel>
           </Box>
         </Stack>
