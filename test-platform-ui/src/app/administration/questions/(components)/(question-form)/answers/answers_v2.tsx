@@ -2,7 +2,7 @@
 
 import { QuestionType } from '@/libs/definitions';
 import { Box, FormGroup, FormHelperText, Typography } from '@mui/material';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import RenderAnswer from './renderAnswer';
 
@@ -27,15 +27,19 @@ const RenderQuestionAnswers2 = (props: IQuestionAnswers): ReactElement => {
   );
   const {
     setValue,
-    getValues,
+    watch,
     formState: { errors },
   } = useFormContext();
-  const questionType = getValues('type');
+  const questionType = watch('type');
 
-  useEffect(() => {
-    setSelectedAnswers(new Array());
-    setValue('answers', new Array());
-  }, [questionType]);
+  // useEffect(() => {
+  //   console.log('selectedAnswers: ', selectedAnswers);
+  // }, [selectedAnswers]);
+
+  // useEffect(() => {
+  //   setSelectedAnswers(new Array());
+  //   setValue('answers', new Array());
+  // }, [questionType]);
 
   const handleUpdateAnswer = (updateVal: string, AnswIndx: number) => {
     const updatedOptions = answers.map((_answ: string, indx: number) => {

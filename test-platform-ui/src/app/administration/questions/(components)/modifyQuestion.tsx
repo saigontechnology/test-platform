@@ -21,7 +21,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import RenderQuestionAnswers2 from './(question-form)/answers/answers_v2';
 import { QuestionPreview } from './(question-form)/preview';
@@ -86,6 +86,10 @@ export default function ModifyQuestion(props: ICreateQuestion) {
     setValue,
     formState: { errors },
   } = form;
+
+  useEffect(() => {
+    console.log('questionData: ', questionData);
+  }, [])
 
   //#region : Handle interactive functions
   const HandleInteractions = {
@@ -252,11 +256,11 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                     padding: '20px',
                   }}
                 >
-                  <RenderQuestionAnswers2
-                    renderAnswers={getValues('options')}
-                    correctAnswers={getValues('answers')}
-                    error={errors['answers'] as any}
-                  />
+                    <RenderQuestionAnswers2
+                      renderAnswers={getValues('options')}
+                      correctAnswers={getValues('answers')}
+                      error={errors['answers'] as any}
+                    />
                 </Stack>
                 <FormControl variant="standard" className="!w-11/12 pb-7">
                   <Typography className="pb-4 font-semibold">
