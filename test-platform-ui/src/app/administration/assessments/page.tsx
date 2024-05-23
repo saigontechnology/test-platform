@@ -44,7 +44,7 @@ export default function EditAssessment() {
 
   const getAssessments = async () => {
     setLoading(true);
-    const resp = await ApiHook(Methods.GET, '/assessments');
+    const resp = await ApiHook(Methods.GET, '/admin/assessments');
     const assessmentsData: any = (resp.data as Array<IAssessment>).map(
       (q: IAssessment) => {
         return {
@@ -72,7 +72,7 @@ export default function EditAssessment() {
 
   const handleDelete = async (e: React.MouseEvent, row: IAssessment) => {
     e.stopPropagation();
-    const { error } = await ApiHook(Methods.DELETE, `/assessments/${row.id}`);
+    const { error } = await ApiHook(Methods.DELETE, `/admin/assessments/${row.id}`);
     if (!error) {
       showNotification('Delete assessment successfully', 'success');
       getAssessments();
@@ -90,7 +90,7 @@ export default function EditAssessment() {
     const formData: {
       email: string[];
     } = sendInviteForm.getValues();
-    const { error } = await ApiHook(Methods.POST, `/examinations/invite`, {
+    const { error } = await ApiHook(Methods.POST, `/admin/examinations/invite`, {
       data: { ...formData, assessmentId: rowIdValueRef.current },
     });
     if (!error) {

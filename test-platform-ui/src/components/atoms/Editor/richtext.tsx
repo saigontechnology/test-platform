@@ -50,7 +50,7 @@ const CustomReactQuill = dynamic(
 );
 
 /** Main module content: */
-export default function RichTextArea(props: IRichTextArea) {
+function RichTextArea(props: IRichTextArea) {
   const { placeholder, data, isReadOnly, onChange } = props;
   // const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
   let quillRef: ReactQuill | null = null;
@@ -148,3 +148,5 @@ export default function RichTextArea(props: IRichTextArea) {
     </>
   );
 }
+
+export default React.memo(RichTextArea)

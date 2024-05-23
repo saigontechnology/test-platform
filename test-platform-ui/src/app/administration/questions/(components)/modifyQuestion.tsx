@@ -159,10 +159,10 @@ export default function ModifyQuestion(props: ICreateQuestion) {
       if (formData.answer.length) {
         setIsSubmitLoading(true);
         const { error } = await (questionData.id
-          ? ApiHook(Methods.PUT, `/questions/${questionData.id}`, {
+          ? ApiHook(Methods.PUT, `/admin/questions/${questionData.id}`, {
               data: formData,
             })
-          : ApiHook(Methods.POST, '/questions', {
+          : ApiHook(Methods.POST, '/admin/questions', {
               data: formData,
             }));
         setIsSubmitLoading(false);

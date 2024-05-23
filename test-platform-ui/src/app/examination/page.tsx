@@ -17,7 +17,6 @@ import { useEffect, useMemo, useState } from 'react';
 import Confetti from 'react-confetti';
 import ExaminationLayout from './(components)/examinationLayout';
 import LinkExpired from './(components)/linkExpired';
-import Loading from './(components)/loading';
 import LogoBanner from './(components)/logoBanner';
 
 type Layout = 'overview' | 'examination' | 'result';
@@ -90,13 +89,13 @@ export default function Examination() {
     switch (layout) {
       case 'overview':
         return !examination.isPending ? (
-          isExpired ? (
+          !isExpired ? (
             <LinkExpired />
           ) : (
             <div className="grid h-screen grid-cols-2 gap-2 p-20">
               <div className="mb-20 flex items-center">
                 <div className="flex flex-col gap-2">
-                  <p className="text-[32px] font-bold">
+                  <p className="text-[35px] font-bold">
                     {examination?.data?.assessment?.name}
                   </p>
                   {examination.isPending ? (
@@ -122,7 +121,7 @@ export default function Examination() {
                       <div className="flex gap-10">
                         <div className="flex items-center gap-1">
                           <AccessAlarmIcon fontSize="small" />
-                          <p className="mt-[2px] text-[14px] font-light">
+                          <p className="mt-[2px] text-[15px] font-light">
                             {formatTimeString(
                               examination?.data?.durationTotal || 0,
                             )}
@@ -130,7 +129,7 @@ export default function Examination() {
                         </div>
                         <div className="flex items-center gap-1">
                           <ViewStreamOutlinedIcon fontSize="small" />
-                          <p className="text-[14px] font-light">
+                          <p className="text-[15px] font-light">
                             {examination?.data?.questionNumbers}{' '}
                             {examination?.data?.questionNumbers === 1
                               ? 'question'
@@ -139,7 +138,7 @@ export default function Examination() {
                         </div>
                         <div className="flex items-center gap-1">
                           <KeyboardDoubleArrowUpOutlinedIcon fontSize="small" />
-                          <p className="text-[14px] font-light">
+                          <p className="text-[15px] font-light">
                             {examination?.data?.assessment?.level}
                           </p>
                         </div>
@@ -152,7 +151,7 @@ export default function Examination() {
                         disabled={isUpdateExaminationExpiredPending}
                         className="item-center mt-10 flex h-12 w-40 justify-center rounded-xl bg-gradient-to-br from-purple-600 to-blue-500 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
                       >
-                        <div className="flex h-full items-center">
+                        <div className="flex h-full items-center text-[15px]">
                           {isUpdateExaminationExpiredPending ? (
                             <div className="flex items-center gap-2">
                               <CircularProgress
@@ -177,7 +176,7 @@ export default function Examination() {
           )
         ) : (
           <div className="flex h-screen w-full items-center justify-center">
-            <Loading />
+            <CircularProgress color="inherit" />
           </div>
         );
 
@@ -196,12 +195,12 @@ export default function Examination() {
           <div className="grid h-screen grid-cols-2 gap-2 p-20">
             <div className="mb-20 flex items-center">
               <div className="flex flex-col gap-4">
-                <span className="text-[20px] font-light">Congratulations!</span>
-                <p className="text-[26px] font-bold text-slate-600">
+                <span className="text-[23px] font-light">Congratulations!</span>
+                <p className="text-[29px] font-bold text-slate-600">
                   Your challenge has been completed successfully!
                 </p>
                 <div className="mt-10 h-[1px] w-full bg-slate-100" />
-                <span className="text-[16px] font-semibold">Test Results</span>
+                <span className="text-[19px] font-semibold">Test Results</span>
                 {isSubmitExaminationPending ? (
                   <div className="flex animate-pulse flex-col gap-1">
                     <div className="h-4 w-1/2 rounded bg-gray-200"></div>
@@ -209,11 +208,11 @@ export default function Examination() {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-1">
-                    <span className="text-[14px]">
+                    <span className="text-[16px]">
                       - Correct questions:
                       {` ${examinationResult?.correctQuestions}/${examination.data?.questionNumbers}`}
                     </span>
-                    <span className="text-[14px]">
+                    <span className="text-[16px]">
                       - Score: {examinationResult?.scored}
                     </span>
                   </div>

@@ -295,4 +295,47 @@ export class ExaminationsService {
       },
     };
   }
+
+  async findExaminationByIdWithoutSubmitAnswer(id: number) {
+    let result = await this.prisma.examination.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        score: true,
+        status: true,
+        createdAt: true,
+        assessmentId: true,
+        assessment: {
+          select: {
+            name: true,
+            level: true,
+            assessmentQuestionMapping: {
+              select: {
+                question: true,
+              },
+            },
+          },
+        },
+        expireUtil: true,
+      },
+    });
+
+    const durationTotal = result?.assessment?.assessmentQuestionMapping?.reduce(
+      (total, item) => {
+        const duration = item?.question?.duration ?? 0;
+        return total + duration;
+      },
+      0,
+    );
+
+    let resultFormat: any = { ...result };
+    resultFormat.durationTotal = durationTotal;
+    resultFormat.questionNumbers =
+      result?.assessment?.assessmentQuestionMapping.length;
+
+    delete resultFormat.assessment.assessmentQuestionMapping;
+
+    return { ...resultFormat };
+  }
 }

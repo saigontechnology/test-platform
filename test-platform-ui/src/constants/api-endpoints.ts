@@ -12,6 +12,12 @@ export const EXAMINATION_API = {
 
 export const ASSESSMENT_API = {
   getAssessmentById: {
-    api: (assessmentId: string) => `/assessments/${assessmentId}`,
+    api: (assessmentId: string) => `/assessment/${assessmentId}`,
   },
 };
+
+export const AUTH_API = {
+  signIn: {
+    api: "/auth/login"
+  }
+}

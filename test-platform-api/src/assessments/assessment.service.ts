@@ -137,4 +137,45 @@ export class AssessmentsService {
     await this.prisma.assessment.delete({ where: { id } });
     return;
   }
+
+  async findQuestionAssessmentWithoutAnswers(id: number) {
+    const assessment = await this.prisma.assessment.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        level: true,
+        name: true,
+        assessmentQuestionMapping: {
+          select: {
+            question: {
+              select: {
+                id: true,
+                options: true,
+                question: true,
+                description: true,
+                type: true,
+                category: true,
+                duration: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    const questions = assessment.assessmentQuestionMapping.length;
+    const duration = assessment.assessmentQuestionMapping.reduce(
+      (accumulator, currentValue) => {
+        return accumulator + currentValue.question.duration;
+      },
+      0,
+    );
+
+    return {
+      ...assessment,
+      questions,
+      duration,
+    };
+  }
 }
