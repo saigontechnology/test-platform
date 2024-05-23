@@ -7,7 +7,10 @@ import { DataContext } from '@/libs/contextStore';
 import { showNotification } from '@/libs/toast';
 import { handleMappingImportData } from '@/libs/utils';
 import { AddBox } from '@mui/icons-material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import StackedBarChartOutlinedIcon from '@mui/icons-material/StackedBarChartOutlined';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import { Box, Stack } from '@mui/material';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -95,54 +98,114 @@ const Page = () => {
 
   return (
     <Box>
-      <Box className="flex flex-row-reverse items-center justify-between pb-10">
-        <Box>
-          <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<CloudUploadIcon />}
-            className="mr-3"
-            disabled={isImportLoading}
-          >
-            Import
-            <VisuallyHiddenInput
-              type="file"
-              accept="application/JSON"
-              onChange={handleImport}
-            />
-          </Button>
-          <Button
-            variant="contained"
-            onClick={(evt: React.MouseEvent) => {
-              evt.preventDefault();
-              updateData({
-                ...data,
-                pagination: {
-                  pageNum: 1,
-                },
-              });
-              router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
-            }}
-            startIcon={<AddBox />}
-          >
-            New Question
-          </Button>
-        </Box>
-      </Box>
       <Stack
-        className="h-[calc(100vh_-_220px)]"
+        className="h-[calc(100vh_-_120px)]"
         gridTemplateColumns={'2fr 1fr'}
         display={'grid'}
         gap={4}
       >
-        <Box className="question-list h-full border-2 border-dashed border-slate-300">
-          <ListCardItem />
-          <ListCardItem />
-          <ListCardItem />
+        <Box className="question-list grid h-full gap-3">
+          {[1, 2, 3].map((value: number, _indx: number) => (
+            <ListCardItem
+              cardData={{
+                title: `Render card data title ${value}`,
+                tags: [
+                  'Aggregation',
+                  'Data Filtering',
+                  'Data Manipulation',
+                  'Database Management',
+                ],
+                flagChip: {
+                  label: 'Javascript',
+                },
+                description: {
+                  label: 'Testing description label',
+                  content: `Testing description content. Lorem Ipsum is simply dummy text of the printing and
+                  typesetting industry. Lorem Ipsum has been the standard
+                  dummy text ever since the 1500s`,
+                  // render: () => (
+                  //   <>
+                  //     <div>{`Question Gist data ${_indx}`}</div>
+                  //     <div>
+                  //       Lorem Ipsum is simply dummy text of the printing and
+                  //       typesetting industry. Lorem Ipsum has been the standard
+                  //       dummy text ever since the 1500s,
+                  //     </div>
+                  //   </>
+                  // )
+                },
+                cardInfo: {
+                  render: () => {
+                    return (
+                      <>
+                        <span className="info-chip">
+                          <TaskAltIcon fontSize="small" />
+                          Multiple Choice
+                        </span>
+                        <span className="info-chip">
+                          <StackedBarChartOutlinedIcon
+                            sx={{
+                              width: '16px',
+                              height: '16px',
+                            }}
+                          />
+                          Easy
+                        </span>
+                        <span className="info-chip">
+                          <AccessTimeIcon
+                            sx={{
+                              width: '16px',
+                              height: '16px',
+                            }}
+                          />
+                          30 min
+                        </span>
+                      </>
+                    );
+                  },
+                },
+              }}
+            />
+          ))}
         </Box>
-        <Box className="summary-list h-full border-2 border-dashed border-slate-300"></Box>
+        <Box className="summary-list h-full border-2 border-dashed border-slate-300">
+          <Box className="flex flex-row-reverse items-center justify-between pb-6">
+            <Box>
+              <Button
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<CloudUploadIcon />}
+                className="mr-3"
+                disabled={isImportLoading}
+              >
+                Import
+                <VisuallyHiddenInput
+                  type="file"
+                  accept="application/JSON"
+                  onChange={handleImport}
+                />
+              </Button>
+              <Button
+                variant="contained"
+                onClick={(evt: React.MouseEvent) => {
+                  evt.preventDefault();
+                  updateData({
+                    ...data,
+                    pagination: {
+                      pageNum: 1,
+                    },
+                  });
+                  router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
+                }}
+                startIcon={<AddBox />}
+              >
+                New Question
+              </Button>
+            </Box>
+          </Box>
+        </Box>
       </Stack>
     </Box>
   );

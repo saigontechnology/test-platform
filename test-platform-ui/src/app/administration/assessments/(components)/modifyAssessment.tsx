@@ -25,7 +25,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
-import { IQuestion } from '../../questions/page';
+import { IQuestion } from '../../questions/page_old';
 
 interface IModifyAssessment {
   detail?: any;
