@@ -6,13 +6,14 @@ import {
   resize_base64,
 } from '@/libs/utils';
 import hljs from 'highlight.js';
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
 import { Editor, Modules } from './quillConfig';
 
 import clsx from 'clsx';
 import 'highlight.js/styles/atom-one-dark-reasonable.css';
+import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
 
 interface IRichTextArea extends ReactQuillProps {
@@ -27,7 +28,7 @@ interface CustomQuillProps extends ReactQuill.ReactQuillProps {
 }
 
 /** Dynamic import ReactQuill, with Hightlight Js configuration: */
-const CustomReactQuill = dynamic(
+const ReactQuillCS = dynamic(
   async () => {
     hljs.configure({
       // optionally configure hljs
@@ -52,7 +53,6 @@ const CustomReactQuill = dynamic(
 /** Main module content: */
 function RichTextArea(props: IRichTextArea) {
   const { placeholder, data, isReadOnly, onChange } = props;
-  // const quillRef = React.useRef<ElementRef<typeof ReactQuill>>(null);
   let quillRef: ReactQuill | null = null;
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -122,7 +122,7 @@ function RichTextArea(props: IRichTextArea) {
 
   return (
     <>
-      <CustomReactQuill
+      <ReactQuillCS
         className={clsx('!h-fit grow', {
           '[&_.ql-container]:border-0 [&_.ql-editor]:px-0 [&_.ql-toolbar]:hidden':
             isReadOnly,

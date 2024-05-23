@@ -10,17 +10,15 @@ import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { DataContext } from '@/libs/contextStore';
 import { QuestionLevel } from '@/libs/definitions';
 import { showNotification } from '@/libs/toast';
-import { handleMappingImportData, isStringHTML } from '@/libs/utils';
+import { handleMappingImportData } from '@/libs/utils';
 import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { Box, Chip, IconButton, Typography } from '@mui/material';
+import { Box, Chip, IconButton, Stack } from '@mui/material';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material/styles';
-import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import clsx from 'clsx';
+import { GridColDef } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -69,6 +67,7 @@ const Page = () => {
         answers: q.answer,
         options: q.options,
         type: q.type,
+        level: q.level,
       };
     });
     setQuestionList(_questionList);
@@ -163,14 +162,14 @@ const Page = () => {
     {
       field: 'level',
       headerName: 'Standard',
-      flex: 0.3,
+      flex: 0.2,
       renderCell: (params) => {
         const level = QuestionLevel.find(
           (lvl) => lvl.value === params.row.level,
         );
         return (
           <Box className="grid gap-1">
-            {level ? <Chip label={level?.label} /> : null}
+            {level ? <Chip label={params.row.level} /> : null}
           </Box>
         );
       },
@@ -178,7 +177,7 @@ const Page = () => {
     {
       field: 'categories',
       headerName: 'Categories',
-      flex: 0.5,
+      flex: 0.3,
       renderCell: (params) => {
         return (
           <Box className="grid gap-1">
@@ -190,47 +189,10 @@ const Page = () => {
       },
     },
     {
-      field: 'answers',
-      headerName: 'Correct answer',
-      sortable: false,
-      flex: 0.7,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <Box className="grid gap-1">
-            {params.row.options?.map((answ: any, indx: number) => {
-              const _answ = isStringHTML(answ) ? (
-                <div>{String.fromCharCode(indx + 'A'.charCodeAt(0))}</div>
-              ) : (
-                answ
-              );
-              if (params.row.answers?.includes(indx)) {
-                return (
-                  <Chip
-                    className={clsx('w-fit max-w-sm', {
-                      'bg-blue-500 text-white':
-                        params.row.answers?.includes(indx),
-                    })}
-                    key={`answer-${indx}`}
-                    label={_answ}
-                    variant="outlined"
-                  />
-                );
-              } else {
-                return null;
-              }
-            })}
-          </Box>
-        );
-      },
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.options.join('\t'),
-    },
-    {
       field: 'actions',
       headerName: 'Actions',
       sortable: false,
-      flex: 0.3,
+      flex: 0.2,
       disableColumnMenu: true,
       renderCell: (params) => {
         return (
@@ -264,10 +226,7 @@ const Page = () => {
 
   return (
     <Box>
-      <Box className="flex items-center justify-between">
-        <Typography component="h1" className={`text-xl md:text-2xl`}>
-          Questions
-        </Typography>
+      <Box className="flex flex-row-reverse items-center justify-between pb-10">
         <Box>
           <Button
             component="label"
@@ -303,13 +262,17 @@ const Page = () => {
           </Button>
         </Box>
       </Box>
-      <Divider className="my-10" />
-      <DataTable
-        rows={questionList}
-        columns={columns}
-        loading={loading}
-        height="h-[calc(100vh_-_215px)]"
-      />
+      <Stack gridTemplateColumns={'2fr 1fr'} display={'grid'} gap={4}>
+        <DataTable
+          className=""
+          rows={questionList}
+          columns={columns}
+          loading={loading}
+          height="h-[calc(100vh_-_215px)]"
+        />
+        <Box className="summary-list border-2 border-dashed border-slate-300"></Box>
+      </Stack>
+
       <CustomModal ref={modalRef} title={''}>
         <ModalContent />
       </CustomModal>

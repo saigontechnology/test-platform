@@ -12,19 +12,14 @@ import StackedBarChartOutlinedIcon from '@mui/icons-material/StackedBarChartOutl
 import {
   Box,
   Divider,
-  FormControlLabel,
-  Radio,
   RadioGroup,
   Stack,
   Typography,
   styled,
 } from '@mui/material';
-import { useEffect } from 'react';
-import { IQuestionInfo } from '../../models';
-
-interface IQuestionInterview {
-  values: IQuestionInfo;
-}
+import { ReactElement } from 'react';
+import { useFormContext } from 'react-hook-form';
+import RenderAnswer from '../answers/renderAnswer';
 
 function getQuestionType(type: string) {
   switch (type) {
@@ -71,19 +66,17 @@ const ContentBackground = styled(Box)(
   `,
 );
 
-export function QuestionPreview({ values }: IQuestionInterview) {
-  const TitleWDivider = ({ title }: { title: string }) => {
-    return (
-      <TitleWLine variant="body1" className="py-4">
-        <span className="bg-gray-50">{title}</span>
-      </TitleWLine>
-    );
-  };
+function TitleWDivider({ title }: { title: string }): ReactElement {
+  return (
+    <TitleWLine variant="body1" className="py-4">
+      <span className="bg-gray-50">{title}</span>
+    </TitleWLine>
+  );
+}
 
-  useEffect(() => {
-    console.log('values: ', values);
-  });
-
+export function QuestionPreview() {
+  const { getValues } = useFormContext();
+  const values = getValues();
   return (
     <Stack
       gridTemplateColumns={'1fr fit-content(20%) 1fr'}
@@ -192,31 +185,16 @@ export function QuestionPreview({ values }: IQuestionInterview) {
           aria-labelledby="demo-radio-buttons-group-label"
           defaultValue="female"
           name="radio-buttons-group"
-          sx={{
-            backgroundColor: 'white',
-            padding: '10px 20px',
-            borderRadius: '10px',
-            border: 'solid 1px lightgrey',
-          }}
+          className="grid gap-4"
         >
-          {values.options?.map((opt, indx: number) => (
-            <FormControlLabel
-              key={opt}
-              control={
-                <Radio
-                  key={`opt-${indx}`}
-                  value={indx}
-                  readOnly={true}
-                  checked={values.answers.includes(indx)}
-                />
-              }
-              label={opt}
-              className="py-2 [&>span]:text-sm [&_*]:pointer-events-none"
-              sx={{
-                '&~*:hover': {
-                  cursor: 'default',
-                },
-              }}
+          {values.options?.map((opt: string, indx: number) => (
+            <RenderAnswer
+              key={`${opt.length}-${indx}`}
+              answ={opt}
+              index={indx}
+              questionType={values.type}
+              isSelected={values.answers.includes(indx)}
+              readOnly={true}
             />
           ))}
         </RadioGroup>
