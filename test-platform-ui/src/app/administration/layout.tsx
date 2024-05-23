@@ -1,10 +1,12 @@
+'use client'
+
 import NavLinks from '@/components/atoms/NavLinks';
 import { DataProvider } from '@/libs/contextStore';
 import Box from '@mui/material/Box';
 import Image from '../../../node_modules/next/image';
 import Header from '../../components/organisms/Header';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <DataProvider>
       <Box className="flex h-screen flex-col md:flex-row md:overflow-hidden">
@@ -28,4 +30,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </Box>
     </DataProvider>
   );
-}
+};
+
+export default Layout;

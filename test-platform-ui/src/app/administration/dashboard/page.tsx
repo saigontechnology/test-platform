@@ -12,7 +12,7 @@ export default async function Page() {
   const [assessments, setAssessments] = useState<IAssessment[]>([]);
 
   const getAssessement = async () => {
-    const response: any = await ApiHook(Methods.GET, '/assessments');
+    const response: any = await ApiHook(Methods.GET, '/admin/assessments');
     setAssessments(response.data);
   };
 

@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { openSans } from '@/styles/fonts';
 import '@/styles/global.css';
@@ -8,6 +8,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import themeCustom from '../styles/theme';
+import WithAuthentication from '@/components/auth/WithAuthentication';
+import RedirectAuthentication from '@/components/auth/RedirectAuthentication';
 
 export default function RootLayout({
   children,
@@ -22,10 +24,14 @@ export default function RootLayout({
       <title>Saigon Technology - Test Platform</title>
       <body id="root" className={`${openSans.className} antialiased`}>
         <QueryClientProvider client={queryClient}>
-          <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={themeCustom}>{children}</ThemeProvider>
-            <ToastContainer />
-          </StyledEngineProvider>
+          <RedirectAuthentication>
+            <WithAuthentication>
+              <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={themeCustom}>{children}</ThemeProvider>
+                <ToastContainer />
+              </StyledEngineProvider>
+            </WithAuthentication>
+          </RedirectAuthentication>
         </QueryClientProvider>
       </body>
     </html>
