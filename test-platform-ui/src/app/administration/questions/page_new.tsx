@@ -37,8 +37,8 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const Page = () => {
-  const [questionList, setQuestionList] = useState<IQuestion[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [_questionList, setQuestionList] = useState<IQuestion[]>([]);
+  const [_loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const [isImportLoading, setImportLoading] = useState<boolean>(false);
 
