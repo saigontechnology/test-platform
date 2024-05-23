@@ -34,13 +34,15 @@ const RenderAnswer = ({
     }
   };
 
-  const renderOptionType = () => {
+  const renderOptionType = (answSelected: boolean) => {
+    console.log(`${index} isSelected: `, answSelected);
     switch (questionType) {
       case QuestionType.SINGLE_CHOICE:
         return (
           <Radio
-            checked={isSelected}
+            checked={answSelected}
             onClick={() => {
+              console.log('Radio on click');
               selectAnswer && selectAnswer(index);
             }}
           />
@@ -48,9 +50,12 @@ const RenderAnswer = ({
       case QuestionType.MULTIPLE_CHOICE:
         return (
           <Checkbox
-            checked={isSelected}
+            checked={answSelected}
             disabled={false}
-            onClick={() => selectAnswer && selectAnswer(index)}
+            onClick={() => {
+              console.log('Checkbox on click');
+              selectAnswer && selectAnswer(index);
+            }}
           />
         );
     }
@@ -69,7 +74,7 @@ const RenderAnswer = ({
         width: 'calc(100% - 30px)',
       }}
     >
-      {renderOptionType()}
+      {renderOptionType(isSelected)}
       {/** Notes:
        *    - Specific cases answer include code patterns, simply envision the answer contents.
        */}

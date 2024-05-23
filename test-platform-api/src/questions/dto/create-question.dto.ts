@@ -62,5 +62,5 @@ export class CreateQuestionDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({ required: true, type: Number })
-  time: number;
+  duration: number;
 }

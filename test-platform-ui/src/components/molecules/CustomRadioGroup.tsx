@@ -15,12 +15,14 @@ interface IRadioGroup {
     label: string;
     value: any;
   }[];
+  handleOnClick?: (evt: React.MouseEvent | undefined) => void;
 }
 
 const CustomRadioGroup = ({
   label,
   controlName,
   options,
+  handleOnClick,
 }: IRadioGroup): ReactElement => {
   const { control } = useFormContext();
 
@@ -38,7 +40,13 @@ const CustomRadioGroup = ({
               <FormControlLabel
                 key={option.value}
                 value={option.value}
-                control={<Radio />}
+                control={
+                  <Radio
+                    onClick={(evt: React.MouseEvent | undefined) =>
+                      handleOnClick && handleOnClick(evt)
+                    }
+                  />
+                }
                 label={option.label}
               />
             ))}
