@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, ReactNode } from 'react';
-import Cookies from 'js-cookie';
 import { COOKIE } from '@/constants/common';
+import Cookies from 'js-cookie';
 import { usePathname, useRouter } from 'next/navigation';
+import { ReactNode, useEffect } from 'react';
 
 interface RedirectAuthenticationProps {
   children: ReactNode;
@@ -17,12 +17,14 @@ const RedirectAuthentication: React.FC<RedirectAuthenticationProps> = ({
 
   useEffect(() => {
     const token = Cookies.get(COOKIE.TOKEN);
-    if (token) {
-      if (pathname === '/') {
-        router.push('/administration/dashboard');
+    if (pathname !== '/examination') {
+      if (token) {
+        if (pathname === '/') {
+          router.push('/administration/dashboard');
+        }
+      } else {
+        router.push('/');
       }
-    } else {
-      router.push('/');
     }
   }, []);
 
