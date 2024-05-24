@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ExaminationStatus } from "@prisma/client";
 import { AssessmentsService } from "src/assessments/assessment.service";
 import { PrismaService } from "src/prisma/prisma.service";
-import { inviteExamination, sendResult } from "src/utils/mailer";
+import { inviteExamination } from "src/utils/mailer";
 import { regexEmailPattern } from "src/utils/regex";
 import { calculateExamScored } from "src/utils/scoring";
 import {
@@ -155,7 +155,7 @@ export class ExaminationsService {
         status: examStatus,
       },
     });
-    await sendResult(email, assessmentInfo.name, scored);
+    // await sendResult(email, assessmentInfo.name, scored);
     return { email, scored, correctQuestions };
   }
 

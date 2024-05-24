@@ -150,8 +150,16 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
             onChange={(e) => setSelectedAnswerValues([Number(e.target.value)])}
           >
             {currentQuestion?.question?.options?.map((item, index) => {
+              const handleOptionClick = () => {
+                setSelectedAnswerValues([index]); // Set the selected item when the div is clicked
+              };
+
               return (
-                <div key={index} className="mt-5">
+                <div
+                  key={index}
+                  className="mt-5 cursor-pointer"
+                  onClick={handleOptionClick}
+                >
                   <div className="flex items-center rounded-md border-[1px] border-[#99a2ae] p-5">
                     <FormControlLabel
                       value={index}
@@ -175,11 +183,29 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
         return (
           <FormGroup onChange={handleChangeAnswerWithCheckbox}>
             {currentQuestion?.question?.options?.map((item, index) => {
+              const handleOptionClick = () => {
+                // Toggle checkbox selection for the corresponding index
+                const isChecked = !selectedAnswerValues.includes(index);
+                const updatedSelectedValues = isChecked
+                  ? [...selectedAnswerValues, index]
+                  : selectedAnswerValues.filter((value) => value !== index);
+                setSelectedAnswerValues(updatedSelectedValues);
+              };
+
               return (
-                <div key={index} className="mt-5">
+                <div
+                  key={index}
+                  className="mt-5 cursor-pointer"
+                  onClick={handleOptionClick}
+                >
                   <div className="flex items-center rounded-md border-[1px] border-[#64748b] p-5">
                     <FormControlLabel
-                      control={<Checkbox value={index} />}
+                      control={
+                        <Checkbox
+                          value={index}
+                          checked={selectedAnswerValues.includes(index)}
+                        />
+                      }
                       label=""
                     />
                     <RichTextArea
@@ -230,72 +256,88 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
             Question Index
           </span>
         </div>
-        <div className="flex items-center justify-center">
-          <button
-            onClick={() => dialogLeaveRef?.current?.openDialog()}
-            className="mb-2 me-2 rounded-lg border-[1px] border-[#6c6e69] px-5 py-2.5 text-center text-[15px] font-medium text-[#6c6e69]"
-          >
-            <div className="flex items-center justify-center gap-2">
-              <LogoutOutlinedIcon fontSize="small" />
-              <span className="text-[16px]">Leave</span>
-            </div>
-          </button>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-center">
+            <button
+              onClick={() => dialogLeaveRef?.current?.openDialog()}
+              className="mb-2 me-2 rounded-lg border-[1px] border-[#6c6e69] px-5 py-2.5 text-center text-[15px] font-medium text-[#6c6e69]"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <LogoutOutlinedIcon fontSize="small" />
+                <span className="text-[16px]">Leave</span>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
-      <div className="bg w-32 flex-1 border-l-[1px] border-[#64748b]">
-        <div className="flex h-14 items-center justify-between border-b-[1px] border-[#64748b] px-5">
-          {assessment?.isLoading ? (
-            <div className="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-          ) : (
-            <span className="font-bold">
-              {currentQuestion?.question?.question}
-            </span>
-          )}
-          <button
-            onClick={() => handleManualNextQuestion()}
-            className="inline-flex items-center rounded-lg bg-[#7bbd1e] px-5 py-2.5 text-center text-[15px] font-medium text-white hover:bg-[#7bbd1e] focus:bg-[#7bbd1e] dark:bg-[#7bbd1e] dark:hover:bg-[#7bbd1e] dark:focus:bg-[#7bbd1e]"
-          >
-            {isLastQuestion ? 'Submit' : 'Next'}
-            <svg
-              className="ms-2 h-3.5 w-3.5 rtl:rotate-180"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 14 10"
+      <div className="bg flex w-32 flex-1 flex-col justify-between  border-l-[1px] border-[#64748b]">
+        <div>
+          <div className="flex h-14 items-center justify-between border-b-[1px] border-[#64748b] px-5">
+            {assessment?.isLoading ? (
+              <div className="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+            ) : (
+              <span className="font-bold">
+                {currentQuestion?.question?.question}
+              </span>
+            )}
+            <button
+              onClick={() => handleManualNextQuestion()}
+              className="inline-flex items-center rounded-lg bg-[#7bbd1e] px-5 py-2.5 text-center text-[15px] font-medium text-white hover:bg-[#7bbd1e] focus:bg-[#7bbd1e] dark:bg-[#7bbd1e] dark:hover:bg-[#7bbd1e] dark:focus:bg-[#7bbd1e]"
             >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M1 5h12m0 0L9 1m4 4L9 9"
-              />
-            </svg>
-          </button>
-        </div>
-        <div className="px-5 py-5">
-          {assessment.isLoading ? (
-            <SkeletonQuestion />
-          ) : (
-            <RichTextArea
-              key="questionDescriptionPreview"
-              name="description"
-              data={currentQuestion?.question?.description!}
-              isReadOnly={true}
-            />
-          )}
-        </div>
-        <div className="flex flex-col gap-3 px-5">
-          <div className="mt-6 flex items-center gap-2">
-            <span className="w-[140px] text-[15px] font-semibold">
-              Answer Options
-            </span>
-            <div className="h-[1px] w-full border-t-[1px] border-[#64748b]"></div>
+              {isLastQuestion ? 'Submit' : 'Next'}
+              <svg
+                className="ms-2 h-3.5 w-3.5 rtl:rotate-180"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 10"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M1 5h12m0 0L9 1m4 4L9 9"
+                />
+              </svg>
+            </button>
           </div>
-          <div>
-            <span className="w-[140px] text-[14px]">Select any one option</span>
-            {assessment.isLoading ? <SkeletonAnswers /> : renderOptions()}
+          <div
+            className="overflow-y-auto"
+            style={{ maxHeight: 'calc(100vh - 60px)' }}
+          >
+            <div className="px-5 py-5">
+              {assessment.isLoading ? (
+                <SkeletonQuestion />
+              ) : (
+                <RichTextArea
+                  key="questionDescriptionPreview"
+                  name="description"
+                  data={currentQuestion?.question?.description!}
+                  isReadOnly={true}
+                />
+              )}
+            </div>
+            <div className="flex flex-col gap-3 px-5">
+              <div className="mt-6 flex items-center gap-2">
+                <span className="w-[140px] text-[15px] font-semibold">
+                  Answer Options
+                </span>
+                <div className="h-[1px] w-full border-t-[1px] border-[#64748b]"></div>
+              </div>
+              <div>
+                <span className="w-[140px] text-[14px]">
+                  Select any one option
+                </span>
+                {assessment.isLoading ? <SkeletonAnswers /> : renderOptions()}
+              </div>
+            </div>
           </div>
+        </div>
+        <div className="flex w-full p-4 flex-row-reverse">
+          <span className="text-[14px]">
+            {`*Warning: Don't close this page when not completed, because you cannot retake this test.`}
+          </span>
         </div>
       </div>
       <SimpleDialog
