@@ -3,12 +3,16 @@ export function calculateExamScored(
   examAnswers: any,
   candidateEmail: string,
 ) {
-  const numberCorrect = assessmentInfo.assessmentQuestionMapping
-    .map((item) => {
-      const examAnswer = examAnswers.find((answ) => answ.questionId);
-      return item.question?.answer[0] === examAnswer.selections[0];
-    })
-    .filter(Boolean).length;
+  let numberCorrect = 0;
+
+  assessmentInfo.assessmentQuestionMapping.map((item) => {
+    const examAnswer = examAnswers.find(
+      (answ) => answ.questionId === item.question.id,
+    );
+    if (item.question?.answer[0] == examAnswer.selections[0]) {
+      numberCorrect += 1;
+    }
+  });
   return {
     email: candidateEmail,
     scored: Number(((numberCorrect / examAnswers.length) * 100).toFixed(2)),
