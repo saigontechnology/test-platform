@@ -1,7 +1,8 @@
 import AutocompleteTags, {
   IOptions,
 } from '@/components/atoms/CustomModules/AutocompleteTags';
-import { useState } from 'react';
+import { useGetCandidates } from '@/hooks/user/hooks';
+import { useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 export interface IEmployee extends IOptions {
@@ -72,6 +73,19 @@ export default function AccordionExpandIcon() {
   const { setValue, getValues } = useFormContext();
   const [candidates, setCandidates] = useState<IEmployee[]>([]);
 
+  const candidate = useGetCandidates();
+
+  const candidateFormats = useMemo(() => {
+    return candidate.data?.map((item) => {
+      return {
+        name: `${item.lastName} ${item.firstName}`,
+        empCode: item.empCode,
+      };
+    });
+  }, [candidate]);
+
+  console.log('candidate', candidate.data);
+
   const handleAddCandidate = (new_candidate: IEmployee) => {
     if (new_candidate) {
       setCandidates(candidates.concat(new_candidate));
@@ -92,7 +106,7 @@ export default function AccordionExpandIcon() {
 
   return (
     <AutocompleteTags
-      options={EmployeeEmails}
+      options={candidateFormats}
       selectedItems={candidates}
       addItem={(item) => handleAddCandidate(item as IEmployee)}
       removeItem={(items) => handleRemoveCandidate(items as IEmployee[])}
