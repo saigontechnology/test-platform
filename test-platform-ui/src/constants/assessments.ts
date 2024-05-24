@@ -80,6 +80,8 @@ export interface IExamAnswer {
   question: {
     question: string;
     options: string[];
+    level: string;
+    answer: [number];
   };
   selections: number[];
 }
@@ -101,4 +103,11 @@ export interface IExamination {
   empCode: string;
   durationTotal?: number;
   questionNumbers?: number;
+  correctByLevel: ICorrectByLevel[];
+}
+
+export interface ICorrectByLevel {
+  level: string;
+  scored: number;
+  total: number;
 }

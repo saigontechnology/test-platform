@@ -18,7 +18,7 @@ const EditPage = () => {
   const getEditQuestion = async () => {
     const { data } = await ApiHook<IAssessment>(
       Methods.GET,
-      `/assessments/${pathname[pathname.length - 1]}`,
+      `/admin/assessments/${pathname[pathname.length - 1]}`,
     );
     setData(data);
   };

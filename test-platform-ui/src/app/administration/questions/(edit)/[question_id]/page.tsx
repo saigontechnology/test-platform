@@ -17,7 +17,7 @@ const EditQuestion = () => {
     (async () => {
       const { data } = await ApiHook<IResponseQuestion>(
         Methods.GET,
-        `/questions/${pathname[pathname.length - 1]}`,
+        `/admin/questions/${pathname[pathname.length - 1]}`,
       );
       const editQuestion: IQuestionInfo = {
         id: data?.id,
@@ -33,7 +33,6 @@ const EditQuestion = () => {
         isModified: data?.isModified,
         duration: data?.duration,
       };
-      console.log('editQuestion: ', editQuestion);
       setData(editQuestion);
     })();
   }, []);

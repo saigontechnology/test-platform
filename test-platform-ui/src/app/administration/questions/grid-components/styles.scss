@@ -1,0 +1,58 @@
+.items-container {
+    grid-template-rows: repeat(4, max-content);
+    transition: 0.2s linear;
+    @apply grid gap-3 rounded-md border border-solid border-zinc-400 p-3 scale-[97%];
+
+    .active {
+        @apply bg-sky-100;
+    }
+
+    &:hover {
+        transition: 0.2s linear;
+        @apply border-4 border-blue-300 shadow-lg cursor-pointer scale-100;
+    }
+
+    .question-title {
+        @apply flex justify-between;
+        .title {
+            @apply text-lg font-semibold;
+        }
+        .category {
+            @apply bg-green-600 w-1/12 h-8 rounded-r-md flex items-center relative justify-end px-4 text-white font-semibold;
+            // https://css-tricks.com/the-shapes-of-css/
+            .triangle-right {
+                width: 0;
+                height: 0;
+                border-top: 17px solid transparent;
+                border-left: 20px solid ghostwhite;
+                border-bottom: 17px solid transparent;
+                left: 0px;
+                position: absolute;
+            }
+        }
+    }
+
+    .tag-chip-container {
+        @apply flex gap-4 text-sm;
+
+        .tag-chip-item {
+            @apply rounded-md border border-solid bg-indigo-50 p-1.5 text-indigo-600;
+        }
+    }
+
+    .question-description {
+        div {
+            @apply font-semibold text-sm;
+
+            &:nth-child(1) {
+                @apply text-slate-500;
+            }
+        }
+        @apply grid gap-2 rounded-md border border-solid border-zinc-400 p-3;
+    }
+    .info-container {
+        .info-chip {
+            @apply flex items-center justify-center gap-2 rounded-md border border-solid bg-blue-100 p-1.5 font-semibold text-blue-700 text-sm;
+        }
+    }
+}

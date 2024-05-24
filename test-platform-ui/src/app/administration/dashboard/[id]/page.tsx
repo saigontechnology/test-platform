@@ -1,15 +1,14 @@
 'use client';
 
-import LinearProgressBar from '@/components/atoms/LinearProgressBar';
 import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
-import { IExamination, Level } from '@/constants/assessments';
+import { ICorrectByLevel, IExamination, Level } from '@/constants/assessments';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
+import { QuestionLevels } from '@/libs/definitions';
 import { formatTimeString } from '@/libs/utils';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 import Brightness1Icon from '@mui/icons-material/Brightness1';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import { Chip } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -27,6 +26,8 @@ interface IExamResults {
     label: string;
     color: string;
   };
+  correctByLevel: ICorrectByLevel[];
+  totalCorrect: number;
 }
 
 interface IStatistic {
@@ -68,13 +69,15 @@ export default async function Page() {
   const getExaminationByAssessment = async () => {
     const response: any = await ApiHook(
       Methods.GET,
-      `/examinations/assessments/${assessmentId}`,
+      `/admin/examinations/assessments/${assessmentId}`,
     );
     const { examination, statistic, assessment } = response.data;
+
     const examinationsInfo: IExamResults[] = (
       examination as Array<IExamination>
     ).map((ex: IExamination) => {
       const _status = getStatus(ex.status) || 'Processing';
+
       return {
         id: ex.id,
         title: ex.assessment.name,
@@ -95,8 +98,23 @@ export default async function Page() {
                 ? 'success'
                 : 'error',
         },
+        correctByLevel: ex.correctByLevel
+          .map((score: ICorrectByLevel) => {
+            return {
+              ...score,
+              index: Object.keys(QuestionLevels).indexOf(score.level),
+            };
+          })
+          .sort((a, b) => {
+            return a.index - b.index;
+          }),
+        totalCorrect: ex.correctByLevel.reduce((acc, curr) => {
+          console.log(curr);
+          return acc + curr.scored;
+        }, 0),
       };
     });
+
     setStatistic(statistic);
     setExamsInfo(examinationsInfo);
     setAssessment(assessment);
@@ -107,25 +125,53 @@ export default async function Page() {
     {
       field: 'empCode',
       flex: 1,
-      headerName: 'Emp Code',
+      headerName: 'Emp. Code',
       headerAlign: 'center',
       align: 'center',
       sortable: false,
       renderCell: (params) => multipleLinesTypo(params.row.empCode),
     },
     {
-      field: 'status',
+      field: 'levelQuestions',
+      minWidth: 300,
+      headerName: 'Level questions',
+      headerAlign: 'center',
+      align: 'center',
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <div className="flex w-full justify-between">
+            {params.row.correctByLevel.map((summary: any) => {
+              return (
+                <div className="flex items-center">
+                  <div className="text-center">
+                    <div
+                      className={`capitalize ${questionLevelColor[summary.level]}`}
+                    >
+                      {questionLevel[summary.level]}
+                    </div>
+                    <div>
+                      <span>{summary.scored}/</span>
+                      <span>{summary.total}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      },
+    },
+    {
+      field: 'corrects',
       minWidth: 150,
-      headerName: 'Status',
+      headerName: 'Corrects',
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => {
         return (
           <div>
-            <Chip
-              label={params.row.status.label}
-              color={params.row.status.color}
-            />
+            {params.row.totalCorrect}/{assessment?.questions}
           </div>
         );
       },
@@ -144,28 +190,24 @@ export default async function Page() {
         return <span>{expiredDate}</span>;
       },
     },
-    {
-      field: 'result',
-      minWidth: 250,
-      headerName: 'Result',
-      headerAlign: 'center',
-      align: 'center',
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <LinearProgressBar
-            value={params.row.result.score}
-            status={params.row.result.status}
-          />
-        );
-      },
-    },
   ];
 
   const levelColor: any = {
     [Level.Junior]: 'text-green-500',
     [Level.Intermediate]: 'text-yellow-500',
     [Level.Senior]: 'text-red-500',
+  };
+
+  const questionLevel: any = {
+    [QuestionLevels.JUNIOR]: 'Junior',
+    [QuestionLevels.INTERMEDIATE]: 'Intermediate',
+    [QuestionLevels.SENIOR]: 'Senior',
+  };
+
+  const questionLevelColor: any = {
+    [QuestionLevels.JUNIOR]: 'text-green-500',
+    [QuestionLevels.INTERMEDIATE]: 'text-yellow-500',
+    [QuestionLevels.SENIOR]: 'text-red-500',
   };
 
   return (
