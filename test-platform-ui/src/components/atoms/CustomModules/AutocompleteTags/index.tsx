@@ -14,7 +14,7 @@ import {
 
 export interface IOptions {
   name: string;
-  subName?: string;
+  empCode?: string;
   [k: string]: any;
 }
 
@@ -69,12 +69,12 @@ export default function AutocompleteTags<T>({
       <Item
         isDisabled={isSelected}
         {...getOptionProps({ option, index })}
-        value={option.subName}
+        value={option.empCode}
       >
         <span
           dangerouslySetInnerHTML={{
             __html: `<p><b>${option.name}</b>${
-              option.subName ? `- <i></i>${option.subName}</p>` : ''
+              option.empCode ? `- <i></i>${option.empCode}</p>` : ''
             }`,
           }}
         />
