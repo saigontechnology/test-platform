@@ -4,13 +4,9 @@ export function calculateExamScored(
   candidateEmail: string,
 ) {
   const numberCorrect = assessmentInfo.assessmentQuestionMapping
-    .map((question) => {
-      const exam_answers = examAnswers.find((answ) => answ.questionId)
-        ?.selections;
-      return (
-        JSON.stringify(exam_answers) ===
-        JSON.stringify(question.question.answer)
-      );
+    .map((item) => {
+      const examAnswer = examAnswers.find((answ) => answ.questionId);
+      return item.question?.answer[0] === examAnswer.selections[0];
     })
     .filter(Boolean).length;
   return {
