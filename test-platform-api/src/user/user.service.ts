@@ -1,8 +1,9 @@
 // src/user/user.service.ts
 
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { UserStatus } from "@prisma/client";
 import * as bcrypt from "bcrypt";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class UserService {
@@ -38,5 +39,29 @@ export class UserService {
 
     // Return an array of role names
     return roles.map((roleAssignment) => roleAssignment.role.name);
+  }
+
+  async findAllCandidates() {
+    const results = await this.prisma.userRoleAssignment.findMany({
+      where: {
+        roleId: 2,
+        user: {
+          active: UserStatus.ACTIVE,
+        },
+      },
+      select: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            empCode: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+
+    return results.map((result) => result.user);
   }
 }

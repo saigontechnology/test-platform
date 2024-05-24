@@ -1,3 +1,4 @@
+
 export const EXAMINATION_API = {
   getExaminationInfo: {
     api: (examId: string) => `/examinations/${examId}`,
@@ -21,3 +22,9 @@ export const AUTH_API = {
     api: "/auth/login"
   }
 }
+
+export const USER_API = {
+  getCandidates: {
+    api: "/admin/candidate/list",
+  },
+};
