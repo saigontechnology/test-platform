@@ -1,5 +1,7 @@
+import { COOKIE } from '@/constants/common';
 import { ERROR_CODE } from '@/constants/error-code';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import Cookies from 'js-cookie';
 
 // import { ROUTES_PATH } from '@/constants/routes-path';
 
@@ -24,7 +26,13 @@ export function httpRequest(
   });
 
   if (!options?.suppressErrorToasts) {
+    const setAuthorizationHeader = (request: AxiosRequestConfig | any, token: string) => {
+      request.headers.Authorization = `Bearer ${token}`;
+    };
+
     const onRequest = (config: AxiosRequestConfig | any) => {
+      const token = Cookies.get(COOKIE.TOKEN);
+      token && setAuthorizationHeader(config, token);
       return config;
     };
 

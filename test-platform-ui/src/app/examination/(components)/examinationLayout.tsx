@@ -10,6 +10,7 @@ import { QuestionType } from '@/libs/definitions';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import {
   Checkbox,
+  CircularProgress,
   Dialog,
   FormControlLabel,
   FormGroup,
@@ -28,7 +29,6 @@ import React, {
 } from 'react';
 import 'react-quill/dist/quill.snow.css';
 import Countdown from './countdown';
-import Loading from './loading';
 import { SkeletonAnswers, SkeletonQuestion } from './skeleton';
 
 interface IExaminationLayoutProps {
@@ -46,6 +46,8 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
   const [selectedAnswerValues, setSelectedAnswerValues] = useState<number[]>(
     [],
   );
+
+  console.log('currentQuestionIndex', currentQuestionIndex);
 
   const dialogRef = useRef<any>(null);
   const dialogLeaveRef = useRef<any>(null);
@@ -202,8 +204,12 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
     <div className="flex">
       <div className="flex h-screen w-48 flex-col justify-between">
         <div className="flex items-center justify-center bg-slate-500 p-4 ">
-          {assessment?.isLoading && !currentQuestion?.question.duration ? (
-            <Loading />
+          {!assessment?.isLoading && !currentQuestion?.question.duration ? (
+            <CircularProgress
+              color="inherit"
+              size={18}
+              className="text-white"
+            />
           ) : currentQuestion?.question.duration ? (
             <Countdown
               ref={countdownRef}
@@ -227,7 +233,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
         <div className="flex items-center justify-center">
           <button
             onClick={() => dialogLeaveRef?.current?.openDialog()}
-            className="mb-2 me-2 rounded-lg border-[2px] border-[#6c6e69] px-5 py-2.5 text-center text-sm font-medium text-[#6c6e69]"
+            className="mb-2 me-2 rounded-lg border-[1px] border-[#6c6e69] px-5 py-2.5 text-center text-[15px] font-medium text-[#6c6e69]"
           >
             <div className="flex items-center justify-center gap-2">
               <LogoutOutlinedIcon fontSize="small" />
@@ -247,7 +253,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
           )}
           <button
             onClick={() => handleManualNextQuestion()}
-            className="inline-flex items-center rounded-lg bg-[#7bbd1e] px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-[#7bbd1e] focus:bg-[#7bbd1e] dark:bg-[#7bbd1e] dark:hover:bg-[#7bbd1e] dark:focus:bg-[#7bbd1e]"
+            className="inline-flex items-center rounded-lg bg-[#7bbd1e] px-5 py-2.5 text-center text-[15px] font-medium text-white hover:bg-[#7bbd1e] focus:bg-[#7bbd1e] dark:bg-[#7bbd1e] dark:hover:bg-[#7bbd1e] dark:focus:bg-[#7bbd1e]"
           >
             {isLastQuestion ? 'Submit' : 'Next'}
             <svg
@@ -271,12 +277,6 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
           {assessment.isLoading ? (
             <SkeletonQuestion />
           ) : (
-            // <ReactQuill
-            //   theme="snow"
-            //   value={currentQuestion?.question?.description!}
-            //   readOnly
-            //   modules={{ toolbar: false }}
-            // />
             <RichTextArea
               key="questionDescriptionPreview"
               name="description"
@@ -337,7 +337,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
                 <button
                   data-modal-hide="popup-modal"
                   type="button"
-                  className="ms-3 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                  className="ms-3 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
                   onClick={() => dialogRef.current.closeDialog()}
                 >
                   No, cancel
@@ -388,7 +388,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
                 <button
                   data-modal-hide="popup-modal"
                   type="button"
-                  className="ms-3 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+                  className="ms-3 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
                   onClick={() => dialogLeaveRef.current.closeDialog()}
                 >
                   No, cancel

@@ -27,6 +27,11 @@ enum QuestionLevel {
   PRINCIPAL
 }
 
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
 model Question {
   id          Int           @id @default(autoincrement())
   question    String
@@ -97,4 +102,42 @@ model ExamAnswer {
   question    Question?    @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@id([questionId, examinationId])
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  password  String
+  empCode   String?    @unique
+  firstName String?
+  lastName  String?
+  active    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relation
+  userRoleAssignment UserRoleAssignment[]
+}
+
+model UserRole {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation
+  userRoleAssignment UserRoleAssignment[]
+}
+
+model UserRoleAssignment {
+  userId     Int
+  roleId     Int
+  assignedAt DateTime @default(now())
+
+  // Relation
+  user User     @relation(fields: [userId], references: [id])
+  role UserRole @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
 }

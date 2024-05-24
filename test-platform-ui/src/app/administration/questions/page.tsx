@@ -49,7 +49,7 @@ const Page = () => {
 
   const getGridQuestion = async () => {
     setLoading(true);
-    const _questions = await ApiHook(Methods.GET, '/questions');
+    const _questions = await ApiHook(Methods.GET, '/admin/questions');
     const _questionList: IQuestion[] = (
       _questions.data as Array<IResponseQuestion>
     ).map((q: IResponseQuestion) => {
@@ -87,7 +87,7 @@ const Page = () => {
       ).then((result) => result);
       importQuestions = JSON.stringify(mappedQuestions);
       setImportLoading(true);
-      const { error } = await ApiHook(Methods.POST, `/questions/import`, {
+      const { error } = await ApiHook(Methods.POST, `/admin/questions/import`, {
         data: importQuestions,
       });
       !error && showNotification('Import questions successfully', 'success');

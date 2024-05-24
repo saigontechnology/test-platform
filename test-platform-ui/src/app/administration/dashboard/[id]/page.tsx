@@ -69,7 +69,7 @@ export default async function Page() {
   const getExaminationByAssessment = async () => {
     const response: any = await ApiHook(
       Methods.GET,
-      `/examinations/assessments/${assessmentId}`,
+      `/admin/examinations/assessments/${assessmentId}`,
     );
     const { examination, statistic, assessment } = response.data;
 

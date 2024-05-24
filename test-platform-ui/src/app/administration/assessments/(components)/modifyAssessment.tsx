@@ -42,7 +42,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
   }, []);
 
   const getQuestionsList = async () => {
-    const _questions = await ApiHook(Methods.GET, '/questions');
+    const _questions = await ApiHook(Methods.GET, '/admin/questions');
     const _questionList: IQuestion[] = (
       _questions.data as Array<IResponseQuestion>
     ).map((q: IResponseQuestion) => {
@@ -103,7 +103,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
 
   const handleAddNew = async () => {
     const formData = form.getValues();
-    const { error } = await ApiHook(Methods.POST, '/assessments', {
+    const { error } = await ApiHook(Methods.POST, '/admin/assessments', {
       data: formData,
     });
     setIsSubmitLoading(false);
@@ -115,7 +115,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
 
   const handleEdit = async () => {
     const formData = form.getValues();
-    const { error } = await ApiHook(Methods.PUT, `/assessments/${detail.id}`, {
+    const { error } = await ApiHook(Methods.PUT, `/admin/assessments/${detail.id}`, {
       data: formData,
     });
     setIsSubmitLoading(false);

@@ -1,5 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { showNotification } from '../toast';
+import Cookies from 'js-cookie';
+import { COOKIE } from '@/constants/common';
 
 export enum Methods {
   GET = 'GET',
@@ -14,6 +16,20 @@ const axiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get(COOKIE.TOKEN); // Replace with your cookie name
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
 
 //  Axios Error Handling:
 axiosInstance.interceptors.response.use(
