@@ -30,19 +30,6 @@ const GridPaging = styled('div')`
     place-content: flex-end;
   }
 `;
-const GridDivider = styled('hr')`
-  padding: 0px 0px 0px 10px;
-  &.dashed {
-    border-top: 3px dashed #bbb;
-  }
-  &.solid {
-    border-top: 3px solid #bbb;
-  }
-  &.rounded {
-    border-top: 8px solid #bbb;
-    border-radius: 5px;
-  }
-`;
 
 export default function TFGrid({
   data,
@@ -99,7 +86,6 @@ export default function TFGrid({
   return (
     <div className="question-list grid h-[inherit] gap-2">
       <GridPagination itemPerPage={3} />
-      {/* <GridDivider className="solid" /> */}
       <Grid className="grid gap-1">
         {chunkedData[currPage]?.map((_data: any, _indx: number) => {
           if (_indx <= itemCounter) {
