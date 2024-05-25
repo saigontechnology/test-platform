@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import NavLinks from '@/components/atoms/NavLinks';
 import { DataProvider } from '@/libs/contextStore';
@@ -23,7 +23,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </Box>
         <Box className="flex-grow bg-[#f9f9f9]">
           <Header />
-          <Box className="flex-grow rounded-[15px] p-6 md:overflow-y-auto">
+          <Box className="h-[calc(100vh_-_80px)] flex-grow rounded-[15px] p-4 md:overflow-hidden">
             {children}
           </Box>
         </Box>
