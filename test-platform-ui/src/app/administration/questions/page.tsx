@@ -116,7 +116,6 @@ const Page = () => {
   };
 
   const pageChange = (currentPage: number) => {
-    console.log('page on change: ', currentPage);
     setCurrentPageNum(currentPage);
   };
 

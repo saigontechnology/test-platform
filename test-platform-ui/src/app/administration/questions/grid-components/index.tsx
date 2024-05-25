@@ -67,7 +67,6 @@ export default function TFGrid({
       { length: Math.ceil(data.length / paging) },
       (_item: ICardData, indx: number) => {
         const _r = data.slice(indx * paging, indx * paging + paging);
-        console.log('chunk sliced: ', _r);
         return _r;
       },
     );

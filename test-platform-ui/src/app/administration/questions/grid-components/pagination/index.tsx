@@ -41,8 +41,6 @@ const TFPagination = (props: IPagination) => {
     onPageChange(currentPage - 1);
   };
 
-  console.log('paginationRange: ', paginationRange);
-
   return (
     <ul className={clsx('pagination-container', { [className]: className })}>
       <li
