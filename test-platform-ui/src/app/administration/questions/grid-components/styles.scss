@@ -1,7 +1,7 @@
 .items-container {
     grid-template-rows: repeat(4, max-content);
     transition: 0.2s linear;
-    @apply grid gap-3 rounded-md border border-solid border-zinc-400 p-3 scale-[97%];
+    @apply grid gap-3 rounded-md border border-solid border-zinc-400 p-3 scale-[95%];
 
     .active {
         @apply bg-sky-100;
@@ -9,7 +9,7 @@
 
     &:hover {
         transition: 0.2s linear;
-        @apply border-4 border-blue-300 shadow-lg cursor-pointer scale-100;
+        @apply border-blue-600 shadow-lg cursor-pointer scale-[97%];
     }
 
     .question-title {
@@ -50,6 +50,7 @@
         }
         @apply grid gap-2 rounded-md border border-solid border-zinc-400 p-3;
     }
+
     .info-container {
         .info-chip {
             @apply flex items-center justify-center gap-2 rounded-md border border-solid bg-blue-100 p-1.5 font-semibold text-blue-700 text-sm;

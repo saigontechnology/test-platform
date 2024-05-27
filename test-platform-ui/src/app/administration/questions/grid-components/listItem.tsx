@@ -1,34 +1,49 @@
+import RichTextArea from '@/components/atoms/Editor/richtext';
 import { FlagChip } from './flag-chip/flagChip';
 
 import './styles.scss';
 
-interface ICardData {
+export interface ICardData {
+  id: number;
   title: string;
   tags?: string[];
   flagChip?: {
     label: string;
   };
   description: {
-    label: string;
     content: string;
     render?: () => React.ReactElement;
   };
   cardInfo: {
-    render?: () => React.ReactElement;
+    info: string[];
+    render?: (info?: string) => React.ReactElement;
   };
 }
 
 interface IGridCard {
+  key: string;
   active?: boolean;
   cardData: ICardData;
 }
 
 export default function ListCardItem({
+  key,
   active,
   cardData,
 }: IGridCard): React.ReactElement {
+  const handleCSRender = () => {
+    if (cardData.cardInfo.render) {
+      return cardData.cardInfo.render();
+    }
+    return cardData.cardInfo.info?.map((info: string, indx: number) => (
+      <span key={`card-info-${indx}`} className="info-chip">
+        {info}
+      </span>
+    ));
+  };
+
   return (
-    <div className={`items-container ${active ? 'active' : ''}`}>
+    <div key={key} className={`items-container ${active ? 'active' : ''}`}>
       <div className="question-title">
         <div className="title">{cardData.title}</div>
         {cardData.flagChip ? (
@@ -42,21 +57,21 @@ export default function ListCardItem({
           </span>
         ))}
       </div>
-      {cardData.description?.label && cardData.description?.content ? (
+      {cardData.description?.content ? (
         <div className="question-description">
           {cardData.description?.render ? (
             cardData.description.render()
           ) : (
-            <>
-              <div>{cardData.description?.label}</div>
-              <div>{cardData.description?.content}</div>
-            </>
+            <RichTextArea
+              name="description"
+              data={cardData.description.content}
+              onChange={(_val: string) => null}
+              isReadOnly={true}
+            />
           )}
         </div>
       ) : null}
-      <div className="info-container flex gap-4">
-        {cardData.cardInfo?.render ? cardData.cardInfo.render() : null}
-      </div>
+      <div className="info-container flex gap-4">{handleCSRender()}</div>
     </div>
   );
 }
