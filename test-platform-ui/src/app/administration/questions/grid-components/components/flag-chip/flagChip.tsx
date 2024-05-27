@@ -1,6 +1,7 @@
+import React from 'react';
 import './flagChip.scss';
 
-export function FlagChip({
+function FlagChip({
   customClass,
   label,
 }: {
@@ -14,3 +15,5 @@ export function FlagChip({
     </div>
   );
 }
+
+export default React.memo(FlagChip);

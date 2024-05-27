@@ -1,5 +1,9 @@
+$flag-color: #8dc63f;
+
 .flag-chip-container {
-    @apply bg-green-600 w-fit h-8 rounded-r-md flex items-center relative justify-end px-4 py-4 text-white font-semibold;
+    background-color: $flag-color;
+    @apply w-fit h-8 rounded-r-md flex items-center relative justify-end px-4 py-4
+        text-white font-semibold;
     span {
         padding-left: 20px;
     }
