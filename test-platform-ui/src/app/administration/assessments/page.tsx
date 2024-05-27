@@ -40,7 +40,7 @@ export default function EditAssessment() {
   const selectedEmails = sendInviteForm.watch('email');
 
   const getAssessments = async () => {
-    const response: any = await ApiHook(Methods.GET, '/assessments');
+    const response: any = await ApiHook(Methods.GET, '/admin/assessments');
     setAssessments(response.data);
   };
 

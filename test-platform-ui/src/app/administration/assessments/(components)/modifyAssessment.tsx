@@ -11,7 +11,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import AddIcon from '@mui/icons-material/Add';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 import CategoryIcon from '@mui/icons-material/Category';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EditIcon from '@mui/icons-material/Edit';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
@@ -21,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { IQuestion } from '../../questions/page';
+import QuestionCard from './questionCard';
 import QuestionList from './questionList';
 
 interface IModifyAssessment {
@@ -34,6 +34,9 @@ export default function ModifyAssessment(props: IModifyAssessment) {
   const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
   const [selectedQuestion, setSelectedQuestion] = useState<IQuestion>();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [assessmentQuestions, setAssessmentQuestions] = useState<IQuestion[]>(
+    [],
+  );
 
   useEffect(() => {
     getQuestionsList();
@@ -58,8 +61,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
         question: q.question,
       };
     });
-    setQuestionList(_questionList.slice(0, 5));
-    setSelectedQuestion(_questionList[0]);
+    setQuestionList(_questionList.slice(0, 10));
   };
 
   const form = useForm<ICreateAssessment>({
@@ -118,9 +120,13 @@ export default function ModifyAssessment(props: IModifyAssessment) {
 
   const handleEdit = async () => {
     const formData = form.getValues();
-    const { error } = await ApiHook(Methods.PUT, `/admin/assessments/${detail.id}`, {
-      data: formData,
-    });
+    const { error } = await ApiHook(
+      Methods.PUT,
+      `/admin/assessments/${detail.id}`,
+      {
+        data: formData,
+      },
+    );
     setIsSubmitLoading(false);
     if (!error) {
       showNotification('Update assessment successfully', 'success');
@@ -128,7 +134,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
     }
   };
 
-  const handleSelect = (index: number) => {
+  const handleSelectQuestion = (index: number) => {
     setSelectedQuestion(questionList[index]);
   };
 
@@ -280,51 +286,19 @@ export default function ModifyAssessment(props: IModifyAssessment) {
           </div>
           <div className="h-[calc(100vh_-_201px)] overflow-y-scroll pt-4">
             <div className="text-sm text-gray-400">Question</div>
-            {questionList.map((question: IQuestion, index: number) => {
+            {assessmentQuestions.map((question: IQuestion, index: number) => {
               return (
-                <div className="mt-4 flex items-center pr-4" key={question.id}>
-                  <div className="px-4 text-sm text-gray-400">#{index + 1}</div>
-                  <div
-                    className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white p-4 text-sm"
-                    onClick={() => {
-                      handleSelect(index);
-                    }}
-                  >
-                    <div>
-                      <RichTextArea
-                        key={index}
-                        name={question.content}
-                        data={question.content}
-                        isReadOnly={true}
-                      />
-                      <div className="flex">
-                        <div className="text-xs font-medium text-gray-500">
-                          <CategoryIcon sx={{ fontSize: 14 }} />
-                          <span className="ml-1">{question.category}</span>
-                        </div>
-                        <div className="ml-4 text-xs font-medium text-gray-500">
-                          <KeyboardDoubleArrowUpIcon sx={{ fontSize: 14 }} />
-                          <span className="ml-1">
-                            {questionLevel[question.level]}
-                          </span>
-                        </div>
-                        <div className="ml-4 text-xs font-medium text-gray-500">
-                          <DescriptionIcon sx={{ fontSize: 14 }} />
-                          <span className="ml-1">
-                            {questionType[question.type]}
-                          </span>
-                        </div>
-                        <div className="ml-4 text-xs font-medium text-gray-500">
-                          <AlarmOnIcon sx={{ fontSize: 14 }} />
-                          <span className="ml-1">{question.duration}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="cursor-pointer p-4 text-gray-500">
-                      <DeleteOutlineIcon sx={{ fontSize: 18 }} />
-                    </div>
-                  </div>
-                </div>
+                <QuestionCard
+                  id={question.id}
+                  index={index}
+                  content={question.content}
+                  category={question.category}
+                  level={question.level}
+                  type={question.type}
+                  duration={question.duration}
+                  selected={selectedQuestion?.id}
+                  onSelect={handleSelectQuestion}
+                />
               );
             })}
             <div></div>
@@ -334,67 +308,73 @@ export default function ModifyAssessment(props: IModifyAssessment) {
           {/* <div>Invitation</div> */}
           <div className="rounded-lg border border-gray-200 bg-white p-4">
             <div className="border-b border-gray-200 pb-4 text-sm">Preview</div>
-            <div className="h-[calc(100vh_-_165px)] overflow-y-scroll pt-4 ">
-              <div className="text-lg">{selectedQuestion?.question}</div>
-              <div className="mt-4">
-                <div className="flex">
-                  <div className="text-xs font-medium text-gray-500">
-                    <CategoryIcon sx={{ fontSize: 14 }} />
-                    <span className="ml-1">{selectedQuestion?.category}</span>
-                  </div>
-                  <div className="ml-4 text-xs font-medium text-gray-500">
-                    <KeyboardDoubleArrowUpIcon sx={{ fontSize: 14 }} />
-                    <span className="ml-1">
-                      {questionLevel[selectedQuestion?.level || '']}
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-4 flex">
-                  <div className="text-xs font-medium text-gray-500">
-                    <DescriptionIcon sx={{ fontSize: 14 }} />
-                    <span className="ml-1">
-                      {questionType[selectedQuestion?.type || '']}
-                    </span>
-                  </div>
-                  <div className="ml-4 text-xs font-medium text-gray-500">
-                    <AlarmOnIcon sx={{ fontSize: 14 }} />
-                    <span className="ml-1">{selectedQuestion?.duration}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4">
-                <RichTextArea
-                  name={selectedQuestion?.content}
-                  data={selectedQuestion?.content}
-                  isReadOnly={true}
-                />
-              </div>
-              <div className="mt-4 border-t border-gray-200 p-4">
-                <div className="text-center text-sm font-medium">Answers</div>
+            {selectedQuestion ? (
+              <div className="h-[calc(100vh_-_165px)] overflow-y-scroll pt-4 ">
+                <div className="text-lg">{selectedQuestion?.question}</div>
                 <div className="mt-4">
-                  <RadioGroup value={selectedQuestion?.answers[0] || null}>
-                    {selectedQuestion?.options?.map((item, index) => {
-                      return (
-                        <div key={index} className="mt-5">
-                          <div className="flex items-center rounded-md border-[1px] border-[#64748b] p-5">
-                            <FormControlLabel
-                              value={index}
-                              control={<Radio disabled />}
-                            />
-                            <RichTextArea
-                              key={index}
-                              name={item}
-                              data={item}
-                              isReadOnly={true}
-                            />
+                  <div className="flex">
+                    <div className="text-xs font-medium text-gray-500">
+                      <CategoryIcon sx={{ fontSize: 14 }} />
+                      <span className="ml-1">{selectedQuestion?.category}</span>
+                    </div>
+                    <div className="ml-4 text-xs font-medium text-gray-500">
+                      <KeyboardDoubleArrowUpIcon sx={{ fontSize: 14 }} />
+                      <span className="ml-1">
+                        {questionLevel[selectedQuestion?.level || '']}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex">
+                    <div className="text-xs font-medium text-gray-500">
+                      <DescriptionIcon sx={{ fontSize: 14 }} />
+                      <span className="ml-1">
+                        {questionType[selectedQuestion?.type || '']}
+                      </span>
+                    </div>
+                    <div className="ml-4 text-xs font-medium text-gray-500">
+                      <AlarmOnIcon sx={{ fontSize: 14 }} />
+                      <span className="ml-1">{selectedQuestion?.duration}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <RichTextArea
+                    name={selectedQuestion?.content}
+                    data={selectedQuestion?.content}
+                    isReadOnly={true}
+                  />
+                </div>
+                <div className="mt-4 border-t border-gray-200 p-4">
+                  <div className="text-center text-sm font-medium">Answers</div>
+                  <div className="mt-4">
+                    <RadioGroup value={selectedQuestion?.answers[0] || 0}>
+                      {selectedQuestion?.options?.map((item, index) => {
+                        return (
+                          <div key={index} className="mt-5">
+                            <div className="flex items-center rounded-md border-[1px] border-[#64748b] p-5">
+                              <FormControlLabel
+                                value={index}
+                                control={<Radio disabled />}
+                              />
+                              <RichTextArea
+                                key={index}
+                                name={item}
+                                data={item}
+                                isReadOnly={true}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </RadioGroup>
+                        );
+                      })}
+                    </RadioGroup>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="py-20 text-center text-sm text-gray-400">
+                No selected question
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -404,7 +384,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
         onClose={() => setIsDrawerOpen(false)}
       >
         <div className="w-[75vw]">
-          <QuestionList />
+          <QuestionList list={questionList} />
         </div>
       </Drawer>
     </>
