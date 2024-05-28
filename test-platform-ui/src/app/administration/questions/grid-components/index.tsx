@@ -57,7 +57,7 @@ export default function TFGrid({
   isLazyLoad?: boolean;
 }) {
   const [chunkedData, setChunkedData] = useState<ICardData[][]>([]);
-  const [pageSize, setPageSize] = useState(50);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
 
   /** Reference:
    *   https://www.30secondsofcode.org/js/s/split-array-into-chunks/#:~:text=Split%20
