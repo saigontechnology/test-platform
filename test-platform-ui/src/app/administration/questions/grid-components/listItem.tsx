@@ -45,7 +45,10 @@ function ListCardItem({
   }, [cardData]);
 
   return (
-    <div key={key} className={`items-container ${active ? 'active' : ''}`}>
+    <div
+      key={key}
+      className={`items-container ${cardData.id} ${active ? 'active' : ''}`}
+    >
       <div className="question-title">
         <div className="title">
           <span className="p-2 !font-light text-slate-400">#{cardData.id}</span>
