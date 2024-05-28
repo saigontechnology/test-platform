@@ -5,14 +5,26 @@ import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { DataContext } from '@/libs/contextStore';
 import { showNotification } from '@/libs/toast';
-import { handleMappingImportData } from '@/libs/utils';
+import {
+  containsSubstring,
+  formatTimeString,
+  handleMappingImportData,
+} from '@/libs/utils';
 import { AddBox } from '@mui/icons-material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Box, Stack } from '@mui/material';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import StackedBarChartIcon from '@mui/icons-material/StackedBarChart';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import { Box, IconButton, Stack } from '@mui/material';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import {
+  getQuestionLevel,
+  getQuestionType,
+} from './(components)/(question-form)/preview';
 import TFGrid from './grid-components';
 import { ICardData } from './grid-components/listItem';
 
@@ -50,6 +62,7 @@ const Page = () => {
   const [_loading, setLoading] = useState<boolean>(true);
   const [isImportLoading, setImportLoading] = useState<boolean>(false);
   const [currentPageNum, setCurrentPageNum] = useState<number>(1);
+  const tempQuestionOnSearch = useRef<ICardData[] | null>(null);
 
   const getGridQuestion = async () => {
     setLoading(true);
@@ -60,12 +73,6 @@ const Page = () => {
       const questionCard = {
         id: q.id,
         title: q.question,
-        tags: [
-          'Aggregation',
-          'Data Filtering',
-          'Data Manipulation',
-          'Database Management',
-        ],
         flagChip: {
           label: q.category,
         },
@@ -73,20 +80,42 @@ const Page = () => {
           content: q.description,
         },
         cardInfo: {
-          info: ['Multiple Choice', 'Easy', '30 min'],
+          info: [
+            getQuestionType(q.type),
+            getQuestionLevel(q.level),
+            formatTimeString(q.duration),
+          ],
+          render: () => {
+            return (
+              <>
+                <span className="info-chip">
+                  <TaskAltIcon fontSize="small" />
+                  {getQuestionType(q.type)}
+                </span>
+                <span className="info-chip">
+                  <StackedBarChartIcon
+                    sx={{
+                      width: '16px',
+                      height: '16px',
+                    }}
+                  />
+                  {getQuestionLevel(q.level)}
+                </span>
+                <span className="info-chip">
+                  <AccessTimeIcon
+                    sx={{
+                      width: '16px',
+                      height: '16px',
+                    }}
+                  />
+                  30 min
+                </span>
+              </>
+            );
+          },
         },
       };
       return questionCard;
-      // return {
-      //   id: q.id,
-      //   title: q.question,
-      //   content: q.description,
-      //   categories: new Array().concat(q.category),
-      //   answers: q.answer,
-      //   options: q.options,
-      //   type: q.type,
-      //   level: q.level,
-      // };
     });
     setQuestionList(_questionList);
     setLoading(false);
@@ -122,6 +151,43 @@ const Page = () => {
 
   const pageChange = (currentPage: number) => {
     setCurrentPageNum(currentPage);
+  };
+
+  const handleSearch = (searchVal: string) => {
+    /** Filter on points:
+     *    - title
+     *    - description
+     *    - tags (optional could be remove)
+     */
+    if (tempQuestionOnSearch.current) {
+      if (/#/.test(searchVal) && searchVal.replace(/#/, '')?.length) {
+        const searchId: string = searchVal.replace(/#/, '');
+        const searchResult = tempQuestionOnSearch.current.find(
+          (_d: ICardData) => _d.id === Number(searchId),
+        );
+        return searchResult ? new Array(searchResult) : [];
+      } else {
+        return tempQuestionOnSearch.current.filter((_d: ICardData) => {
+          // Search on title:
+          if (containsSubstring(_d.title, searchVal)) {
+            return _d;
+          }
+          // Search on description:
+          if (containsSubstring(_d.description.content, searchVal)) {
+            return _d;
+          }
+          // Search on tags:
+          const existTag = _d.tags?.find((tag) => {
+            if (containsSubstring(tag, searchVal)) {
+              return tag;
+            }
+          });
+          if (existTag) {
+            return _d;
+          }
+        });
+      }
+    } else return null;
   };
 
   return (
@@ -170,9 +236,41 @@ const Page = () => {
       >
         <TFGrid
           data={_questionList}
-          paging={3}
+          defaultPageSize={10}
           handlePageChange={pageChange}
           currPage={currentPageNum}
+          placeholder="Search question ..."
+          itemActions={(itemId: number) => {
+            return (
+              <IconButton
+                sx={{
+                  alignSelf: 'center',
+                }}
+                onClick={() =>
+                  router.push(`${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${itemId}`)
+                }
+              >
+                <ModeEditIcon />
+              </IconButton>
+            );
+          }}
+          handleOnSearch={(searchVal: string) => {
+            /**  Notes:
+             *    - Validate <!Null> to avoid to set tempQuestionOnSearch every time onchange.
+             */
+            if (!tempQuestionOnSearch.current) {
+              tempQuestionOnSearch.current = _questionList;
+            }
+            const filteredItems = handleSearch(searchVal);
+            if (filteredItems) {
+              setCurrentPageNum(1);
+              setQuestionList(filteredItems);
+            }
+          }}
+          handleSearchClear={() => {
+            tempQuestionOnSearch.current = null;
+            getGridQuestion();
+          }}
         />
         <Box className="summary-list h-[inherit] border-2 border-dashed border-slate-300"></Box>
       </Stack>

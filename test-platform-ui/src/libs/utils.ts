@@ -177,3 +177,8 @@ export function formatTimeString(value: number): string {
 
   return result;
 }
+
+export function containsSubstring(mainString: string, subString: string) {
+  const regex = new RegExp(subString, 'i');
+  return regex.test(mainString);
+}

@@ -21,7 +21,7 @@ import { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 import RenderAnswer from '../answers/renderAnswer';
 
-function getQuestionType(type: string) {
+export function getQuestionType(type: string) {
   switch (type) {
     case QuestionType.MULTIPLE_CHOICE:
       return 'Multiple Choice';
@@ -36,7 +36,7 @@ function getQuestionType(type: string) {
   }
 }
 
-function getQuestionLevel(type: string) {
+export function getQuestionLevel(type: string) {
   switch (type) {
     case QuestionLevels.INTERMEDIATE:
       return 'Intermediate';

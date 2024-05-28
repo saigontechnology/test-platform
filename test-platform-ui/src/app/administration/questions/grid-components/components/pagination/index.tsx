@@ -20,7 +20,6 @@ const TFPagination = (props: IPagination) => {
     pageSize,
     className,
   } = props;
-
   const paginationRange: any = usePagination({
     currentPage,
     totalCount,
@@ -32,11 +31,9 @@ const TFPagination = (props: IPagination) => {
     return null;
   }
   const lastPage = paginationRange[paginationRange.length - 1];
-
   const onNext = () => {
     onPageChange(currentPage + 1);
   };
-
   const onPrevious = () => {
     onPageChange(currentPage - 1);
   };
