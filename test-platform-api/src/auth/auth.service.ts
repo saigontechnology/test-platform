@@ -2,12 +2,12 @@
 
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { UserService } from "../user/user.service";
-import * as bcrypt from "bcrypt";
-import { decrypt } from "src/utils/securities";
-import { UnauthorizedException } from "src/common/excepptions/unauthorized.exception";
-import { InactiveUserException } from "src/common/excepptions/inactive-user.exception";
 import { UserStatus } from "@prisma/client";
+import * as bcrypt from "bcrypt";
+import { InactiveUserException } from "src/common/excepptions/inactive-user.exception";
+import { UnauthorizedException } from "src/common/excepptions/unauthorized.exception";
+import { decrypt } from "src/utils/securities";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
