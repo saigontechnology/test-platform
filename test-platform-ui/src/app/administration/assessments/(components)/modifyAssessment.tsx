@@ -2,7 +2,6 @@
 
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { ICreateAssessment } from '@/constants/assessments';
-import { IResponseQuestion } from '@/constants/questions';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { QuestionLevels, QuestionType } from '@/libs/definitions';
 import { showNotification } from '@/libs/toast';
@@ -17,7 +16,7 @@ import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp
 import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { IQuestion } from '../../questions/page';
 import QuestionCard from './questionCard';
@@ -30,39 +29,13 @@ interface IModifyAssessment {
 export default function ModifyAssessment(props: IModifyAssessment) {
   const { detail } = props;
   const router = useRouter();
-  const [questionList, setQuestionList] = useState<IQuestion[]>([]);
+
   const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
   const [selectedQuestion, setSelectedQuestion] = useState<IQuestion>();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [assessmentQuestions, setAssessmentQuestions] = useState<IQuestion[]>(
     [],
   );
-
-  useEffect(() => {
-    getQuestionsList();
-  }, []);
-
-  const getQuestionsList = async () => {
-    const _questions = await ApiHook(Methods.GET, '/admin/questions');
-    const _questionList: IQuestion[] = (
-      _questions.data as Array<IResponseQuestion>
-    ).map((q: IResponseQuestion) => {
-      return {
-        id: q.id,
-        title: q.question,
-        content: q.description,
-        categories: new Array().concat(q.category),
-        answers: q.answer,
-        options: q.options,
-        type: q.type,
-        level: q.level,
-        duration: q.duration,
-        category: q.category,
-        question: q.question,
-      };
-    });
-    setQuestionList(_questionList.slice(0, 10));
-  };
 
   const form = useForm<ICreateAssessment>({
     defaultValues: {
@@ -134,20 +107,20 @@ export default function ModifyAssessment(props: IModifyAssessment) {
     }
   };
 
-  const handleSelectQuestion = (index: number) => {
-    setSelectedQuestion(questionList[index]);
-  };
+  // const handleSelectQuestion = (index: number) => {
+  //   setSelectedQuestion(questionList[index]);
+  // };
 
   const handleOpenDrawer = () => {
     setIsDrawerOpen(true);
   };
 
-  const questionOptions = useMemo(() => {
-    return questionList.map((item) => ({
-      label: item.title,
-      value: item.id,
-    }));
-  }, [questionList]);
+  // const questionOptions = useMemo(() => {
+  //   return questionList.map((item) => ({
+  //     label: item.title,
+  //     value: item.id,
+  //   }));
+  // }, [questionList]);
 
   const questionType: any = {
     [QuestionType.SINGLE_CHOICE]: 'Single Choice',
@@ -162,100 +135,6 @@ export default function ModifyAssessment(props: IModifyAssessment) {
   };
 
   return (
-    // <Box sx={{ overflow: 'auto' }}>
-    //   <Box className="flex items-center justify-between">
-    //     <Typography component="h1" className={`mb-10 text-xl md:text-2xl`}>
-    //       {detail ? 'Edit' : 'New'} Assessment
-    //     </Typography>
-    //   </Box>
-    //   <FormProvider {...form}>
-    //     <Box
-    //       component="form"
-    //       noValidate
-    //       autoComplete="off"
-    //       className="flex flex-row"
-    //     >
-    //       <Box className="!w-1/2">
-    //         <FormControl variant="standard" className="!w-11/12 pb-7">
-    //           <Typography className="font-semibold">Name</Typography>
-    //           <CustomTextField
-    //             name="name"
-    //             id="question-title-input"
-    //             className="full-width ring-offset-0"
-    //             multiline
-    //             maxRows={5}
-    //             onKeyDown={(event) => {
-    //               if (event.key === 'Enter') {
-    //                 event.preventDefault();
-    //               }
-    //             }}
-    //           />
-    //         </FormControl>
-    //         <FormControl variant="standard" className="!w-11/12 pb-7">
-    //           <Typography className="font-semibold">Level</Typography>
-    //           <CustomSingleSelect name="level" options={LevelOptions} />
-    //         </FormControl>
-    //         <FormGroup className="!w-11/12 pb-7">
-    //           <Typography className="font-semibold">Questions</Typography>
-    //           <Box sx={{ overflowY: 'auto', maxHeight: 300, width: '100%' }}>
-    //             {(questions || []).map((question, index) => (
-    //               <Stack
-    //                 key={`question-${question}`}
-    //                 alignItems="center"
-    //                 justifyContent="flex-start"
-    //                 direction="row"
-    //                 gap={1}
-    //               >
-    //                 <Typography className="font-semibold">
-    //                   {index + 1}.
-    //                 </Typography>
-    //                 <CustomSingleSelect
-    //                   name={`questions.${index}`}
-    //                   options={questionOptions}
-    //                 />
-    //                 <IconButton
-    //                   color="primary"
-    //                   onClick={() => append('')}
-    //                   sx={{
-    //                     display:
-    //                       index + 1 === questions?.length ? 'block' : 'none',
-    //                   }}
-    //                 >
-    //                   <AddBox />
-    //                 </IconButton>
-    //                 <IconButton
-    //                   color="error"
-    //                   onClick={() => remove(index)}
-    //                   disabled={questions?.length === 1}
-    //                 >
-    //                   <Delete />
-    //                 </IconButton>
-    //               </Stack>
-    //             ))}
-    //           </Box>
-    //         </FormGroup>
-    //       </Box>
-    //     </Box>
-    //     <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
-    //       <Button
-    //         variant="contained"
-    //         startIcon={<LibraryAddIcon />}
-    //         onClick={form.handleSubmit(submit)}
-    //         disabled={isSubmitLoading}
-    //       >
-    //         Submit
-    //       </Button>
-    //       <Button
-    //         variant="outlined"
-    //         startIcon={<ClearIcon />}
-    //         onClick={() => router.back()}
-    //       >
-    //         Cancel
-    //       </Button>
-    //     </ButtonGroup>
-    //     <DevTool control={control} />
-    //   </FormProvider>
-    // </Box>`
     <>
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-lg border border-gray-200 bg-white p-4">
@@ -384,7 +263,7 @@ export default function ModifyAssessment(props: IModifyAssessment) {
         onClose={() => setIsDrawerOpen(false)}
       >
         <div className="w-[75vw]">
-          <QuestionList list={questionList} />
+          <QuestionList />
         </div>
       </Drawer>
     </>

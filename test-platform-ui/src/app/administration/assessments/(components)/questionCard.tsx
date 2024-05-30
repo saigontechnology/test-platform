@@ -20,6 +20,7 @@ export default function QuestionCard(props) {
     type,
     duration,
     hasDeleted = true,
+    onAdd,
   } = props;
 
   const questionType: any = {
@@ -35,17 +36,16 @@ export default function QuestionCard(props) {
   };
 
   const handleIndex = (index: number) => {
-    let idx = index + 1;
-    return idx.toString().padStart(3, '0');
+    return index.toString().padStart(3, '0');
   };
 
   return (
-    <div className="mt-4 flex items-center pr-4" key={id}>
+    <div className="mt-4 flex items-center pr-4">
       <div className="px-4 text-sm text-gray-400">#{handleIndex(index)}</div>
       <div
         className={`flex w-full cursor-pointer items-center justify-between rounded-lg border  bg-white p-4 text-sm ${id === selected ? 'border-primary' : 'border-gray-200'}`}
         onClick={() => {
-          onSelect(index);
+          onSelect(id);
         }}
       >
         <div>
@@ -79,7 +79,12 @@ export default function QuestionCard(props) {
             <DeleteOutlineIcon sx={{ fontSize: 18 }} />
           </div>
         ) : (
-          <div className="cursor-pointer p-4 text-gray-500 hover:text-primary">
+          <div
+            className="cursor-pointer p-4 text-gray-500 hover:text-primary"
+            onClick={() => {
+              onAdd(id);
+            }}
+          >
             <AddIcon sx={{ fontSize: 24 }} />
           </div>
         )}

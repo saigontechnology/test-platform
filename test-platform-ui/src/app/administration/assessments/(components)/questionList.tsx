@@ -1,68 +1,108 @@
 'use client';
 import { IQuestion } from '@/constants/assessments';
+import useDebounce from '@/hooks/common/useDebounce';
+import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
-import { useState } from 'react';
+import Pagination from '@mui/material/Pagination';
+import { useCallback, useEffect, useState } from 'react';
 import QuestionCard from './questionCard';
 
-export default function QuestionList(props) {
-  const { list } = props;
+export default function QuestionList() {
+  const [questionList, setQuestionList] = useState<IQuestion[]>([]);
   const [selectedQuestion, setSelectedQuestion] = useState<IQuestion>();
+  const [totalPages, setTotalPages] = useState<number>(10);
+  const [total, setTotal] = useState<number>(0);
+  const [startIndex, setStartIndex] = useState<number>(0);
+  const [endIndex, setEndIndex] = useState<number>(0);
+  const [filters, setFilters] = useState<any>();
+  const [filterSkill, setFilterSkill] = useState<string[]>([]);
+  const [filterLevel, setFilterLevel] = useState<string[]>([]);
+  const [filterType, setFilterType] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isOpenDialog, setIsOpenDialog] = useState<boolean>(true);
 
-  const skills = [
-    {
-      name: 'React',
-      logo: '',
-      total: 15,
-    },
-    {
-      name: 'Javascript',
-      logo: '',
-      total: 18,
-    },
-    {
-      name: 'HTML',
-      logo: '',
-      total: 12,
-    },
-    {
-      name: 'CSS',
-      logo: '',
-      total: 13,
-    },
-  ];
+  const LIMIT = 10;
+  const DELAY = 500;
 
-  const levels = [
-    {
-      name: 'Junior',
-      total: 38,
-    },
-    {
-      name: 'Intermediate',
-      logo: '',
-      total: 49,
-    },
-    {
-      name: 'Senior',
-      logo: '',
-      total: 25,
-    },
-  ];
+  useEffect(() => {
+    getFilters();
+  }, []);
 
-  const types = [
-    {
-      name: 'Single Choice',
-      total: 38,
-    },
-    {
-      name: 'Multi Choice',
-      total: 49,
-    },
-  ];
+  useEffect(() => {
+    getQuestionsList();
+  }, [currentPage, filterSkill, filterLevel, filterType, searchQuery]);
 
-  const handleSelectQuestion = (index: number) => {
-    setSelectedQuestion(list[index]);
+  const getQuestionsList = async () => {
+    const response: any = await ApiHook(Methods.GET, `/admin/questions`, {
+      params: {
+        page: currentPage,
+        limit: LIMIT,
+        category: filterSkill.join(',') || undefined,
+        level: filterLevel.join(',') || undefined,
+        type: filterType.join(',') || undefined,
+        search: searchQuery || undefined,
+      },
+    });
+    const { data } = response;
+    setQuestionList(data.data);
+    setTotalPages(data.totalPages);
+    setTotal(data.total);
+    setStartIndex(data.start);
+    setEndIndex(data.end);
+  };
+
+  const getFilters = async () => {
+    const response: any = await ApiHook(
+      Methods.GET,
+      '/admin/questions/filters',
+    );
+    setFilters(response.data);
+  };
+
+  const handleChangePage = (event, page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleFilterSkill = (name: string) => {
+    if (!filterSkill.includes(name)) {
+      setFilterSkill([...filterSkill, name]);
+    } else {
+      setFilterSkill(filterSkill.filter((item) => item !== name));
+    }
+  };
+
+  const handleFilterLevel = (name: string) => {
+    if (!filterLevel.includes(name)) {
+      setFilterLevel([...filterLevel, name]);
+    } else {
+      setFilterLevel(filterLevel.filter((item) => item !== name));
+    }
+  };
+
+  const handleFilterType = (name: string) => {
+    if (!filterType.includes(name)) {
+      setFilterType([...filterType, name]);
+    } else {
+      setFilterType(filterType.filter((item) => item !== name));
+    }
+  };
+
+  const handleSelectQuestion = (id: number) => {
+    setSelectedQuestion(questionList.find((item: any) => item.id === id));
+  };
+
+  const handleSearch = useCallback(
+    useDebounce((value: string) => {
+      setSearchQuery(value);
+    }, DELAY),
+    [],
+  );
+
+  const handleAddQuestion = (id: number) => {
+    console.log(22222, id);
   };
 
   return (
@@ -70,17 +110,24 @@ export default function QuestionList(props) {
       <div className="p-2 pt-0">
         <div className="rounded border border-t-0 border-gray-200">
           <div className="rounded-t bg-gray-100 p-4 text-sm font-medium">
-            Skills
+            Category
           </div>
           <FormGroup>
-            {skills.map((skill) => {
+            {filters?.category.map((item: string, index: number) => {
               return (
-                <div className="flex items-center justify-between px-2 text-sm">
+                <div
+                  className="flex items-center justify-between px-2 text-sm"
+                  key={index}
+                >
                   <FormControlLabel
-                    control={<Checkbox value={skill.name} />}
-                    label={<p className="text-sm">{skill.name}</p>}
+                    control={
+                      <Checkbox
+                        value={item}
+                        onChange={() => handleFilterSkill(item)}
+                      />
+                    }
+                    label={<p className="text-sm">{item}</p>}
                   />
-                  <span className="text-sm text-gray-400">{skill.total}</span>
                 </div>
               );
             })}
@@ -91,14 +138,21 @@ export default function QuestionList(props) {
             Question Levels
           </div>
           <FormGroup>
-            {levels.map((level) => {
+            {filters?.level.map((item: string, index: number) => {
               return (
-                <div className="flex items-center justify-between px-2 text-sm">
+                <div
+                  className="flex items-center justify-between px-2 text-sm"
+                  key={index}
+                >
                   <FormControlLabel
-                    control={<Checkbox value={level.name} />}
-                    label={<p className="text-sm">{level.name}</p>}
+                    control={
+                      <Checkbox
+                        value={item}
+                        onChange={() => handleFilterLevel(item)}
+                      />
+                    }
+                    label={<p className="text-sm">{item}</p>}
                   />
-                  <span className="text-sm text-gray-400">{level.total}</span>
                 </div>
               );
             })}
@@ -109,14 +163,21 @@ export default function QuestionList(props) {
             Question Types
           </div>
           <FormGroup>
-            {types.map((type) => {
+            {filters?.type.map((item: string, index: number) => {
               return (
-                <div className="flex items-center justify-between px-2 text-sm">
+                <div
+                  className="flex items-center justify-between px-2 text-sm"
+                  key={index}
+                >
                   <FormControlLabel
-                    control={<Checkbox value={type.name} />}
-                    label={<p className="text-sm">{type.name}</p>}
+                    control={
+                      <Checkbox
+                        value={item}
+                        onChange={() => handleFilterType(item)}
+                      />
+                    }
+                    label={<p className="text-sm">{item}</p>}
                   />
-                  <span className="text-sm text-gray-400">{type.total}</span>
                 </div>
               );
             })}
@@ -133,19 +194,38 @@ export default function QuestionList(props) {
             type="text"
             className="w-1/2 rounded border border-gray-200 p-2 text-sm"
             placeholder="Search for question"
+            onChange={(e) => {
+              handleSearch(e.target.value);
+            }}
           />
         </div>
         <div className="flex items-center justify-between border-b border-gray-200 bg-gray-100 p-2">
-          <div className="text-xs">Showing 1 - 10 of 97 questions</div>
-          <div className="text-xs ">pagination</div>
+          <div className="text-xs">
+            Showing
+            {total ? (
+              <span>
+                {startIndex} - {endIndex} of {total} questions
+              </span>
+            ) : (
+              <span> {total} question</span>
+            )}
+          </div>
+          <div className="text-xs ">
+            <Pagination
+              count={totalPages}
+              size="small"
+              onChange={handleChangePage}
+            />
+          </div>
         </div>
-        <div className="h-[calc(100vh_-_86px)] overflow-y-scroll pb-4">
-          {list.map((question: IQuestion, index: number) => {
+        <div className="h-[calc(100vh_-_96px)] overflow-y-scroll pb-4">
+          {questionList.map((question: any, index: number) => {
             return (
               <QuestionCard
+                key={question.id}
                 id={question.id}
-                index={index}
-                content={question.content}
+                index={startIndex + index}
+                content={question.description}
                 category={question.category}
                 level={question.level}
                 type={question.type}
@@ -153,6 +233,7 @@ export default function QuestionList(props) {
                 selected={selectedQuestion?.id}
                 onSelect={handleSelectQuestion}
                 hasDeleted={false}
+                onAdd={handleAddQuestion}
               />
             );
           })}

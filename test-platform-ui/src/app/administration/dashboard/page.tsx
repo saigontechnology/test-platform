@@ -8,7 +8,7 @@ import { IAssessment } from '@/constants/assessments';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { useEffect, useState } from 'react';
 
-export default async function Page() {
+export default function Page() {
   const [assessments, setAssessments] = useState<IAssessment[]>([]);
 
   const getAssessement = async () => {

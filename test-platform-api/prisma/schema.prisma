@@ -32,10 +32,20 @@ enum UserStatus {
   INACTIVE
 }
 
+enum QuestionCategory {
+  HTML
+  CSS
+  JAVASCRIPT
+  TYPESCRIPT
+  REACT
+  ANGULAR
+  VUE
+}
+
 model Question {
   id          Int           @id @default(autoincrement())
   question    String
-  category    String
+  category    QuestionCategory @default(JAVASCRIPT)
   type        QuestionType  @default(SINGLE_CHOICE)
   level       QuestionLevel @default(JUNIOR)
   categories  String[]

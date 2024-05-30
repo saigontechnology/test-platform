@@ -7,18 +7,19 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UseGuards,
   ValidationPipe,
 } from "@nestjs/common";
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { Roles } from "src/user/role.decorator";
+import { RoleGuard } from "src/user/role.guard";
 import { CreateQuestionDto } from "./dto/create-question.dto";
 import { ImportQuestionsDto } from "./dto/import-questions.dto";
 import { UpdateQuestionDto } from "./dto/update-question.dto";
 import { QuestionEntity } from "./entities/question.entity";
 import { QuestionsService } from "./question.service";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
-import { Roles } from "src/user/role.decorator";
-import { RoleGuard } from "src/user/role.guard";
 
 @Controller("admin/questions")
 @ApiTags("questions")
@@ -37,8 +38,16 @@ export class QuestionsController {
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles("Admin")
   @ApiOkResponse({ type: QuestionEntity, isArray: true })
-  async findAll() {
-    return await this.questionService.findAll();
+  async findAll(@Query() query) {
+    return await this.questionService.findAll(query);
+  }
+
+  @Get("filters")
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles("Admin")
+  @ApiOkResponse()
+  async getFilters() {
+    return await this.questionService.getFilters();
   }
 
   @Get(":id")
