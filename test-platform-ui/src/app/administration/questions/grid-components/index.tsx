@@ -1,10 +1,10 @@
 // import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import PageSizeDropdown from './components/page-size';
 import TFPagination from './components/pagination';
 import SearchBar from './components/searchBar';
+import LazyLoadList from './lazyItem';
 import ListCardItem, { ICardData } from './listItem';
 
 const Grid = styled('div')`
@@ -14,6 +14,7 @@ const Grid = styled('div')`
   overflow-y: auto;
   &::-webkit-scrollbar {
     width: 10px;
+    scroll-behavior: smooth;
   }
   &::-webkit-scrollbar-track {
     background: #f1f1f1;
@@ -43,6 +44,7 @@ export default function TFGrid({
   handleSearchClear,
   placeholder,
   itemActions,
+  isLazyLoad = false,
 }: {
   data: ICardData[];
   defaultPageSize: number;
@@ -52,6 +54,7 @@ export default function TFGrid({
   handleSearchClear: () => void;
   placeholder?: string;
   itemActions?: (itemId: number) => React.ReactElement;
+  isLazyLoad?: boolean;
 }) {
   const [chunkedData, setChunkedData] = useState<ICardData[][]>([]);
   const [pageSize, setPageSize] = useState(defaultPageSize);
@@ -113,18 +116,26 @@ export default function TFGrid({
           />
         </div>
       </GridToolBar>
-      <Grid className="grid gap-1">
-        {chunkedData[currPage - 1]?.map((_data: any, _indx: number) => {
-          const _cardData = itemActions
-            ? { ..._data, actions: itemActions(_data.id) }
-            : _data;
-          return (
-            <ListCardItem
-              key={`question-${_indx}-${uuidv4()}`}
-              cardData={_cardData}
-            />
-          );
-        })}
+      <Grid className="grid-items grid gap-1">
+        {isLazyLoad ? (
+          <LazyLoadList
+            containerSelector={'.grid-items'}
+            items={chunkedData[currPage - 1]}
+            itemsPerPage={pageSize < 10 ? pageSize : 10}
+            cardActions={itemActions}
+          />
+        ) : (
+          <>
+            {chunkedData[currPage - 1]?.map((_data: any, _indx: number) => {
+              const _cardData = itemActions
+                ? { ..._data, actions: itemActions(_data.id) }
+                : _data;
+              return (
+                <ListCardItem key={`question-${_indx}`} cardData={_cardData} />
+              );
+            })}
+          </>
+        )}
       </Grid>
     </div>
   );

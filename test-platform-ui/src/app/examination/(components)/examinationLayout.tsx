@@ -228,12 +228,12 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
 
   return (
     <div className="flex">
-      <div className="flex h-screen w-48 flex-col justify-between">
-        <div className="flex items-center justify-center bg-slate-500 p-4 ">
+      <div className="sticky top-0 flex h-screen w-48 flex-col justify-between">
+        <div className="flex items-center justify-center bg-slate-900 p-4 [&_span]:text-2xl [&_span]:font-bold">
           {!assessment?.isLoading && !currentQuestion?.question.duration ? (
             <CircularProgress
               color="inherit"
-              size={18}
+              size={32}
               className="text-white"
             />
           ) : currentQuestion?.question.duration ? (
@@ -247,7 +247,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
               }}
             />
           ) : (
-            <span className="text-[16px] text-white">Time up</span>
+            <span className=" text-white">Time up</span>
           )}
         </div>
         <div className="flex flex-col items-center justify-center">
@@ -334,7 +334,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
             </div>
           </div>
         </div>
-        <div className="flex w-full p-4 flex-row-reverse">
+        <div className="flex w-full flex-row-reverse p-4">
           <span className="text-[14px]">
             {`*Warning: Don't close this page when not completed, because you cannot retake this test.`}
           </span>
