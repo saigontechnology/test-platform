@@ -51,7 +51,7 @@ const RenderAnswer = ({
         return (
           <Checkbox
             checked={answSelected}
-            disabled={false}
+            disabled={!readOnly}
             onClick={() => {
               console.log('Checkbox on click');
               selectAnswer && selectAnswer(index);
