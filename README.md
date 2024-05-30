@@ -1,28 +1,11 @@
-# Test Platform API setup
+# Test Platform
 
-### 1. Install dependencies
-Install npm dependencies:
+Welcome to the Test Platform repository. This repository contains both the frontend and backend projects.
 
-```
-npm install
-```
+## Documentation
 
-### 2. Setup env variables.
+### Backend
+For backend documentation, click [here](test-platform-api/README.md).
 
-Setup env following .env.example structure.
-
-### 3. Sync prisma model
-
-Run the following command to sync prisma database file:
-
-```
-npm run migrate:dev
-```
-
-### 4. Start API server
-
-```
-npm run dev
-```
-
-The server is now running on `http://localhost:3000`. You can now run the API requests, e.g. [`http://localhost:3000/api`](http://localhost:3000/api) to go to swagger documentation.
+### Frontend
+For frontend documentation, click [here](test-platform-ui/README.md).
