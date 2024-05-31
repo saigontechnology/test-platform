@@ -1,22 +1,21 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
   ParseIntPipe,
+  Post,
   Put,
   UseGuards,
 } from "@nestjs/common";
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { Roles } from "src/user/role.decorator";
+import { RoleGuard } from "src/user/role.guard";
 import { AssessmentsService } from "./assessment.service";
 import { CreateAssessmentDto } from "./dto/create-assessment.dto";
-import { UpdateAssessmentDto } from "./dto/update-assessment.dto";
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { AssessmentEntity } from "./entities/assessment.entity";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
-import { RoleGuard } from "src/user/role.guard";
-import { Roles } from "src/user/role.decorator";
 
 @Controller()
 @ApiTags("assessments")
@@ -52,11 +51,8 @@ export class AssessmentsController {
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles("Admin")
   @ApiCreatedResponse({ type: AssessmentEntity })
-  async update(
-    @Param("id", ParseIntPipe) id: number,
-    @Body() updateAssessmentDto: UpdateAssessmentDto,
-  ) {
-    return await this.assessmentService.update(id, updateAssessmentDto);
+  async update(@Param("id", ParseIntPipe) id: number, @Body() data: any) {
+    return await this.assessmentService.update(id, data);
   }
 
   @Delete("admin/assessments/:id")
@@ -65,6 +61,34 @@ export class AssessmentsController {
   @ApiOkResponse()
   async remove(@Param("id", ParseIntPipe) id: number) {
     return await this.assessmentService.remove(id);
+  }
+
+  @Post("admin/assessments/question")
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles("Admin")
+  @ApiCreatedResponse()
+  async addQuestionToAssessment(@Body() body) {
+    const assessmentId = parseInt(body.assessmentId);
+    const questionId = parseInt(body.questionId);
+
+    return await this.assessmentService.addQuestionToAssessment(
+      assessmentId,
+      questionId,
+    );
+  }
+
+  @Delete("admin/assessments/:assessmentId/question/:questionId")
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles("Admin")
+  @ApiOkResponse()
+  async deleteQuestionToAssessment(
+    @Param("assessmentId", ParseIntPipe) assessmentId: number,
+    @Param("questionId", ParseIntPipe) questionId: number,
+  ) {
+    return await this.assessmentService.deleteQuestionToAssessment(
+      assessmentId,
+      questionId,
+    );
   }
 
   // User Routes

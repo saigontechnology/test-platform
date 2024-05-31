@@ -36,6 +36,11 @@ export interface IQuestion {
   categories: string[];
   answers: number[];
   options: string[];
+  level: string;
+  type: string;
+  duration: number;
+  category: string;
+  question: string;
 }
 
 const VisuallyHiddenInput = styled('input')({

@@ -46,7 +46,7 @@ interface IAssessment {
   questions: number;
 }
 
-export default async function Page() {
+export default function Page() {
   const pathname = usePathname().split('/');
   const assessmentId = pathname[pathname.length - 1];
   const [isLoading, toggleLoading] = useState<boolean>(true);
