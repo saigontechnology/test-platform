@@ -1,6 +1,6 @@
 import { QuestionType } from '@/libs/definitions';
 
-const Level = {
+export const Level = {
   Junior: 'Junior',
   Intermediate: 'Intermediate',
   Senior: 'Senior',
@@ -39,6 +39,13 @@ export const QuestionTypeOptions = [
   },
 ];
 
+export enum AssessmentLevels {
+  JUNIOR = 'JUNIOR',
+  INTERMEDIATE = 'INTERMEDIATE',
+  SENIOR = 'SENIOR',
+  PRINCIPAL = 'PRINCIPAL',
+}
+
 export interface IQuestion {
   createdAt: string;
   question: {
@@ -49,6 +56,7 @@ export interface IQuestion {
     options: string[];
     question: string;
     type: QuestionType;
+    duration: number;
   };
 }
 
@@ -59,6 +67,8 @@ export interface IAssessment {
   level: string;
   assessmentQuestionMapping: IQuestion[];
   error?: Error;
+  duration: number;
+  active?: boolean;
 }
 
 export interface ICreateAssessment {
@@ -77,6 +87,8 @@ export interface IExamAnswer {
   question: {
     question: string;
     options: string[];
+    level: string;
+    answer: [number];
   };
   selections: number[];
 }
@@ -95,4 +107,14 @@ export interface IExamination {
   assessment: IExamInfo;
   submittedAnswers: IExamAnswer[];
   expireUtil: string;
+  empCode: string;
+  durationTotal?: number;
+  questionNumbers?: number;
+  correctByLevel: ICorrectByLevel[];
+}
+
+export interface ICorrectByLevel {
+  level: string;
+  scored: number;
+  total: number;
 }

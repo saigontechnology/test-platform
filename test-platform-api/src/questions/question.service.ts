@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { QuestionCategory, QuestionLevel, QuestionType } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateQuestionDto } from "./dto/create-question.dto";
 import { ImportQuestionsDto, OptionItem } from "./dto/import-questions.dto";
@@ -12,8 +13,58 @@ export class QuestionsService {
     return await this.prisma.question.create({ data: createQuestionDto });
   }
 
-  async findAll() {
-    return await this.prisma.question.findMany();
+  async findAll(query) {
+    const { page, limit, search, ...rest } = query;
+    const numPage = parseInt(page) || 1;
+    const numLimit = parseInt(limit) || 10;
+    const skip = (numPage - 1) * numLimit || 0;
+
+    let filters = [];
+    if (rest) {
+      Object.entries(rest).forEach(([key, value]: any) => {
+        filters.push({
+          [key]: {
+            in: value.split(","),
+          },
+        });
+      });
+    }
+
+    if (search) {
+      filters.push({
+        description: {
+          contains: search,
+          mode: "insensitive",
+        },
+      });
+    }
+
+    const conditions = {
+      where: {
+        AND: filters,
+      },
+    };
+
+    const [total, data] = await this.prisma.$transaction([
+      this.prisma.question.count(conditions),
+      this.prisma.question.findMany({
+        skip,
+        take: numLimit,
+        ...conditions,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / numLimit);
+
+    return {
+      total,
+      numLimit,
+      numPage,
+      totalPages,
+      data,
+      start: skip + 1,
+      end: numPage * numLimit,
+    };
   }
 
   async findOne(id: number) {
@@ -47,5 +98,13 @@ export class QuestionsService {
     }
     await this.prisma.question.createMany({ data: questions });
     return;
+  }
+
+  async getFilters() {
+    return {
+      category: Object.entries(QuestionCategory).map(([key, value]) => value),
+      level: Object.entries(QuestionLevel).map(([key, value]) => value),
+      type: Object.entries(QuestionType).map(([key, value]) => value),
+    };
   }
 }

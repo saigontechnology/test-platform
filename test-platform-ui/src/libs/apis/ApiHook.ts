@@ -1,5 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { showNotification } from '../toast';
+import Cookies from 'js-cookie';
+import { COOKIE } from '@/constants/common';
 
 export enum Methods {
   GET = 'GET',
@@ -9,12 +11,25 @@ export enum Methods {
 }
 
 const axiosInstance = axios.create({
-  // baseURL: 'http://localhost:3000',
-  baseURL: 'https://test-platform-api.onrender.com',
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get(COOKIE.TOKEN); // Replace with your cookie name
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
 
 //  Axios Error Handling:
 axiosInstance.interceptors.response.use(

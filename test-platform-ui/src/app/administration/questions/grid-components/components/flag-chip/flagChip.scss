@@ -1,0 +1,20 @@
+$flag-color: #8dc63f;
+
+.flag-chip-container {
+    background-color: $flag-color;
+    @apply w-fit h-8 rounded-r-md flex items-center relative justify-end px-4 py-4
+        text-white font-semibold;
+    span {
+        padding-left: 20px;
+    }
+    // https://css-tricks.com/the-shapes-of-css/
+    .triangle-right {
+        width: 0;
+        height: 0;
+        border-top: 20px solid transparent;
+        border-left: 20px solid ghostwhite;
+        border-bottom: 20px solid transparent;
+        left: -0.06vw;
+        position: absolute;
+    }
+}

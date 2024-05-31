@@ -6,9 +6,8 @@ import { Suspense, useEffect, useState } from 'react';
 
 import { IResponseQuestion } from '@/constants/questions';
 import { Box } from '@mui/material';
-import ModifyQuestion, {
-  IQuestionInfo,
-} from '../../(components)/modifyQuestion';
+import { IQuestionInfo } from '../../(components)/models';
+import ModifyQuestion from '../../(components)/modifyQuestion';
 
 const EditQuestion = () => {
   const [data, setData] = useState<IQuestionInfo | null>(null);
@@ -18,19 +17,21 @@ const EditQuestion = () => {
     (async () => {
       const { data } = await ApiHook<IResponseQuestion>(
         Methods.GET,
-        `/questions/${pathname[pathname.length - 1]}`,
+        `/admin/questions/${pathname[pathname.length - 1]}`,
       );
       const editQuestion: IQuestionInfo = {
         id: data?.id,
         question: data?.question,
         description: data?.description,
-        categories: new Array().concat(data?.category),
+        categories: new Array().concat(data?.categories),
+        category: data?.category,
         notes: data?.notes,
         answers: data?.answer,
         options: data?.options,
         type: data?.type,
         level: data?.level,
         isModified: data?.isModified,
+        duration: data?.duration,
       };
       setData(editQuestion);
     })();

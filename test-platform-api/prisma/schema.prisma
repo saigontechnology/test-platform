@@ -7,66 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Question {
-  id                        Int                         @id @default(autoincrement())
-  createdAt                 DateTime                    @default(now())
-  updatedAt                 DateTime?                   @updatedAt
-  question                  String
-  category                  String
-  categories                String[]
-  description               String
-  answer                    Int[]
-  options                   String[]
-  type                      QuestionType                @default(SINGLE_CHOICE)
-  assessmentQuestionMapping AssessmentQuestionMapping[]
-  ExamAnswer                ExamAnswer[]
-  notes                     String?
-  level                     QuestionLevel               @default(JUNIOR)
-  isModified                Boolean?
-}
-
-model Assessment {
-  id                        Int                         @id @default(autoincrement())
-  createdAt                 DateTime                    @default(now())
-  updatedAt                 DateTime?                   @updatedAt
-  name                      String
-  level                     String
-  assessmentQuestionMapping AssessmentQuestionMapping[]
-  Examination               Examination[]
-}
-
-model AssessmentQuestionMapping {
-  id           Int        @id @default(autoincrement())
-  createdAt    DateTime   @default(now())
-  question     Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  questionId   Int
-  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  assessmentId Int
-}
-
-model Examination {
-  id               Int               @id @default(autoincrement())
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime?         @updatedAt
-  email            String
-  assessmentId     Int
-  assessment       Assessment        @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  submittedAnswers ExamAnswer[]
-  score            Decimal?
-  status           ExaminationStatus @default(IN_PROGRESS)
-  expireUtil       DateTime
-}
-
-model ExamAnswer {
-  questionId    Int
-  selections    Int[]
-  examinationId Int
-  examination   Examination? @relation(fields: [examinationId], references: [id], onDelete: Cascade)
-  question      Question?    @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  @@id([questionId, examinationId])
-}
-
 enum ExaminationStatus {
   IN_PROGRESS // Candidate is working on examination, but not finish or submit
   COMPLETED
@@ -77,6 +17,7 @@ enum QuestionType {
   SINGLE_CHOICE
   MULTIPLE_CHOICE
   TRUE_FALSE
+  PROGRAMMING_LOGIC
 }
 
 enum QuestionLevel {
@@ -84,4 +25,129 @@ enum QuestionLevel {
   INTERMEDIATE
   SENIOR
   PRINCIPAL
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum QuestionCategory {
+  HTML
+  CSS
+  JAVASCRIPT
+  TYPESCRIPT
+  REACT
+  ANGULAR
+  VUE
+}
+
+model Question {
+  id          Int           @id @default(autoincrement())
+  question    String
+  category    QuestionCategory @default(JAVASCRIPT)
+  type        QuestionType  @default(SINGLE_CHOICE)
+  level       QuestionLevel @default(JUNIOR)
+  categories  String[]
+  description String
+  answer      Int[]
+  options     String[]
+  notes       String?
+  isModified  Boolean?
+  duration    Int           @default(30)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+
+  // Relation
+  assessmentQuestionMapping AssessmentQuestionMapping[]
+  examAnswer                ExamAnswer[]
+}
+
+model Assessment {
+  id        Int       @id @default(autoincrement())
+  name      String
+  level     String
+  active    Boolean?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  // Relation
+  assessmentQuestionMapping AssessmentQuestionMapping[]
+  examination               Examination[]
+}
+
+model AssessmentQuestionMapping {
+  id           Int      @id @default(autoincrement())
+  assessmentId Int
+  questionId   Int
+  createdAt    DateTime @default(now())
+  question     Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  // Relation
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+model Examination {
+  id           Int               @id @default(autoincrement())
+  status       ExaminationStatus @default(IN_PROGRESS)
+  email        String
+  assessmentId Int
+  score        Decimal?
+  expireUtil   DateTime
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime?         @updatedAt
+
+  // Relation
+  assessment       Assessment   @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  submittedAnswers ExamAnswer[]
+}
+
+model ExamAnswer {
+  questionId    Int
+  selections    Int[]
+  examinationId Int
+
+  // Relation
+  examination Examination? @relation(fields: [examinationId], references: [id], onDelete: Cascade)
+  question    Question?    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([questionId, examinationId])
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  password  String
+  empCode   String?    @unique
+  firstName String?
+  lastName  String?
+  active    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relation
+  userRoleAssignment UserRoleAssignment[]
+}
+
+model UserRole {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation
+  userRoleAssignment UserRoleAssignment[]
+}
+
+model UserRoleAssignment {
+  userId     Int
+  roleId     Int
+  assignedAt DateTime @default(now())
+
+  // Relation
+  user User     @relation(fields: [userId], references: [id])
+  role UserRole @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
 }

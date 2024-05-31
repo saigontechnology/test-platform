@@ -1,3 +1,5 @@
+'use client';
+
 export const calc_image_size_base64 = (image: string) => {
   let y = 1;
   if (image.endsWith('==')) {
@@ -134,4 +136,49 @@ export function decodeHtml(html: string) {
   var txt = document.createElement('textarea');
   txt.innerHTML = html;
   return txt.value;
+}
+
+export function capitalizeFirstLetter(s: string) {
+  return s && s[0].toUpperCase() + s.slice(1).toLowerCase();
+}
+
+export function millisToMinutesAndSeconds(millis: number) {
+  const minutes = Math.floor(millis / 60000);
+  const seconds: any = ((millis % 60000) / 1000).toFixed(0);
+  return isNaN(minutes)
+    ? '--:--'
+    : minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+}
+
+export function formatTimeString(value: number): string {
+  if (value === 0) {
+    return '0 second';
+  }
+
+  const hours = Math.floor(value / 3600);
+  const minutes = Math.floor((value % 3600) / 60);
+  const seconds = value % 60;
+
+  let result = '';
+
+  if (hours > 0) {
+    result += `${hours} ${hours > 1 ? 'hours' : 'hour'}`;
+  }
+
+  if (minutes > 0) {
+    if (result) result += ' ';
+    result += `${minutes} ${minutes > 1 ? 'mins' : 'min'}`;
+  }
+
+  if (seconds > 0) {
+    if (result) result += ' ';
+    result += `${seconds} ${seconds > 1 ? 'seconds' : 'second'}`;
+  }
+
+  return result;
+}
+
+export function containsSubstring(mainString: string, subString: string) {
+  const regex = new RegExp(subString, 'i');
+  return regex.test(mainString);
 }

@@ -1,5 +1,6 @@
+'use client';
+
 /* eslint-disable react/jsx-key */
-import { IEmployee } from '@/app/administration/assessments/(components)/autocompleteAddCandidate';
 import { useAutocomplete } from '@mui/base/useAutocomplete';
 import CheckIcon from '@mui/icons-material/Check';
 import {
@@ -11,21 +12,29 @@ import {
   Wrapper,
 } from './styles';
 
-interface IAutocompleteTags {
-  options?: IEmployee[];
-  label?: string;
-  selectedCandidates: IEmployee[];
-  addCandidate: (candidate: IEmployee) => void;
-  removeCandidate: (employees: IEmployee[]) => void;
+export interface IOptions {
+  name: string;
+  empCode?: string;
+  [k: string]: any;
 }
 
-export default function AutocompleteTags({
+interface IAutocompleteTags<T> {
+  options?: IOptions[];
+  label?: string;
+  selectedItems: IOptions[];
+  addItem: (item: T | IOptions) => void;
+  removeItem: (items: T[] | IOptions[]) => void;
+  single?: boolean;
+}
+
+export default function AutocompleteTags<T>({
   options,
   label,
-  selectedCandidates,
-  addCandidate,
-  removeCandidate,
-}: IAutocompleteTags) {
+  selectedItems,
+  addItem,
+  removeItem,
+  single,
+}: IAutocompleteTags<T>) {
   const {
     getRootProps,
     getInputLabelProps,
@@ -41,53 +50,65 @@ export default function AutocompleteTags({
     defaultValue: undefined,
     multiple: true,
     options: options || [],
-    value: selectedCandidates,
+    value: selectedItems,
     getOptionLabel: (option) => option?.name,
-    onChange: (event: any, value: IEmployee[]) => {
+    onChange: (event: any, value: IOptions[]) => {
       if (
         event.keyCode != 8 &&
-        !selectedCandidates.includes(value[value.length - 1])
+        !selectedItems?.includes(value[value.length - 1])
       ) {
         event.preventDefault();
-        addCandidate(value[value.length - 1]);
+        addItem(value[value.length - 1]);
       }
     },
   });
 
+  const ListItem = ({ option, index }: { option: IOptions; index: number }) => {
+    const isSelected = selectedItems?.includes(option);
+    return (
+      <Item
+        isDisabled={isSelected}
+        {...getOptionProps({ option, index })}
+        value={option.empCode}
+      >
+        <span
+          dangerouslySetInnerHTML={{
+            __html: `<p><b>${option.name}</b>${
+              option.empCode ? `- <i></i>${option.empCode}</p>` : ''
+            }`,
+          }}
+        />
+        {isSelected ? <CheckIcon fontSize="small" /> : null}
+      </Item>
+    );
+  };
+
   return (
     <Wrapper>
       <div {...getRootProps()}>
-        <Label {...getInputLabelProps()}>{label}</Label>
+        {label ? <Label {...getInputLabelProps()}>{label}</Label> : null}
         <InputWrapper ref={setAnchorEl} className={focused ? 'focused' : ''}>
-          {selectedCandidates?.map((option: IEmployee, index: number) => (
-            <StyledTag
-              label={option.name}
-              {...getTagProps({ index })}
-              removeItems={(index: number) => {
-                const _tempCandidates = [...selectedCandidates];
-                _tempCandidates.splice(index, 1);
-                removeCandidate(_tempCandidates);
-              }}
-            />
-          ))}
+          {selectedItems?.map((option: IOptions, index: number) => {
+            return (
+              <StyledTag
+                label={option?.name}
+                {...getTagProps({ index })}
+                removeItems={(index: number) => {
+                  const _tempItems = [...selectedItems];
+                  _tempItems.splice(index, 1);
+                  removeItem(_tempItems);
+                }}
+                isSingle={single}
+              />
+            );
+          })}
           <input {...getInputProps()} />
         </InputWrapper>
       </div>
       {groupedOptions.length > 0 && options?.length ? (
         <Listbox {...getListboxProps()}>
           {(groupedOptions as typeof options).map((option, index) => (
-            <Item
-              isDisabled={selectedCandidates.includes(option)}
-              {...getOptionProps({ option, index })}
-              value={option.empCode}
-            >
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: `<p><b>${option.name}</b> - <i>${option.empCode}</i></p>`,
-                }}
-              />
-              <CheckIcon fontSize="small" />
-            </Item>
+            <ListItem option={option} index={index} />
           ))}
         </Listbox>
       ) : null}

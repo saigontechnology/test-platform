@@ -1,28 +1,33 @@
 'use client';
 
-import CustomModal, {
-  CustomModalHandler,
-} from '@/components/molecules/CustomModal';
-import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IResponseQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { DataContext } from '@/libs/contextStore';
-import { QuestionLevel } from '@/libs/definitions';
 import { showNotification } from '@/libs/toast';
-import { handleMappingImportData, isStringHTML } from '@/libs/utils';
-import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
-import ClearIcon from '@mui/icons-material/Clear';
+import {
+  containsSubstring,
+  formatTimeString,
+  handleMappingImportData,
+} from '@/libs/utils';
+import { AddBox } from '@mui/icons-material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { Box, Chip, IconButton, Typography } from '@mui/material';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import StackedBarChartIcon from '@mui/icons-material/StackedBarChart';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Box, Button, IconButton, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import {
+  getQuestionLevel,
+  getQuestionType,
+} from './(components)/(question-form)/preview';
+import GridSettings, { GriSettingHandler } from './(components)/setting-group';
+import TFGrid from './grid-components';
+import { ICardData } from './grid-components/listItem';
 
 export interface IQuestion {
   id: number;
@@ -31,6 +36,11 @@ export interface IQuestion {
   categories: string[];
   answers: number[];
   options: string[];
+  level: string;
+  type: string;
+  duration: number;
+  category: string;
+  question: string;
 }
 
 const VisuallyHiddenInput = styled('input')({
@@ -46,31 +56,71 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const Page = () => {
-  const [questionList, setQuestionList] = useState<IQuestion[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const onDeleteQuestion = React.useRef<number>(0);
   const router = useRouter();
-  const modalRef = React.useRef<CustomModalHandler>(null);
-  const [isImportLoading, setImportLoading] = useState<boolean>(false);
-
   const { data, updateData } = useContext(DataContext);
+
+  const [_questionList, setQuestionList] = useState<ICardData[]>([]);
+  const [_loading, setLoading] = useState<boolean>(true);
+  const [isImportLoading, setImportLoading] = useState<boolean>(false);
+  const [currentPageNum, setCurrentPageNum] = useState<number>(1);
+  const cachedQuestions = useRef<IResponseQuestion[]>([]);
+  const tempQuestionOnSearch = useRef<ICardData[] | null>(null);
+  const previewRef = useRef<GriSettingHandler | null>(null);
 
   const getGridQuestion = async () => {
     setLoading(true);
-    const _questions = await ApiHook(Methods.GET, '/questions');
-    const _questionList: IQuestion[] = (
-      _questions.data as Array<IResponseQuestion>
-    ).map((q: IResponseQuestion) => {
-      return {
-        id: q.id,
-        title: q.question,
-        content: q.description,
-        categories: new Array().concat(q.category),
-        answers: q.answer,
-        options: q.options,
-        type: q.type,
-      };
-    });
+    const { data } = await ApiHook(Methods.GET, '/admin/questions');
+    cachedQuestions.current = data as Array<IResponseQuestion>;
+    const _questionList: ICardData[] = (data as Array<IResponseQuestion>).map(
+      (q: IResponseQuestion) => {
+        const questionCard = {
+          id: q.id,
+          title: q.question,
+          flagChip: {
+            label: q.category,
+          },
+          description: {
+            content: q.description,
+          },
+          cardInfo: {
+            info: [
+              getQuestionType(q.type),
+              getQuestionLevel(q.level),
+              formatTimeString(q.duration),
+            ],
+            render: () => {
+              return (
+                <>
+                  <span className="info-chip">
+                    <TaskAltIcon fontSize="small" />
+                    {getQuestionType(q.type)}
+                  </span>
+                  <span className="info-chip">
+                    <StackedBarChartIcon
+                      sx={{
+                        width: '16px',
+                        height: '16px',
+                      }}
+                    />
+                    {getQuestionLevel(q.level)}
+                  </span>
+                  <span className="info-chip">
+                    <AccessTimeIcon
+                      sx={{
+                        width: '16px',
+                        height: '16px',
+                      }}
+                    />
+                    30 min
+                  </span>
+                </>
+              );
+            },
+          },
+        };
+        return questionCard;
+      },
+    );
     setQuestionList(_questionList);
     setLoading(false);
   };
@@ -78,17 +128,6 @@ const Page = () => {
   useEffect(() => {
     getGridQuestion();
   }, []);
-
-  const handleDeleteQuestion = async (questionId: number) => {
-    const { error } = await ApiHook(Methods.DELETE, `/questions/${questionId}`);
-    // Handle response
-    if (!error) {
-      getGridQuestion();
-    } else {
-      alert(`Can not delete question ${questionId}`);
-    }
-    modalRef.current?.close();
-  };
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -98,7 +137,6 @@ const Page = () => {
     fileReader.readAsText(file, 'UTF-8');
     fileReader.onload = async (e: any) => {
       let importQuestions = JSON.parse(e.target.result);
-      console.log(importQuestions);
       const mappedQuestions = await handleMappingImportData(
         'X',
         importQuestions,
@@ -106,7 +144,7 @@ const Page = () => {
       ).then((result) => result);
       importQuestions = JSON.stringify(mappedQuestions);
       setImportLoading(true);
-      const { error } = await ApiHook(Methods.POST, `/questions/import`, {
+      const { error } = await ApiHook(Methods.POST, `/admin/questions/import`, {
         data: importQuestions,
       });
       !error && showNotification('Import questions successfully', 'success');
@@ -115,225 +153,151 @@ const Page = () => {
     };
   };
 
-  const ModalContent = () => {
+  const pageChange = (currentPage: number) => {
+    setCurrentPageNum(currentPage);
+  };
+
+  const handleSearch = (searchVal: string) => {
+    /** Filter on points:
+     *    - title
+     *    - description
+     *    - tags (optional could be remove)
+     */
+    if (tempQuestionOnSearch.current) {
+      if (/#/.test(searchVal) && searchVal.replace(/#/, '')?.length) {
+        const searchId: string = searchVal.replace(/#/, '');
+        const searchResult = tempQuestionOnSearch.current.find(
+          (_d: ICardData) => _d.id === Number(searchId),
+        );
+        return searchResult ? new Array(searchResult) : [];
+      } else {
+        return tempQuestionOnSearch.current.filter((_d: ICardData) => {
+          // Search on title:
+          if (containsSubstring(_d.title, searchVal)) {
+            return _d;
+          }
+          // Search on description:
+          if (containsSubstring(_d.description.content, searchVal)) {
+            return _d;
+          }
+          // Search on tags:
+          const existTag = _d.tags?.find((tag) => {
+            if (containsSubstring(tag, searchVal)) {
+              return tag;
+            }
+          });
+          if (existTag) {
+            return _d;
+          }
+        });
+      }
+    } else return null;
+  };
+
+  const renderItemActions = (itemId: number) => {
     return (
-      <Box className="grid">
-        <h2 id="parent-modal-title">{`Deleting Question ID ${onDeleteQuestion.current}`}</h2>
-        <p id="parent-modal-description" className="mt-3">
-          Are you sure want to delete selected question ? Question will be
-          delete permanently.
-        </p>
-        <Box className="inline-flex gap-10">
-          <Button
-            className="mt-5 w-full content-end"
-            title="Delete"
-            variant="outlined"
-            startIcon={<ClearIcon />}
-            onClick={() => modalRef.current?.close()}
-          >
-            Cancel
-          </Button>
-          <Button
-            className="mt-5 w-full content-end"
-            title="Delete"
-            variant="contained"
-            startIcon={<DeleteForeverIcon />}
-            onClick={() => handleDeleteQuestion(onDeleteQuestion.current)}
-          >
-            Delete
-          </Button>
-        </Box>
-      </Box>
+      <>
+        <IconButton
+          sx={{
+            alignSelf: 'center',
+          }}
+          onClick={() => {
+            const previewItem = cachedQuestions.current.find(
+              (_q: IResponseQuestion) => _q.id === itemId,
+            );
+            previewItem && previewRef.current?.onPreview(previewItem);
+          }}
+        >
+          <VisibilityIcon />
+        </IconButton>
+        <IconButton
+          sx={{
+            alignSelf: 'center',
+          }}
+          onClick={() =>
+            router.push(`${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${itemId}`)
+          }
+        >
+          <ModeEditIcon />
+        </IconButton>
+      </>
     );
   };
 
-  //#region : Temporary definition Questions list's columns:
-  const columns: GridColDef[] = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      disableColumnMenu: true,
-      width: 70,
-    },
-    {
-      field: 'title',
-      headerName: 'Title',
-      flex: 0.6,
-      renderCell: (params) => multipleLinesTypo(params.row.title),
-    },
-    {
-      field: 'level',
-      headerName: 'Standard',
-      flex: 0.3,
-      renderCell: (params) => {
-        const level = QuestionLevel.find(
-          (lvl) => lvl.value === params.row.level,
-        );
-        console.log('level: ', level);
-        return (
-          <Box className="grid gap-1">
-            {level ? <Chip label={level?.label} /> : null}
-          </Box>
-        );
-      },
-    },
-    // {
-    //   field: 'content',
-    //   headerName: 'Question Content',
-    //   flex: 0.8,
-    //   renderCell: (params) => {
-    //     if (isStringHTML(params.row.content)) {
-    //       return (
-    //         <Box
-    //           className="h-[150px] w-[350px] overflow-hidden text-ellipsis whitespace-normal"
-    //           dangerouslySetInnerHTML={{ __html: params.row.content }}
-    //         />
-    //       );
-    //     } else {
-    //       return multipleLinesTypo(params.row.content);
-    //     }
-    //   },
-    // },
-    {
-      field: 'categories',
-      headerName: 'Categories',
-      flex: 0.5,
-      renderCell: (params) => {
-        return (
-          <Box className="grid gap-1">
-            {params.row.categories?.map((cate: any, indx: number) => {
-              return <Chip key={`cate-${indx}`} label={cate} />;
-            })}
-          </Box>
-        );
-      },
-    },
-    {
-      field: 'answers',
-      headerName: 'Correct answer',
-      sortable: false,
-      flex: 0.7,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <Box className="grid gap-1">
-            {params.row.options?.map((answ: any, indx: number) => {
-              const _answ = isStringHTML(answ) ? (
-                <div>{String.fromCharCode(indx + 'A'.charCodeAt(0))}</div>
-              ) : (
-                answ
-              );
-              if (params.row.answers?.includes(indx)) {
-                return (
-                  <Chip
-                    className={clsx('w-fit max-w-sm', {
-                      'bg-blue-500 text-white':
-                        params.row.answers?.includes(indx),
-                    })}
-                    key={`answer-${indx}`}
-                    label={_answ}
-                    variant="outlined"
-                  />
-                );
-              } else {
-                return null;
-              }
-            })}
-          </Box>
-        );
-      },
-      valueGetter: (params: GridValueGetterParams) =>
-        params.row.options.join('\t'),
-    },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      sortable: false,
-      flex: 0.3,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <>
-            <IconButton
-              title="Edit"
-              onClick={() =>
-                router.push(
-                  `${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${params.row.id}`,
-                )
-              }
-            >
-              <ModeEdit />
-            </IconButton>
-            <IconButton
-              title="Delete"
-              className="ml-3"
-              onClick={() => {
-                onDeleteQuestion.current = params.row.id;
-                modalRef.current?.open();
-              }}
-            >
-              <Delete />
-            </IconButton>
-          </>
-        );
-      },
-    },
-  ];
-  //#endregion
+  const handleOnSearch = (searchVal: string) => {
+    /**  Notes:
+     *    - Validate <!Null> to avoid to set tempQuestionOnSearch every time onchange.
+     */
+    if (!tempQuestionOnSearch.current) {
+      tempQuestionOnSearch.current = _questionList;
+    }
+    const filteredItems = handleSearch(searchVal);
+    if (filteredItems) {
+      setCurrentPageNum(1);
+      setQuestionList(filteredItems);
+    }
+  };
 
   return (
-    <Box>
-      <Box className="flex items-center justify-between">
-        <Typography component="h1" className={`text-xl md:text-2xl`}>
-          Questions
-        </Typography>
-        <Box>
-          <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<CloudUploadIcon />}
-            className="mr-3"
-            disabled={isImportLoading}
-          >
-            Import
-            <VisuallyHiddenInput
-              type="file"
-              accept="application/JSON"
-              onChange={handleImport}
-            />
-          </Button>
-          <Button
-            variant="contained"
-            onClick={(evt: React.MouseEvent) => {
-              evt.preventDefault();
-              updateData({
-                ...data,
-                pagination: {
-                  pageNum: 1,
-                },
-              });
-              router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
-            }}
-            startIcon={<AddBox />}
-          >
-            New Question
-          </Button>
-        </Box>
-      </Box>
-      <Divider className="my-10" />
-      <DataTable
-        rows={questionList}
-        columns={columns}
-        // rowHeight={170}
-        loading={loading}
+    <Stack
+      className="h-[inherit]"
+      gridTemplateColumns={'fit-content(60%) 1fr'}
+      display={'grid'}
+      gap={4}
+    >
+      <TFGrid
+        data={_questionList}
+        defaultPageSize={10}
+        handlePageChange={pageChange}
+        currPage={currentPageNum}
+        placeholder="Search question ..."
+        itemActions={renderItemActions}
+        handleOnSearch={handleOnSearch}
+        handleSearchClear={() => {
+          tempQuestionOnSearch.current = null;
+          getGridQuestion();
+        }}
       />
-      <CustomModal ref={modalRef} title={''}>
-        <ModalContent />
-      </CustomModal>
-    </Box>
+      <Stack className="h-[inherit]">
+        <Box className="flex h-fit flex-row-reverse items-center justify-between gap-4 pb-4">
+          <Box>
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              className="mr-3"
+              disabled={isImportLoading}
+            >
+              Import
+              <VisuallyHiddenInput
+                type="file"
+                accept="application/JSON"
+                onChange={handleImport}
+              />
+            </Button>
+            <Button
+              variant="contained"
+              onClick={(evt: React.MouseEvent) => {
+                evt.preventDefault();
+                updateData({
+                  ...data,
+                  pagination: {
+                    pageNum: 1,
+                  },
+                });
+                router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
+              }}
+              startIcon={<AddBox />}
+            >
+              New Question
+            </Button>
+          </Box>
+        </Box>
+        <GridSettings ref={previewRef} />
+      </Stack>
+    </Stack>
   );
 };
-
 export default Page;

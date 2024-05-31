@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 'use client';
 
 import { ROUTE_KEY } from '@/constants/routePaths';
@@ -6,12 +7,12 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import QuizIcon from '@mui/icons-material/Quiz';
-import { Box, List, ListItem, SvgIconTypeMap } from '@mui/material';
+import { SvgIconTypeMap } from '@mui/material';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 
 interface ILink {
   name: string;
@@ -25,8 +26,11 @@ interface IMainLink extends ILink {
   sublinks?: ILink[];
 }
 
-// Map of links to display in the side navigation.
-// Depending on the size of the application, this would be stored in a database.
+/**
+ *  Map of links to display in the side navigation.
+ *  Depending on the size of the application, this would be stored in a database.
+ */
+
 const links: IMainLink[] = [
   {
     name: 'Dashboard',
@@ -45,8 +49,20 @@ const links: IMainLink[] = [
   },
 ];
 
-export default function NavLinks() {
+export type SideNavHandler = {
+  toggleCollapse: () => void;
+  collapseStatus: boolean;
+};
+
+const NavLinks = React.forwardRef<SideNavHandler, any>(({}, ref) => {
   const pathname = usePathname();
+  const [collapse, toggleCollapse] = useState<boolean>(false);
+
+  React.useImperativeHandle(ref, () => ({
+    toggleCollapse: () => toggleCollapse(!collapse),
+    collapseStatus: collapse,
+  }));
+
   const handleRenderLink = (link: IMainLink, isShowSublinks?: boolean) => {
     const LinkIcon = link.icon;
     return (
@@ -54,22 +70,31 @@ export default function NavLinks() {
         key={link.name}
         href={link.href}
         className={clsx(
-          'flex h-[48px] grow items-center justify-center gap-2 rounded-md p-3 text-sm font-medium text-white hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3',
-          {
-            'text-blue-600': pathname === link.href,
-          },
+          'flex items-center justify-center gap-4 rounded-md p-4 text-sm hover:text-primary',
+          pathname.includes(link.href) ? 'text-primary' : 'text-white',
         )}
       >
         <LinkIcon className="w-6" />
-        <p className="hidden w-2/3 md:block">{link.name}</p>
+        <div
+          style={{
+            display: 'block',
+            opacity: 1,
+            transition: 'opacity 0.2s ease-in-out',
+          }}
+          className={clsx('w-2/3', {
+            '!hidden opacity-0': collapse,
+          })}
+        >
+          {link.name}
+        </div>
         {link.sublinks?.length && (
-          <Box>
+          <div>
             {isShowSublinks ? (
               <ExpandLessIcon className="w-5" />
             ) : (
               <ExpandMoreIcon className="w-5" />
             )}
-          </Box>
+          </div>
         )}
       </Link>
     );
@@ -77,20 +102,24 @@ export default function NavLinks() {
 
   const handleRenderSublinks = (sublinks: ILink[]) => {
     return (
-      <List>
+      <ul>
         {sublinks.map((sub: ILink, indx: number) => {
           return (
-            <ListItem key={sub.name + indx + ''} className="py-px">
+            <li key={sub.name + indx + ''} className="py-px">
               {handleRenderLink(sub)}
-            </ListItem>
+            </li>
           );
         })}
-      </List>
+      </ul>
     );
   };
 
   return (
-    <Box>
+    <div
+      className={clsx('nav-wrapper', {
+        collapsed: collapse,
+      })}
+    >
       {links.map((link: IMainLink) => {
         const isShowSubs = pathname.includes(link.href);
         const mainLink = handleRenderLink(link, isShowSubs);
@@ -103,6 +132,8 @@ export default function NavLinks() {
           </Fragment>
         );
       })}
-    </Box>
+    </div>
   );
-}
+});
+
+export default NavLinks;

@@ -1,10 +1,12 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import * as dotenv from "dotenv";
 import { json, urlencoded } from "express";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
+  dotenv.config();
   const LIMIT_PAYLOAD = "50mb";
   const app = await NestFactory.create(AppModule, { cors: true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));

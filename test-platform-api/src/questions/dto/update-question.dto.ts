@@ -1,10 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { QuestionLevel, QuestionType } from "@prisma/client";
+import { QuestionCategory, QuestionLevel, QuestionType } from "@prisma/client";
 import {
   IsArray,
   IsBoolean,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from "class-validator";
@@ -31,7 +32,8 @@ export class UpdateQuestionDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ required: true })
-  category: string;
+  @IsEnum(QuestionCategory)
+  category: QuestionCategory;
 
   @IsArray()
   @IsNotEmpty()
@@ -57,4 +59,9 @@ export class UpdateQuestionDto {
   @IsNotEmpty()
   @ApiProperty({ required: true, type: Boolean })
   isModified: boolean;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({ required: true, type: Number })
+  duration: number;
 }
