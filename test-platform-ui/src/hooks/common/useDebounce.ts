@@ -1,10 +1,10 @@
 import { useCallback, useRef } from 'react';
 
 function useDebounce(callback: any, delay: number) {
-  const timer = useRef(null);
+  const timer: any = useRef(null);
 
   const debouncedFunction = useCallback(
-    (...args) => {
+    (...args: any) => {
       if (timer.current) {
         clearTimeout(timer.current);
       }
