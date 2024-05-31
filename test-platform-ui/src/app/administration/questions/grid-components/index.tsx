@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import PageSizeDropdown from './components/page-size';
 import TFPagination from './components/pagination';
 import SearchBar from './components/searchBar';
-import LazyLoadList from './lazyItem';
 import ListCardItem, { ICardData } from './listItem';
 
 const Grid = styled('div')`
@@ -12,21 +11,6 @@ const Grid = styled('div')`
   gap: 10px;
   height: inherit;
   overflow-y: auto;
-  &::-webkit-scrollbar {
-    width: 10px;
-    scroll-behavior: smooth;
-  }
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 30px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #8888889c;
-    border-radius: 30px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: #555555a3;
-  }
 `;
 const GridToolBar = styled('div')`
   margin: 0px 10px 0px;
@@ -44,7 +28,6 @@ export default function TFGrid({
   handleSearchClear,
   placeholder,
   itemActions,
-  isLazyLoad = false,
 }: {
   data: ICardData[];
   defaultPageSize: number;
@@ -116,26 +99,15 @@ export default function TFGrid({
           />
         </div>
       </GridToolBar>
-      <Grid className="grid-items grid gap-1">
-        {isLazyLoad ? (
-          <LazyLoadList
-            containerSelector={'.grid-items'}
-            items={chunkedData[currPage - 1]}
-            itemsPerPage={pageSize < 10 ? pageSize : 10}
-            cardActions={itemActions}
-          />
-        ) : (
-          <>
-            {chunkedData[currPage - 1]?.map((_data: any, _indx: number) => {
-              const _cardData = itemActions
-                ? { ..._data, actions: itemActions(_data.id) }
-                : _data;
-              return (
-                <ListCardItem key={`question-${_indx}`} cardData={_cardData} />
-              );
-            })}
-          </>
-        )}
+      <Grid className="grid-items tf-overflow-scroll grid h-full gap-1">
+        {chunkedData[currPage - 1]?.map((_data: any, _indx: number) => {
+          const _cardData = itemActions
+            ? { ..._data, actions: itemActions(_data.id) }
+            : _data;
+          return (
+            <ListCardItem key={`question-${_indx}`} cardData={_cardData} />
+          );
+        })}
       </Grid>
     </div>
   );

@@ -5,15 +5,14 @@ import {
   convertBase64,
   resize_base64,
 } from '@/libs/utils';
+import clsx from 'clsx';
 import hljs from 'highlight.js';
-// import dynamic from 'next/dynamic';
+import 'highlight.js/styles/atom-one-dark-reasonable.css';
+import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
 import { Editor, Modules } from './quillConfig';
 
-import clsx from 'clsx';
-import 'highlight.js/styles/atom-one-dark-reasonable.css';
-import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css';
 
 interface IRichTextArea extends ReactQuillProps {
@@ -22,6 +21,7 @@ interface IRichTextArea extends ReactQuillProps {
   data?: string;
   isReadOnly?: boolean;
   onChange?: (e: any, ref: any) => void;
+  customClass?: string;
 }
 interface CustomQuillProps extends ReactQuill.ReactQuillProps {
   hookRef: (ref: ReactQuill | null) => void;
@@ -52,7 +52,7 @@ const ReactQuillCS = dynamic(
 
 /** Main module content: */
 function RichTextArea(props: IRichTextArea) {
-  const { placeholder, data, isReadOnly, onChange } = props;
+  const { placeholder, data, isReadOnly, onChange, customClass } = props;
   let quillRef: ReactQuill | null = null;
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -123,7 +123,7 @@ function RichTextArea(props: IRichTextArea) {
   return (
     <>
       <ReactQuillCS
-        className={clsx('!h-fit grow', {
+        className={clsx(`!h-fit grow ${customClass}`, {
           '[&_.ql-container]:border-0 [&_.ql-editor]:px-0 [&_.ql-toolbar]:hidden':
             isReadOnly,
         })}

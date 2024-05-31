@@ -16,8 +16,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import StackedBarChartIcon from '@mui/icons-material/StackedBarChart';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import { Box, IconButton, Stack } from '@mui/material';
-import Button from '@mui/material/Button';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Box, Button, IconButton, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -25,6 +25,7 @@ import {
   getQuestionLevel,
   getQuestionType,
 } from './(components)/(question-form)/preview';
+import GridSettings, { GriSettingHandler } from './(components)/setting-group';
 import TFGrid from './grid-components';
 import { ICardData } from './grid-components/listItem';
 
@@ -62,61 +63,64 @@ const Page = () => {
   const [_loading, setLoading] = useState<boolean>(true);
   const [isImportLoading, setImportLoading] = useState<boolean>(false);
   const [currentPageNum, setCurrentPageNum] = useState<number>(1);
+  const cachedQuestions = useRef<IResponseQuestion[]>([]);
   const tempQuestionOnSearch = useRef<ICardData[] | null>(null);
+  const previewRef = useRef<GriSettingHandler | null>(null);
 
   const getGridQuestion = async () => {
     setLoading(true);
-    const _questions = await ApiHook(Methods.GET, '/admin/questions');
-    const _questionList: ICardData[] = (
-      _questions.data as Array<IResponseQuestion>
-    ).map((q: IResponseQuestion) => {
-      const questionCard = {
-        id: q.id,
-        title: q.question,
-        flagChip: {
-          label: q.category,
-        },
-        description: {
-          content: q.description,
-        },
-        cardInfo: {
-          info: [
-            getQuestionType(q.type),
-            getQuestionLevel(q.level),
-            formatTimeString(q.duration),
-          ],
-          render: () => {
-            return (
-              <>
-                <span className="info-chip">
-                  <TaskAltIcon fontSize="small" />
-                  {getQuestionType(q.type)}
-                </span>
-                <span className="info-chip">
-                  <StackedBarChartIcon
-                    sx={{
-                      width: '16px',
-                      height: '16px',
-                    }}
-                  />
-                  {getQuestionLevel(q.level)}
-                </span>
-                <span className="info-chip">
-                  <AccessTimeIcon
-                    sx={{
-                      width: '16px',
-                      height: '16px',
-                    }}
-                  />
-                  30 min
-                </span>
-              </>
-            );
+    const { data } = await ApiHook(Methods.GET, '/admin/questions');
+    cachedQuestions.current = data as Array<IResponseQuestion>;
+    const _questionList: ICardData[] = (data as Array<IResponseQuestion>).map(
+      (q: IResponseQuestion) => {
+        const questionCard = {
+          id: q.id,
+          title: q.question,
+          flagChip: {
+            label: q.category,
           },
-        },
-      };
-      return questionCard;
-    });
+          description: {
+            content: q.description,
+          },
+          cardInfo: {
+            info: [
+              getQuestionType(q.type),
+              getQuestionLevel(q.level),
+              formatTimeString(q.duration),
+            ],
+            render: () => {
+              return (
+                <>
+                  <span className="info-chip">
+                    <TaskAltIcon fontSize="small" />
+                    {getQuestionType(q.type)}
+                  </span>
+                  <span className="info-chip">
+                    <StackedBarChartIcon
+                      sx={{
+                        width: '16px',
+                        height: '16px',
+                      }}
+                    />
+                    {getQuestionLevel(q.level)}
+                  </span>
+                  <span className="info-chip">
+                    <AccessTimeIcon
+                      sx={{
+                        width: '16px',
+                        height: '16px',
+                      }}
+                    />
+                    30 min
+                  </span>
+                </>
+              );
+            },
+          },
+        };
+        return questionCard;
+      },
+    );
     setQuestionList(_questionList);
     setLoading(false);
   };
@@ -190,91 +194,110 @@ const Page = () => {
     } else return null;
   };
 
-  return (
-    <Box>
-      <Box className="flex h-fit flex-row-reverse items-center justify-between gap-4 pb-4">
-        <Box>
-          <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<CloudUploadIcon />}
-            className="mr-3"
-            disabled={isImportLoading}
-          >
-            Import
-            <VisuallyHiddenInput
-              type="file"
-              accept="application/JSON"
-              onChange={handleImport}
-            />
-          </Button>
-          <Button
-            variant="contained"
-            onClick={(evt: React.MouseEvent) => {
-              evt.preventDefault();
-              updateData({
-                ...data,
-                pagination: {
-                  pageNum: 1,
-                },
-              });
-              router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
-            }}
-            startIcon={<AddBox />}
-          >
-            New Question
-          </Button>
-        </Box>
-      </Box>
-      <Stack
-        className="h-[calc(100vh_-_220px)]"
-        gridTemplateColumns={'2fr 1fr'}
-        display={'grid'}
-        gap={4}
-      >
-        <TFGrid
-          data={_questionList}
-          defaultPageSize={10}
-          handlePageChange={pageChange}
-          currPage={currentPageNum}
-          placeholder="Search question ..."
-          itemActions={(itemId: number) => {
-            return (
-              <IconButton
-                sx={{
-                  alignSelf: 'center',
-                }}
-                onClick={() =>
-                  router.push(`${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${itemId}`)
-                }
-              >
-                <ModeEditIcon />
-              </IconButton>
+  const renderItemActions = (itemId: number) => {
+    return (
+      <>
+        <IconButton
+          sx={{
+            alignSelf: 'center',
+          }}
+          onClick={() => {
+            const previewItem = cachedQuestions.current.find(
+              (_q: IResponseQuestion) => _q.id === itemId,
             );
+            previewItem && previewRef.current?.onPreview(previewItem);
           }}
-          handleOnSearch={(searchVal: string) => {
-            /**  Notes:
-             *    - Validate <!Null> to avoid to set tempQuestionOnSearch every time onchange.
-             */
-            if (!tempQuestionOnSearch.current) {
-              tempQuestionOnSearch.current = _questionList;
-            }
-            const filteredItems = handleSearch(searchVal);
-            if (filteredItems) {
-              setCurrentPageNum(1);
-              setQuestionList(filteredItems);
-            }
+        >
+          <VisibilityIcon />
+        </IconButton>
+        <IconButton
+          sx={{
+            alignSelf: 'center',
           }}
-          handleSearchClear={() => {
-            tempQuestionOnSearch.current = null;
-            getGridQuestion();
-          }}
-        />
-        <Box className="summary-list h-[inherit] border-2 border-dashed border-slate-300"></Box>
+          onClick={() =>
+            router.push(`${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${itemId}`)
+          }
+        >
+          <ModeEditIcon />
+        </IconButton>
+      </>
+    );
+  };
+
+  const handleOnSearch = (searchVal: string) => {
+    /**  Notes:
+     *    - Validate <!Null> to avoid to set tempQuestionOnSearch every time onchange.
+     */
+    if (!tempQuestionOnSearch.current) {
+      tempQuestionOnSearch.current = _questionList;
+    }
+    const filteredItems = handleSearch(searchVal);
+    if (filteredItems) {
+      setCurrentPageNum(1);
+      setQuestionList(filteredItems);
+    }
+  };
+
+  return (
+    <Stack
+      className="h-[inherit]"
+      gridTemplateColumns={'fit-content(60%) 1fr'}
+      display={'grid'}
+      gap={4}
+    >
+      <TFGrid
+        data={_questionList}
+        defaultPageSize={10}
+        handlePageChange={pageChange}
+        currPage={currentPageNum}
+        placeholder="Search question ..."
+        itemActions={renderItemActions}
+        handleOnSearch={handleOnSearch}
+        handleSearchClear={() => {
+          tempQuestionOnSearch.current = null;
+          getGridQuestion();
+        }}
+      />
+      <Stack className="h-[inherit]">
+        <Box className="flex h-fit flex-row-reverse items-center justify-between gap-4 pb-4">
+          <Box>
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              className="mr-3"
+              disabled={isImportLoading}
+            >
+              Import
+              <VisuallyHiddenInput
+                type="file"
+                accept="application/JSON"
+                onChange={handleImport}
+              />
+            </Button>
+            <Button
+              variant="contained"
+              onClick={(evt: React.MouseEvent) => {
+                evt.preventDefault();
+                updateData({
+                  ...data,
+                  pagination: {
+                    pageNum: 1,
+                  },
+                });
+                router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
+              }}
+              startIcon={<AddBox />}
+            >
+              New Question
+            </Button>
+          </Box>
+        </Box>
+        <GridSettings ref={previewRef} />
       </Stack>
-    </Box>
+    </Stack>
   );
 };
 export default Page;
