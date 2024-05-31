@@ -1,5 +1,4 @@
 'use client';
-import { IQuestion } from '@/constants/assessments';
 import useDebounce from '@/hooks/common/useDebounce';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import Checkbox from '@mui/material/Checkbox';
@@ -9,26 +8,47 @@ import Pagination from '@mui/material/Pagination';
 import { useCallback, useEffect, useState } from 'react';
 import QuestionCard from './questionCard';
 
-export default function QuestionList() {
+interface IQuestionDrawerProps {
+  assessmentId: number;
+  list: number[];
+  filters: any;
+}
+
+interface IQuestion {
+  id: number;
+  description: string;
+  categories: string[];
+  answer: number[];
+  options: string[];
+  level: string;
+  type: string;
+  duration: number;
+  category: string;
+  question: string;
+  createdAt?: Date;
+}
+
+export default function QuestionDrawer(props: IQuestionDrawerProps) {
+  const { assessmentId, list, filters } = props;
+
   const [questionList, setQuestionList] = useState<IQuestion[]>([]);
   const [selectedQuestion, setSelectedQuestion] = useState<IQuestion>();
   const [totalPages, setTotalPages] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const [startIndex, setStartIndex] = useState<number>(0);
   const [endIndex, setEndIndex] = useState<number>(0);
-  const [filters, setFilters] = useState<any>();
   const [filterSkill, setFilterSkill] = useState<string[]>([]);
   const [filterLevel, setFilterLevel] = useState<string[]>([]);
   const [filterType, setFilterType] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isOpenDialog, setIsOpenDialog] = useState<boolean>(true);
+  const [assessmentQuestions, setAssessmentQuestions] = useState<number[]>([]);
 
   const LIMIT = 10;
   const DELAY = 500;
 
   useEffect(() => {
-    getFilters();
+    setAssessmentQuestions(list);
   }, []);
 
   useEffect(() => {
@@ -54,15 +74,7 @@ export default function QuestionList() {
     setEndIndex(data.end);
   };
 
-  const getFilters = async () => {
-    const response: any = await ApiHook(
-      Methods.GET,
-      '/admin/questions/filters',
-    );
-    setFilters(response.data);
-  };
-
-  const handleChangePage = (event, page: number) => {
+  const handleChangePage = (_e: any, page: number) => {
     setCurrentPage(page);
   };
 
@@ -101,8 +113,25 @@ export default function QuestionList() {
     [],
   );
 
-  const handleAddQuestion = (id: number) => {
-    console.log(22222, id);
+  const handleAddQuestion = async (questionId: number) => {
+    await ApiHook(Methods.POST, `admin/assessments/question`, {
+      data: {
+        assessmentId,
+        questionId,
+      },
+    });
+
+    setAssessmentQuestions([...assessmentQuestions, questionId]);
+  };
+
+  const handleDeleteQuestion = async (questionId: number) => {
+    await ApiHook(
+      Methods.DELETE,
+      `admin/assessments/${assessmentId}/question/${questionId}`,
+    );
+    setAssessmentQuestions(
+      assessmentQuestions.filter((item: number) => item !== questionId),
+    );
   };
 
   return (
@@ -219,24 +248,27 @@ export default function QuestionList() {
           </div>
         </div>
         <div className="h-[calc(100vh_-_96px)] overflow-y-scroll pb-4">
-          {questionList.map((question: any, index: number) => {
-            return (
-              <QuestionCard
-                key={question.id}
-                id={question.id}
-                index={startIndex + index}
-                content={question.description}
-                category={question.category}
-                level={question.level}
-                type={question.type}
-                duration={question.duration}
-                selected={selectedQuestion?.id}
-                onSelect={handleSelectQuestion}
-                hasDeleted={false}
-                onAdd={handleAddQuestion}
-              />
-            );
-          })}
+          {questionList.length
+            ? questionList.map((question: any, index: number) => {
+                return (
+                  <QuestionCard
+                    key={question.id}
+                    id={question.id}
+                    index={startIndex + index}
+                    description={question.description}
+                    category={question.category}
+                    level={question.level}
+                    type={question.type}
+                    duration={question.duration}
+                    selected={selectedQuestion?.id || 0}
+                    onSelect={handleSelectQuestion}
+                    hasDeleted={assessmentQuestions.includes(question.id)}
+                    onAdd={handleAddQuestion}
+                    onDelete={handleDeleteQuestion}
+                  />
+                );
+              })
+            : null}
         </div>
       </div>
     </div>

@@ -149,4 +149,4 @@ function RichTextArea(props: IRichTextArea) {
   );
 }
 
-export default React.memo(RichTextArea)
+export default React.memo(RichTextArea);

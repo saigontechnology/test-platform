@@ -4,23 +4,39 @@ import { QuestionLevels, QuestionType } from '@/libs/definitions';
 import AddIcon from '@mui/icons-material/Add';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
 import CategoryIcon from '@mui/icons-material/Category';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DescriptionIcon from '@mui/icons-material/Description';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import RemoveIcon from '@mui/icons-material/Remove';
 
-export default function QuestionCard(props) {
+interface IQuestionCardProps {
+  id: number;
+  index: number;
+  selected: number;
+  description: string;
+  category: string;
+  level: string;
+  type: string;
+  duration: number;
+  hasDeleted?: boolean;
+  onSelect: (id: number) => void;
+  onAdd?: (id: number) => void;
+  onDelete: (id: number) => void;
+}
+
+export default function QuestionCard(props: IQuestionCardProps) {
   const {
     id,
     index,
     selected,
-    onSelect,
-    content,
+    description,
     category,
     level,
     type,
     duration,
     hasDeleted = true,
-    onAdd,
+    onSelect,
+    onAdd = () => {},
+    onDelete,
   } = props;
 
   const questionType: any = {
@@ -40,7 +56,7 @@ export default function QuestionCard(props) {
   };
 
   return (
-    <div className="mt-4 flex items-center pr-4">
+    <div className="mt-4 flex cursor-pointer items-center pr-4">
       <div className="px-4 text-sm text-gray-400">#{handleIndex(index)}</div>
       <div
         className={`flex w-full cursor-pointer items-center justify-between rounded-lg border  bg-white p-4 text-sm ${id === selected ? 'border-primary' : 'border-gray-200'}`}
@@ -51,8 +67,8 @@ export default function QuestionCard(props) {
         <div>
           <RichTextArea
             key={index}
-            name={content}
-            data={content}
+            name={description}
+            data={description}
             isReadOnly={true}
           />
           <div className="flex">
@@ -75,8 +91,13 @@ export default function QuestionCard(props) {
           </div>
         </div>
         {hasDeleted ? (
-          <div className="cursor-pointer p-4 text-gray-500 hover:text-red-500">
-            <DeleteOutlineIcon sx={{ fontSize: 18 }} />
+          <div
+            className="cursor-pointer p-4 text-gray-500 hover:text-red-500"
+            onClick={() => {
+              onDelete(id);
+            }}
+          >
+            <RemoveIcon sx={{ fontSize: 24 }} />
           </div>
         ) : (
           <div
