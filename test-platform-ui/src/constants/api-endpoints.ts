@@ -1,4 +1,3 @@
-
 export const EXAMINATION_API = {
   getExaminationInfo: {
     api: (examId: string) => `/examinations/${examId}`,
@@ -11,6 +10,15 @@ export const EXAMINATION_API = {
   },
 };
 
+export const QUESTION_API = {
+  getQuestions: {
+    api: () => `/admin/questions`,
+  },
+  getFilters: {
+    api: () => `/admin/questions/filters`,
+  },
+};
+
 export const ASSESSMENT_API = {
   getAssessmentById: {
     api: (assessmentId: string) => `/assessment/${assessmentId}`,
@@ -19,12 +27,12 @@ export const ASSESSMENT_API = {
 
 export const AUTH_API = {
   signIn: {
-    api: "/auth/login"
-  }
-}
+    api: '/auth/login',
+  },
+};
 
 export const USER_API = {
   getCandidates: {
-    api: "/admin/candidate/list",
+    api: '/admin/candidate/list',
   },
 };

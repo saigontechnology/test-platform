@@ -3,16 +3,18 @@
 
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { IResponseQuestion } from '@/constants/questions';
+import { useGetQuestionFilters } from '@/hooks/questions/hooks';
+import { capitalizeFirstLetter } from '@/libs/utils';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { styled } from '@mui/material';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import RenderAnswer from '../(question-form)/answers/renderAnswer';
+import { getQuestionType } from '../(question-form)/preview';
 import Accordion, {
   FilterOpts,
   IAccordion,
   IOption,
 } from './accordion/accordion';
-import { _filterOpts } from './data';
 
 const SettingContent = styled('div')`
   height: 100%;
@@ -26,7 +28,7 @@ const SettingButton = styled('button')`
 `;
 
 interface IGriSetting {
-  onFilter: (checked: IOption[]) => void;
+  onFilter: (key: string, checked: IOption[]) => void;
 }
 
 export type GriSettingHandler = {
@@ -45,24 +47,29 @@ const GridSettings = forwardRef<GriSettingHandler, IGriSetting>(
       close: () => console.log(new Error('Function not implemented.')),
     }));
 
-    const faqs: IAccordion[] = [
-      {
-        id: 1,
-        header: 'Categories',
-        render: () => (
-          <FilterOpts
-            options={_filterOpts}
-            formLabel={null}
-            onCheck={onFilter}
-          />
-        ),
-      },
-      {
-        id: 2,
-        header: 'Question Type',
-        content: `It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. `,
-      },
-    ];
+    const { data } = useGetQuestionFilters();
+    const faqs = (): IAccordion[] => {
+      return data
+        ? Object.entries(data).map(([key, value], indx) => {
+            const _filterOpts_ = (value as string[]).map(
+              (_val: string, _indx: number) => {
+                return { key: _val, value: getQuestionType(_val) };
+              },
+            );
+            return {
+              id: indx + 1,
+              header: capitalizeFirstLetter(key),
+              render: () => (
+                <FilterOpts
+                  options={_filterOpts_}
+                  formLabel={null}
+                  onCheck={(checked: IOption[]) => onFilter(key, checked)}
+                />
+              ),
+            };
+          })
+        : [];
+    };
 
     return (
       <SettingContent className="relative flex h-[calc(100%_-_58px)] flex-col border-2 border-neutral-300 p-4">
@@ -129,7 +136,7 @@ const GridSettings = forwardRef<GriSettingHandler, IGriSetting>(
             </div>
           </>
         ) : (
-          <Accordion data={faqs} />
+          <Accordion data={faqs()} />
         )}
       </SettingContent>
     );

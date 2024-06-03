@@ -9,6 +9,7 @@ export enum QuestionType {
   TRUE_FALSE = 'TRUE_FALSE',
   CODING = 'CODING',
   LOGIC = 'LOGIC',
+  PROGRAMMING_LOGIC = 'PROGRAMMING_LOGIC',
 }
 
 export const QuestionTypes = [

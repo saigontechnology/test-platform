@@ -30,7 +30,7 @@ const TFPagination = (props: IPagination) => {
   if (currentPage === 0 || paginationRange?.length < 2) {
     return null;
   }
-  const lastPage = paginationRange[paginationRange.length - 1];
+  const lastPage = paginationRange[paginationRange?.length - 1];
   const onNext = () => {
     onPageChange(currentPage + 1);
   };

@@ -28,11 +28,14 @@ export function getQuestionType(type: string) {
     case QuestionType.CODING:
       return 'Programming Skill';
     case QuestionType.LOGIC:
+    case QuestionType.PROGRAMMING_LOGIC:
       return 'Programming Logic';
     case QuestionType.TRUE_FALSE:
       return 'True or False';
-    default:
+    case QuestionType.SINGLE_CHOICE:
       return 'Single Choice';
+    default:
+      return type;
   }
 }
 

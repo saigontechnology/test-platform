@@ -58,13 +58,13 @@ function ListCardItem({
           <FlagChip label={cardData.flagChip.label} />
         ) : null}
       </div>
-      <div className="tag-chip-container">
-        {cardData.tags?.map((tag: string, indx: number) => (
-          <span key={`tag-${indx}`} className="tag-chip-item">
-            {tag}
-          </span>
-        ))}
+      <div className="info-container flex justify-between">
+        <div className="flex gap-4">{handleCSRender}</div>
+        <div className="flex items-center justify-center">
+          {cardData.actions ? cardData.actions : null}
+        </div>
       </div>
+
       {cardData.description?.content ? (
         <div className="question-description">
           {cardData.description?.render ? (
@@ -79,11 +79,12 @@ function ListCardItem({
           )}
         </div>
       ) : null}
-      <div className="info-container flex justify-between">
-        <div className="flex gap-4">{handleCSRender}</div>
-        <div className="flex items-center justify-center">
-          {cardData.actions ? cardData.actions : null}
-        </div>
+      <div className="tag-chip-container">
+        {cardData.tags?.map((tag: string, indx: number) => (
+          <span key={`tag-${indx}`} className="tag-chip-item">
+            {tag}
+          </span>
+        ))}
       </div>
     </div>
   );

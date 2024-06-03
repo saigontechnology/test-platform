@@ -113,7 +113,10 @@ export const FilterOpts = ({
                   ) => {
                     const _tempItems = [...selectedOpts];
                     if (!checked) {
-                      _tempItems.splice(_tempItems.indexOf(opt), 1);
+                      const removeIndx = _tempItems.findIndex(
+                        (_opt) => _opt.key === opt.key,
+                      );
+                      _tempItems.splice(removeIndx, 1);
                       setSelectedOpts(_tempItems);
                       onCheck(_tempItems);
                     } else {
