@@ -46,9 +46,8 @@ export default function Examination() {
   const [examId, setExamId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    // const _id = getClientSideCookie('examId');
-    setExamId('31');
-    setLayout('examination');
+    const _id = getClientSideCookie('examId');
+    setExamId(_id);
   }, []);
 
   const {
