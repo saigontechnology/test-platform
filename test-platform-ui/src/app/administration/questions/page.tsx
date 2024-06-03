@@ -127,7 +127,7 @@ const Page = () => {
                       height: '16px',
                     }}
                   />
-                  30 min
+                  {formatTimeString(q.duration)}
                 </span>
               </>
             );
