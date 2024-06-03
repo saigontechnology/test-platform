@@ -78,5 +78,5 @@ a:focus {
     transition: height 0.35s ease;
 }
 .rc-collapse.show {
-    height: auto;
+    height: auto !important;
 }

@@ -41,6 +41,8 @@ const RenderAnswer = ({
         return (
           <Radio
             checked={answSelected}
+            disableRipple
+            disabled={readOnly}
             onClick={() => {
               console.log('Radio on click');
               selectAnswer && selectAnswer(index);
@@ -52,6 +54,7 @@ const RenderAnswer = ({
           <Checkbox
             checked={answSelected}
             disabled={!readOnly}
+            disableRipple
             onClick={() => {
               console.log('Checkbox on click');
               selectAnswer && selectAnswer(index);

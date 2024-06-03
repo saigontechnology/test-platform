@@ -204,6 +204,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
                         <Checkbox
                           value={index}
                           checked={selectedAnswerValues.includes(index)}
+                          disableRipple
                         />
                       }
                       label=""

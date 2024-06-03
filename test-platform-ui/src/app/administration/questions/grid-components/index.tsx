@@ -79,8 +79,8 @@ export default function TFGrid({
   };
 
   return (
-    <div className="question-list grid h-[inherit] gap-2">
-      <GridToolBar className="grid-tool-bar ml-4 flex justify-between rounded-lg bg-neutral-200 p-1">
+    <div className="question-list h-[inherit] gap-2">
+      <GridToolBar className="grid-tool-bar ml-4 flex h-12 justify-between rounded-lg bg-neutral-200 p-1">
         {placeholder?.length ? (
           <SearchBar
             placeholder={placeholder}
@@ -99,7 +99,7 @@ export default function TFGrid({
           />
         </div>
       </GridToolBar>
-      <Grid className="grid-items tf-overflow-scroll grid h-full gap-1">
+      <Grid className="grid-items tf-overflow-scroll mt-3.5 grid h-[calc(100%_-_70px)] gap-1 auto-rows-max">
         {chunkedData[currPage - 1]?.map((_data: any, _indx: number) => {
           const _cardData = itemActions
             ? { ..._data, actions: itemActions(_data.id) }

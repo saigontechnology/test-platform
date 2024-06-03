@@ -25,7 +25,8 @@ import {
   getQuestionLevel,
   getQuestionType,
 } from './(components)/(question-form)/preview';
-import GridSettings, { GriSettingHandler } from './(components)/setting-group';
+import GridSettings, { GriSettingHandler } from './(components)/preview';
+import { IOption } from './(components)/preview/accordion/accordion';
 import TFGrid from './grid-components';
 import { ICardData } from './grid-components/listItem';
 
@@ -153,7 +154,7 @@ const Page = () => {
   };
 
   const handleSearch = (searchVal: string) => {
-    /** Filter on points:
+    /** Search based on fields:
      *    - title
      *    - description
      *    - tags (optional could be remove)
@@ -290,7 +291,12 @@ const Page = () => {
             </Button>
           </Box>
         </Box>
-        <GridSettings ref={previewRef} />
+        <GridSettings
+          ref={previewRef}
+          onFilter={(checked: IOption[]) => {
+            console.log('handle filter: ', checked);
+          }}
+        />
       </Stack>
     </Stack>
   );
