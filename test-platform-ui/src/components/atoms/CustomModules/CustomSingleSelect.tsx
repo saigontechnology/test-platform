@@ -4,7 +4,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { FieldError, useController, useFormContext } from 'react-hook-form';
 
-interface IOption {
+export interface IOption {
   label: string;
   value: string | number;
 }

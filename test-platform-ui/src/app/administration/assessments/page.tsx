@@ -1,217 +1,217 @@
 'use client';
 
-import CustomModal from '@/components/molecules/CustomModal';
-import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
-import { IAssessment } from '@/constants/assessments';
+import DashboardCard from '@/components/molecules/DashboardCard';
+import { AssessmentLevels, IAssessment } from '@/constants/assessments';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
-import { DataContext } from '@/libs/contextStore';
-import { showNotification } from '@/libs/toast';
-import { sendAssessmentInvitationSchema } from '@/validations/assessment';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { AddBox, Delete, ModeEdit, Send } from '@mui/icons-material';
-import { Chip, FormControl, IconButton, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import { GridColDef } from '@mui/x-data-grid';
+import Dialog from '@mui/material/Dialog';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import AccordionExpandIcon from './(components)/autocompleteAddCandidate';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
 
-let externalRoute = null;
-
-export default function EditAssessment() {
+export default function AssessmentList() {
   const [assessments, setAssessments] = useState<IAssessment[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const router = (externalRoute = useRouter());
-  const sendInviteModalRef = useRef<any>(null);
-  const rowIdValueRef = useRef<any>(null);
+  const router = useRouter();
 
-  const { data, updateData } = useContext(DataContext);
-
-  const sendInviteForm = useForm<{
-    email: string[];
-  }>({
-    defaultValues: {
-      email: [],
-    },
-    resolver: yupResolver(sendAssessmentInvitationSchema),
-  });
-
-  const selectedEmails = sendInviteForm.watch('email');
+  const [isDialogCreateOpen, setIsDialogCreateOpen] = useState<boolean>(false);
+  const [levels, setLevels] = useState([]);
+  const [isDialogDeleteOpen, setIsDialogDeleteOpen] = useState<boolean>(false);
+  const [deletedId, setDeletedId] = useState<number>();
 
   const getAssessments = async () => {
-    setLoading(true);
-    const resp = await ApiHook(Methods.GET, '/admin/assessments');
-    const assessmentsData: any = (resp.data as Array<IAssessment>).map(
-      (q: IAssessment) => {
-        return {
-          id: q.id,
-          level: q.level,
-          name: q.name,
-          createdAt: q.createdAt,
-        };
-      },
-    );
-    setAssessments(assessmentsData);
-    setLoading(false);
+    const response: any = await ApiHook(Methods.GET, '/admin/assessments');
+    setAssessments(response.data);
   };
 
   useEffect(() => {
     getAssessments();
   }, []);
 
-  const handleEdit = (e: React.MouseEvent, row: IAssessment) => {
-    e.stopPropagation();
-    externalRoute.push(
-      `${ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_EDIT}/${row.id}`,
+  const assessmentLevel: any = {
+    [AssessmentLevels.JUNIOR]: 'Junior',
+    [AssessmentLevels.INTERMEDIATE]: 'Intermediate',
+    [AssessmentLevels.SENIOR]: 'Senior',
+    [AssessmentLevels.PRINCIPAL]: 'Principal',
+  };
+
+  const schema = yup.object({
+    name: yup.string().required(),
+    level: yup.string().required(),
+  });
+
+  const {
+    handleSubmit,
+    register,
+    formState: { isValid },
+  } = useForm({
+    mode: 'onChange',
+    resolver: yupResolver(schema),
+  });
+
+  useEffect(() => {
+    getLevels();
+  }, []);
+
+  const getLevels = async () => {
+    const response: any = await ApiHook(
+      Methods.GET,
+      '/admin/questions/filters',
+    );
+
+    setLevels(
+      response.data.level.map((item: string) => {
+        return {
+          label: assessmentLevel[item],
+          value: item,
+        };
+      }),
     );
   };
 
-  const handleDelete = async (e: React.MouseEvent, row: IAssessment) => {
-    e.stopPropagation();
-    const { error } = await ApiHook(Methods.DELETE, `/admin/assessments/${row.id}`);
-    if (!error) {
-      showNotification('Delete assessment successfully', 'success');
-      getAssessments();
-    }
-  };
-
-  const handleInvite = async (e: React.MouseEvent, row: IAssessment) => {
-    e.stopPropagation();
-    sendInviteForm.reset();
-    rowIdValueRef.current = row.id;
-    sendInviteModalRef?.current.open();
-  };
-
-  const handleSendInvite = async () => {
-    const formData: {
-      email: string[];
-    } = sendInviteForm.getValues();
-    const { error } = await ApiHook(Methods.POST, `/admin/examinations/invite`, {
-      data: { ...formData, assessmentId: rowIdValueRef.current },
+  const onSubmit = async (data: any) => {
+    const response: any = await ApiHook(Methods.POST, '/admin/assessments', {
+      data,
     });
-    if (!error) {
-      showNotification('Send assessment invitation successfully', 'success');
-      sendInviteModalRef?.current.close();
-    }
+    router.push(
+      `${ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_DETAIL}/${response.data.id}`,
+    );
   };
 
-  const columns: GridColDef[] = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      disableColumnMenu: true,
-      width: 70,
-    },
-    {
-      field: 'name',
-      headerName: 'Name',
-      flex: 0.5,
-      renderCell: (params) => multipleLinesTypo(params.row.name),
-    },
-    {
-      field: 'level',
-      headerName: 'Level',
-      flex: 0.3,
-      renderCell: (params) => multipleLinesTypo(params.row.level),
-    },
-    {
-      field: 'categories',
-      headerName: 'Categories',
-      flex: 0.6,
-      renderCell: (params) => {
-        return (
-          <Box className="grid gap-1">
-            {params.row.categories?.map((cate: any, indx: number) => {
-              return <Chip key={`cate-${indx}`} label={cate} />;
-            })}
-          </Box>
-        );
-      },
-    },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      sortable: false,
-      flex: 0.3,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <>
-            <IconButton onClick={(e) => handleEdit(e, params.row)}>
-              <ModeEdit />
-            </IconButton>
-            <IconButton
-              className="ml-3"
-              onClick={(e) => handleDelete(e, params.row)}
-            >
-              <Delete />
-            </IconButton>
-            <IconButton
-              className="ml-3"
-              onClick={(e) => handleInvite(e, params.row)}
-            >
-              <Send />
-            </IconButton>
-          </>
-        );
-      },
-    },
-  ];
+  const handleCancel = (e: any) => {
+    e.preventDefault();
+    setIsDialogCreateOpen(false);
+  };
+
+  const handleCreate = () => {
+    setIsDialogCreateOpen(true);
+  };
+
+  const handleDelete = async () => {
+    await ApiHook(Methods.DELETE, `/admin/assessments/${deletedId}`);
+    setAssessments(
+      assessments.filter((item: IAssessment) => item.id !== deletedId),
+    );
+    setIsDialogDeleteOpen(false);
+  };
+
+  const handleOpenDeleteDialog = (id: number) => {
+    setIsDialogDeleteOpen(true);
+    setDeletedId(id);
+  };
 
   return (
-    <Box>
-      <Box className="flex items-center justify-between">
-        <Typography component="h1" className={`text-xl md:text-2xl`}>
-          Assessments
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={(evt: React.MouseEvent) => {
-            evt.preventDefault();
-            updateData({
-              ...data,
-              pagination: {
-                pageNum: 1,
-              },
-            });
-            router.push(ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_CREATE);
-          }}
-          startIcon={<AddBox />}
-        >
-          New Assessment
-        </Button>
-      </Box>
-      <Divider className="my-10" />
-      <DataTable
-        rows={assessments}
-        columns={columns}
-        loading={loading}
-        height="h-[calc(100vh_-_215px)]"
-      />
+    <>
+      <div className="bg-white p-4">
+        <div className="flex justify-end">
+          <button
+            onClick={handleCreate}
+            className="flex justify-end rounded bg-primary px-8 py-2 text-white"
+          >
+            New Assessment
+          </button>
+        </div>
 
-      {/* Send invitation modal */}
-      <CustomModal ref={sendInviteModalRef} title="Send Invitation">
-        <FormProvider {...sendInviteForm}>
-          <Box className="grid w-[500px]">
-            <FormControl variant="standard" className="my-4">
-              <AccordionExpandIcon />
-            </FormControl>
-            <Box className="text-right">
-              <Button
-                variant="contained"
-                onClick={sendInviteForm.handleSubmit(handleSendInvite)}
-                disabled={!selectedEmails.length}
+        <div className="col-span-2 mt-4 grid grid-cols-1 gap-4 rounded md:grid-cols-2 lg:grid-cols-3">
+          {assessments.length
+            ? assessments.map((assessment) => {
+                return (
+                  <DashboardCard
+                    name={assessment.name}
+                    level={assessment.level}
+                    questions={assessment.assessmentQuestionMapping.length}
+                    duration={assessment.duration}
+                    active={assessment.active || false}
+                    id={assessment.id}
+                    key={assessment.id}
+                    href={`${ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_DETAIL}/${assessment.id}`}
+                    hasDelete
+                    onDelete={handleOpenDeleteDialog}
+                  />
+                );
+              })
+            : null}
+        </div>
+      </div>
+      <Dialog open={isDialogCreateOpen} maxWidth="xs" fullWidth={true}>
+        <div className="p-4">
+          <div className="text-center font-medium">Create a new assessment</div>
+          <div className="mt-8">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <input
+                type="text"
+                className="w-full rounded border border-gray-200 p-2 text-sm"
+                placeholder="Enter name of assessment..."
+                autoFocus
+                {...register('name')}
+              />
+              <select
+                {...register('level')}
+                defaultValue=""
+                className="mt-4 w-full rounded border border-gray-200 p-2 text-sm"
               >
-                Send
-              </Button>
-            </Box>
-          </Box>
-        </FormProvider>
-      </CustomModal>
-    </Box>
+                <option disabled hidden value="" data-testid="placeholder">
+                  Select level...
+                </option>
+                {levels.map((item: any, index: number) => {
+                  return (
+                    <option
+                      value={item.value}
+                      key={index}
+                      disabled={item.disabled}
+                    >
+                      {item.label}
+                    </option>
+                  );
+                })}
+              </select>
+              <div className="mt-4 flex justify-end">
+                <div className="flex flex-row-reverse gap-2">
+                  <button
+                    type="submit"
+                    className={`flex justify-end rounded border border-transparent bg-primary px-8 py-2 text-sm text-white ${isValid ? 'opacity-100' : 'opacity-70'}`}
+                  >
+                    New Assessment
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="flex justify-end rounded border border-primary bg-white px-8 py-2 text-sm text-primary"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </Dialog>
+      <Dialog open={isDialogDeleteOpen} maxWidth="xs" fullWidth={true}>
+        <div className="p-4">
+          <div className="text-center font-medium">Delete assessment</div>
+          <div className="mt-8">
+            <p className="text-center text-sm">
+              Are you sure you want to delete this assessment?
+            </p>
+            <div className="mt-8 flex justify-end">
+              <div className="flex flex-row-reverse gap-2">
+                <button
+                  onClick={handleDelete}
+                  className={`flex justify-end rounded border border-transparent bg-red-500 px-8 py-2 text-sm text-white`}
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => setIsDialogDeleteOpen(false)}
+                  className="flex justify-end rounded border border-gray-500 bg-white px-8 py-2 text-sm text-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Dialog>
+    </>
   );
 }

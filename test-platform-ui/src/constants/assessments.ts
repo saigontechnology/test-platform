@@ -39,6 +39,13 @@ export const QuestionTypeOptions = [
   },
 ];
 
+export enum AssessmentLevels {
+  JUNIOR = 'JUNIOR',
+  INTERMEDIATE = 'INTERMEDIATE',
+  SENIOR = 'SENIOR',
+  PRINCIPAL = 'PRINCIPAL',
+}
+
 export interface IQuestion {
   createdAt: string;
   question: {
@@ -61,7 +68,7 @@ export interface IAssessment {
   assessmentQuestionMapping: IQuestion[];
   error?: Error;
   duration: number;
-  active: boolean;
+  active?: boolean;
 }
 
 export interface ICreateAssessment {

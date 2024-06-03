@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { QuestionLevel, QuestionType } from "@prisma/client";
+import { QuestionCategory, QuestionLevel, QuestionType } from "@prisma/client";
 import {
   IsArray,
   IsBoolean,
@@ -32,7 +32,8 @@ export class UpdateQuestionDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ required: true })
-  category: string;
+  @IsEnum(QuestionCategory)
+  category: QuestionCategory;
 
   @IsArray()
   @IsNotEmpty()

@@ -3,12 +3,13 @@
 
 import { Box } from '@mui/material';
 
-import DashboardCard from '@/app/administration/dashboard/(components)/dashboardCard';
+import DashboardCard from '@/components/molecules/DashboardCard';
 import { IAssessment } from '@/constants/assessments';
+import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { useEffect, useState } from 'react';
 
-export default async function Page() {
+export default function Page() {
   const [assessments, setAssessments] = useState<IAssessment[]>([]);
 
   const getAssessement = async () => {
@@ -30,9 +31,10 @@ export default async function Page() {
               level={assessment.level}
               questions={assessment.assessmentQuestionMapping.length}
               duration={assessment.duration}
-              active={assessment.active}
+              active={assessment.active || false}
               id={assessment.id}
               key={assessment.id}
+              href={`${ROUTE_KEY.ADMINISTRATION_DASHBOARD_ASSESSMENT}/${assessment.id}`}
             />
           );
         })}
