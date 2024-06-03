@@ -21,7 +21,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import RenderQuestionAnswers2 from './(question-form)/answers/answers_v2';
 import { QuestionPreview } from './(question-form)/preview';
@@ -86,10 +86,6 @@ export default function ModifyQuestion(props: ICreateQuestion) {
     setValue,
     formState: { errors },
   } = form;
-
-  useEffect(() => {
-    console.log('questionData: ', questionData);
-  }, []);
 
   //#region : Handle interactive functions
   const HandleInteractions = {

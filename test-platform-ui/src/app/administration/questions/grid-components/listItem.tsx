@@ -1,40 +1,84 @@
-import { FlagChip } from './flag-chip/flagChip';
+import RichTextArea from '@/components/atoms/Editor/richtext';
+import FlagChip from './components/flag-chip/flagChip';
 
+import React, { useMemo } from 'react';
 import './styles.scss';
 
-interface ICardData {
+export interface ICardData {
+  id: number;
   title: string;
   tags?: string[];
   flagChip?: {
     label: string;
   };
   description: {
-    label: string;
     content: string;
     render?: () => React.ReactElement;
   };
   cardInfo: {
-    render?: () => React.ReactElement;
+    info: string[];
+    render?: (info?: string) => React.ReactElement;
   };
+  actions?: React.ReactElement | null;
 }
 
 interface IGridCard {
+  key: string;
   active?: boolean;
   cardData: ICardData;
 }
 
-export default function ListCardItem({
+function ListCardItem({
+  key,
   active,
   cardData,
 }: IGridCard): React.ReactElement {
+  const handleCSRender = useMemo(() => {
+    if (cardData.cardInfo.render) {
+      return cardData.cardInfo.render();
+    }
+    return cardData.cardInfo.info?.map((info: string, indx: number) => (
+      <span key={`card-info-${indx}`} className="info-chip">
+        {info}
+      </span>
+    ));
+  }, [cardData]);
+
   return (
-    <div className={`items-container ${active ? 'active' : ''}`}>
+    <div
+      key={key}
+      className={`items-container ${cardData.id} ${active ? 'active' : ''}`}
+    >
       <div className="question-title">
-        <div className="title">{cardData.title}</div>
+        <div className="title">
+          <span className="p-2 !font-light text-slate-400">#{cardData.id}</span>
+          {cardData.title}
+        </div>
         {cardData.flagChip ? (
           <FlagChip label={cardData.flagChip.label} />
         ) : null}
       </div>
+      <div className="info-container flex justify-between">
+        <div className="flex gap-4">{handleCSRender}</div>
+        <div className="flex items-center justify-center">
+          {cardData.actions ? cardData.actions : null}
+        </div>
+      </div>
+
+      {cardData.description?.content ? (
+        <div className="question-description">
+          {cardData.description?.render ? (
+            cardData.description.render()
+          ) : (
+            <RichTextArea
+              name="description"
+              data={cardData.description.content}
+              onChange={(_val: string) => null}
+              isReadOnly={true}
+            />
+          )}
+        </div>
+      ) : null}
       <div className="tag-chip-container">
         {cardData.tags?.map((tag: string, indx: number) => (
           <span key={`tag-${indx}`} className="tag-chip-item">
@@ -42,21 +86,8 @@ export default function ListCardItem({
           </span>
         ))}
       </div>
-      {cardData.description?.label && cardData.description?.content ? (
-        <div className="question-description">
-          {cardData.description?.render ? (
-            cardData.description.render()
-          ) : (
-            <>
-              <div>{cardData.description?.label}</div>
-              <div>{cardData.description?.content}</div>
-            </>
-          )}
-        </div>
-      ) : null}
-      <div className="info-container flex gap-4">
-        {cardData.cardInfo?.render ? cardData.cardInfo.render() : null}
-      </div>
     </div>
   );
 }
+
+export default React.memo(ListCardItem);

@@ -1,26 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateAssessmentDto } from "./dto/create-assessment.dto";
-import { UpdateAssessmentDto } from "./dto/update-assessment.dto";
 
 @Injectable()
 export class AssessmentsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createAssessmentDto: CreateAssessmentDto) {
-    const { questions, ...createData } = createAssessmentDto;
+    const { ...createData } = createAssessmentDto;
     const assessment = await this.prisma.assessment.create({
       data: createData,
     });
-    await this.prisma.assessmentQuestionMapping.createMany({
-      data: questions.map((item: number) => {
-        return {
-          assessmentId: assessment.id,
-          questionId: item,
-        };
-      }),
-    });
-    return;
+    return assessment;
   }
 
   async findAll() {
@@ -112,24 +103,10 @@ export class AssessmentsService {
     };
   }
 
-  async update(id: number, updateAssessmentDto: UpdateAssessmentDto) {
-    const { questions, ...updateData } = updateAssessmentDto;
-    await this.prisma.assessmentQuestionMapping.deleteMany({
-      where: {
-        assessmentId: id,
-      },
-    });
-    await this.prisma.assessmentQuestionMapping.createMany({
-      data: questions.map((item: number) => {
-        return {
-          assessmentId: id,
-          questionId: item,
-        };
-      }),
-    });
+  async update(id: number, data: any) {
     return await this.prisma.assessment.update({
       where: { id },
-      data: updateData,
+      data,
     });
   }
 
@@ -177,5 +154,20 @@ export class AssessmentsService {
       questions,
       duration,
     };
+  }
+
+  async addQuestionToAssessment(assessmentId: number, questionId: number) {
+    return await this.prisma.assessmentQuestionMapping.create({
+      data: { assessmentId, questionId },
+    });
+  }
+
+  async deleteQuestionToAssessment(assessmentId: number, questionId: number) {
+    return await this.prisma.assessmentQuestionMapping.deleteMany({
+      where: {
+        assessmentId,
+        questionId,
+      },
+    });
   }
 }

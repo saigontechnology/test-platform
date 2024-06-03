@@ -1,7 +1,7 @@
 .items-container {
     grid-template-rows: repeat(4, max-content);
     transition: 0.2s linear;
-    @apply grid gap-3 rounded-md border border-solid border-zinc-400 p-3 scale-[97%];
+    @apply grid gap-3 rounded-md border border-solid border-zinc-400 p-3 scale-[95%] h-fit;
 
     .active {
         @apply bg-sky-100;
@@ -9,7 +9,7 @@
 
     &:hover {
         transition: 0.2s linear;
-        @apply border-4 border-blue-300 shadow-lg cursor-pointer scale-100;
+        @apply border-blue-600 shadow-lg cursor-pointer scale-[97%];
     }
 
     .question-title {
@@ -50,9 +50,77 @@
         }
         @apply grid gap-2 rounded-md border border-solid border-zinc-400 p-3;
     }
+
     .info-container {
         .info-chip {
             @apply flex items-center justify-center gap-2 rounded-md border border-solid bg-blue-100 p-1.5 font-semibold text-blue-700 text-sm;
         }
+    }
+}
+
+// Input Search:
+
+$rad: 0.3rem;
+$dur: 0.3s;
+$color-dark: #2f2f2f;
+$color-light: #fff;
+$color-brand: #8dc63f;
+$font-fam: "Lato", sans-serif;
+$btn-width: 2.5rem;
+$bez: cubic-bezier(0, 0, 0.43, 1.49);
+
+.search-bar {
+    width: 13vw;
+    input,
+    button {
+        @apply h-full;
+        font-family: $font-fam;
+        border: 0;
+        color: $color-dark;
+        font-size: inherit;
+    }
+    input[type="search"] {
+        outline: 0; // <$ shold probably remove this for better accessibility, adding for demo aesthetics for now.
+        width: 100%;
+        background: $color-light;
+        padding: 0 1rem;
+        border-radius: $rad;
+        appearance: none; //for iOS input[type="search"] roundedness issue. border-radius alone doesn't work
+        transition: all $dur $bez;
+        transition-property: width, border-radius;
+        z-index: 1;
+        position: relative;
+
+        &::-webkit-search-cancel-button,
+        &::-webkit-search-decoration {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+    }
+    button {
+        display: none; // prevent being able to tab to it
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: $btn-width;
+        font-weight: bold;
+        background: $color-brand;
+        border-radius: 0 $rad $rad 0;
+    }
+    input:not(:placeholder-shown) {
+        border-radius: $rad 0 0 $rad;
+        width: calc(100% - $btn-width);
+        + button {
+            display: block;
+        }
+    }
+    label {
+        position: absolute;
+        clip: rect(1px, 1px, 1px, 1px);
+        padding: 0;
+        border: 0;
+        height: 1px;
+        width: 1px;
+        overflow: hidden;
     }
 }

@@ -21,22 +21,25 @@ import { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 import RenderAnswer from '../answers/renderAnswer';
 
-function getQuestionType(type: string) {
+export function getQuestionType(type: string) {
   switch (type) {
     case QuestionType.MULTIPLE_CHOICE:
       return 'Multiple Choice';
     case QuestionType.CODING:
       return 'Programming Skill';
     case QuestionType.LOGIC:
+    case QuestionType.PROGRAMMING_LOGIC:
       return 'Programming Logic';
     case QuestionType.TRUE_FALSE:
       return 'True or False';
-    default:
+    case QuestionType.SINGLE_CHOICE:
       return 'Single Choice';
+    default:
+      return type;
   }
 }
 
-function getQuestionLevel(type: string) {
+export function getQuestionLevel(type: string) {
   switch (type) {
     case QuestionLevels.INTERMEDIATE:
       return 'Intermediate';

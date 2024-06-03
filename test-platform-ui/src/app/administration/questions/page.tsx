@@ -1,26 +1,37 @@
 'use client';
 
-import CustomModal, {
-  CustomModalHandler,
-} from '@/components/molecules/CustomModal';
-import DataTable, { multipleLinesTypo } from '@/components/molecules/Grid';
 import { IResponseQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
+import useDebounce from '@/hooks/common/useDebounce';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { DataContext } from '@/libs/contextStore';
-import { QuestionLevel } from '@/libs/definitions';
 import { showNotification } from '@/libs/toast';
-import { handleMappingImportData } from '@/libs/utils';
-import { AddBox, Delete, ModeEdit } from '@mui/icons-material';
-import ClearIcon from '@mui/icons-material/Clear';
+import { formatTimeString, handleMappingImportData } from '@/libs/utils';
+import { AddBox } from '@mui/icons-material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { Box, Chip, IconButton, Stack } from '@mui/material';
-import Button from '@mui/material/Button';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import StackedBarChartIcon from '@mui/icons-material/StackedBarChart';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { Box, Button, IconButton, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { GridColDef } from '@mui/x-data-grid';
 import { useRouter } from 'next/navigation';
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {
+  getQuestionLevel,
+  getQuestionType,
+} from './(components)/(question-form)/preview';
+import GridSettings, { GriSettingHandler } from './(components)/preview';
+import { IOption } from './(components)/preview/accordion/accordion';
+import TFGrid from './grid-components';
+import { ICardData } from './grid-components/listItem';
 
 export interface IQuestion {
   id: number;
@@ -29,6 +40,11 @@ export interface IQuestion {
   categories: string[];
   answers: number[];
   options: string[];
+  level: string;
+  type: string;
+  duration: number;
+  category: string;
+  question: string;
 }
 
 const VisuallyHiddenInput = styled('input')({
@@ -44,50 +60,90 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const Page = () => {
-  const [questionList, setQuestionList] = useState<IQuestion[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const onDeleteQuestion = React.useRef<number>(0);
   const router = useRouter();
-  const modalRef = React.useRef<CustomModalHandler>(null);
-  const [isImportLoading, setImportLoading] = useState<boolean>(false);
-
   const { data, updateData } = useContext(DataContext);
 
-  const getGridQuestion = async () => {
+  const [_questionList, setQuestionList] = useState<ICardData[]>([]);
+  const [_loading, setLoading] = useState<boolean>(true);
+  const [isImportLoading, setImportLoading] = useState<boolean>(false);
+  const [currentPageNum, setCurrentPageNum] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [listInfo, setListInfo] = useState<any>(null);
+  const [filters, setFilters] = useState<any>({});
+  const cachedQuestions = useRef<IResponseQuestion[]>([]);
+  const tempQuestionOnSearch = useRef<ICardData[] | null>(null);
+  const previewRef = useRef<GriSettingHandler | null>(null);
+
+  const getGridQuestion = async (searchVal?: string) => {
     setLoading(true);
-    const _questions = await ApiHook(Methods.GET, '/admin/questions');
-    const _questionList: IQuestion[] = (
-      _questions.data as Array<IResponseQuestion>
+    const response: any = await ApiHook(Methods.GET, `/admin/questions`, {
+      params: {
+        page: currentPageNum,
+        limit: 10,
+        ...filters,
+        search: searchVal || undefined,
+      },
+    });
+    const { data: questions, ...rest } = response.data;
+    cachedQuestions.current = questions as Array<IResponseQuestion>;
+    const _questionList: ICardData[] = (
+      questions as Array<IResponseQuestion>
     ).map((q: IResponseQuestion) => {
-      return {
+      const questionCard = {
         id: q.id,
         title: q.question,
-        content: q.description,
-        categories: new Array().concat(q.category),
-        answers: q.answer,
-        options: q.options,
-        type: q.type,
-        level: q.level,
+        flagChip: {
+          label: q.category,
+        },
+        description: {
+          content: q.description,
+        },
+        cardInfo: {
+          info: [
+            getQuestionType(q.type),
+            getQuestionLevel(q.level),
+            formatTimeString(q.duration),
+          ],
+          render: () => {
+            return (
+              <>
+                <span className="info-chip">
+                  <TaskAltIcon fontSize="small" />
+                  {getQuestionType(q.type)}
+                </span>
+                <span className="info-chip">
+                  <StackedBarChartIcon
+                    sx={{
+                      width: '16px',
+                      height: '16px',
+                    }}
+                  />
+                  {getQuestionLevel(q.level)}
+                </span>
+                <span className="info-chip">
+                  <AccessTimeIcon
+                    sx={{
+                      width: '16px',
+                      height: '16px',
+                    }}
+                  />
+                  {formatTimeString(q.duration)}
+                </span>
+              </>
+            );
+          },
+        },
       };
+      return questionCard;
     });
+    setListInfo(rest);
     setQuestionList(_questionList);
     setLoading(false);
   };
 
   useEffect(() => {
     getGridQuestion();
-  }, []);
-
-  const handleDeleteQuestion = async (questionId: number) => {
-    const { error } = await ApiHook(Methods.DELETE, `/admin/questions/${questionId}`);
-    // Handle response
-    if (!error) {
-      getGridQuestion();
-    } else {
-      alert(`Can not delete question ${questionId}`);
-    }
-    modalRef.current?.close();
-  };
+  }, [pageSize, currentPageNum, filters]);
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -113,171 +169,128 @@ const Page = () => {
     };
   };
 
-  const ModalContent = () => {
+  const pageChange = (currentPage: number) => {
+    setCurrentPageNum(currentPage);
+  };
+
+  const renderItemActions = (itemId: number) => {
     return (
-      <Box className="grid">
-        <h2 id="parent-modal-title">{`Deleting Question ID ${onDeleteQuestion.current}`}</h2>
-        <p id="parent-modal-description" className="mt-3">
-          Are you sure want to delete selected question ? Question will be
-          delete permanently.
-        </p>
-        <Box className="inline-flex gap-10">
-          <Button
-            className="mt-5 w-full content-end"
-            title="Delete"
-            variant="outlined"
-            startIcon={<ClearIcon />}
-            onClick={() => modalRef.current?.close()}
-          >
-            Cancel
-          </Button>
-          <Button
-            className="mt-5 w-full content-end"
-            title="Delete"
-            variant="contained"
-            startIcon={<DeleteForeverIcon />}
-            onClick={() => handleDeleteQuestion(onDeleteQuestion.current)}
-          >
-            Delete
-          </Button>
-        </Box>
-      </Box>
+      <>
+        <IconButton
+          sx={{
+            alignSelf: 'center',
+          }}
+          disableRipple
+          onClick={() => {
+            const previewItem = cachedQuestions.current.find(
+              (_q: IResponseQuestion) => _q.id === itemId,
+            );
+            previewItem && previewRef.current?.onPreview(previewItem);
+          }}
+        >
+          <VisibilityIcon />
+        </IconButton>
+        <IconButton
+          sx={{
+            alignSelf: 'center',
+          }}
+          disableRipple
+          onClick={() =>
+            router.push(`${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${itemId}`)
+          }
+        >
+          <ModeEditIcon />
+        </IconButton>
+      </>
     );
   };
 
-  //#region : Temporary definition Questions list's columns:
-  const columns: GridColDef[] = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      disableColumnMenu: true,
-      width: 70,
-    },
-    {
-      field: 'title',
-      headerName: 'Title',
-      flex: 0.6,
-      renderCell: (params) => multipleLinesTypo(params.row.title),
-    },
-    {
-      field: 'level',
-      headerName: 'Standard',
-      flex: 0.2,
-      renderCell: (params) => {
-        const level = QuestionLevel.find(
-          (lvl) => lvl.value === params.row.level,
-        );
-        return (
-          <Box className="grid gap-1">
-            {level ? <Chip label={params.row.level} /> : null}
-          </Box>
-        );
-      },
-    },
-    {
-      field: 'categories',
-      headerName: 'Categories',
-      flex: 0.3,
-      renderCell: (params) => {
-        return (
-          <Box className="grid gap-1">
-            {params.row.categories?.map((cate: any, indx: number) => {
-              return <Chip key={`cate-${indx}`} label={cate} />;
-            })}
-          </Box>
-        );
-      },
-    },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      sortable: false,
-      flex: 0.2,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <>
-            <IconButton
-              title="Edit"
-              onClick={() =>
-                router.push(
-                  `${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${params.row.id}`,
-                )
-              }
-            >
-              <ModeEdit />
-            </IconButton>
-            <IconButton
-              title="Delete"
-              className="ml-3"
-              onClick={() => {
-                onDeleteQuestion.current = params.row.id;
-                modalRef.current?.open();
-              }}
-            >
-              <Delete />
-            </IconButton>
-          </>
-        );
-      },
-    },
-  ];
-  //#endregion
+  const handleOnSearch = (searchVal: string) => {
+    getGridQuestion(searchVal);
+  };
+
+  const handleFilter = useCallback(
+    useDebounce((key: string, checked: IOption[]) => {
+      setFilters((prevState: any) => {
+        if (!checked.length) {
+          delete prevState[key];
+          return { ...prevState };
+        } else {
+          const checkedVals = checked.map((i) => i.key).join(',');
+          return {
+            ...prevState,
+            [key]: checkedVals,
+          };
+        }
+      });
+    }, 500),
+    [],
+  );
 
   return (
-    <Box>
-      <Box className="flex flex-row-reverse items-center justify-between pb-10">
-        <Box>
-          <Button
-            component="label"
-            role={undefined}
-            variant="contained"
-            tabIndex={-1}
-            startIcon={<CloudUploadIcon />}
-            className="mr-3"
-            disabled={isImportLoading}
-          >
-            Import
-            <VisuallyHiddenInput
-              type="file"
-              accept="application/JSON"
-              onChange={handleImport}
-            />
-          </Button>
-          <Button
-            variant="contained"
-            onClick={(evt: React.MouseEvent) => {
-              evt.preventDefault();
-              updateData({
-                ...data,
-                pagination: {
-                  pageNum: 1,
-                },
-              });
-              router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
-            }}
-            startIcon={<AddBox />}
-          >
-            New Question
-          </Button>
+    <Stack
+      className="h-[inherit]"
+      gridTemplateColumns={'1.5fr 1fr'}
+      display={'grid'}
+      gap={4}
+    >
+      <TFGrid
+        data={_questionList}
+        defaultPageSize={10}
+        isLoading={_loading}
+        handlePageChange={pageChange}
+        currPage={currentPageNum}
+        placeholder="Search question ..."
+        itemActions={renderItemActions}
+        handleOnSearch={handleOnSearch}
+        handlePageSize={(pagesize: number) => setPageSize(pagesize)}
+        totalItems={listInfo?.total}
+        handleSearchClear={() => {
+          tempQuestionOnSearch.current = null;
+          getGridQuestion();
+        }}
+      />
+      <Stack className="h-[inherit]">
+        <Box className="flex h-fit flex-row-reverse items-center justify-between gap-4 pb-4">
+          <Box>
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+              className="mr-3 !bg-primary text-base"
+              disabled={isImportLoading}
+            >
+              Import
+              <VisuallyHiddenInput
+                type="file"
+                accept="application/JSON "
+                onChange={handleImport}
+              />
+            </Button>
+            <Button
+              variant="contained"
+              className="!bg-primary text-base"
+              onClick={(evt: React.MouseEvent) => {
+                evt.preventDefault();
+                updateData({
+                  ...data,
+                  pagination: {
+                    pageNum: 1,
+                  },
+                });
+                router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
+              }}
+              startIcon={<AddBox />}
+            >
+              New Question
+            </Button>
+          </Box>
         </Box>
-      </Box>
-      <Stack gridTemplateColumns={'2fr 1fr'} display={'grid'} gap={4}>
-        <DataTable
-          className=""
-          rows={questionList}
-          columns={columns}
-          loading={loading}
-          height="h-[calc(100vh_-_215px)]"
-        />
-        <Box className="summary-list border-2 border-dashed border-slate-300"></Box>
+        <GridSettings ref={previewRef} onFilter={handleFilter} />
       </Stack>
-
-      <CustomModal ref={modalRef} title={''}>
-        <ModalContent />
-      </CustomModal>
-    </Box>
+    </Stack>
   );
 };
-
 export default Page;

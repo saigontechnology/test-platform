@@ -7,4 +7,5 @@ export const ROUTE_KEY = {
   ADMINISTRATION_ASSESSMENTS_EDIT: '/administration/assessments/edit',
   EXAMINATION: '/examination',
   ADMINISTRATION_DASHBOARD_ASSESSMENT: '/administration/dashboard',
+  ADMINISTRATION_ASSESSMENTS_DETAIL: '/administration/assessments',
 };
