@@ -84,7 +84,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
     setError,
     getValues,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = form;
 
   //#region : Handle interactive functions
