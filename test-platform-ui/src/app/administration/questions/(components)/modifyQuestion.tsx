@@ -84,7 +84,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
     setError,
     getValues,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid },
   } = form;
 
   //#region : Handle interactive functions
@@ -138,14 +138,13 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   //#endregion
 
   //#region : Create question form
-
   return (
     <Box>
       <Box className="mb-4 flex items-center justify-between">
-        <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
+        <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2 pr-2">
           <Button
-            color="primary"
             variant="contained"
+            className="!bg-primary text-base"
             startIcon={<LibraryAddIcon />}
             onClick={form.handleSubmit(
               HandleInteractions.handleModifiedQuestion,
@@ -156,6 +155,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
             Submit
           </Button>
           <Button
+            className="border-primary text-base"
             variant="outlined"
             startIcon={<ClearIcon />}
             onClick={() =>

@@ -90,7 +90,6 @@ const RenderQuestionAnswers2 = (props: IQuestionAnswers): ReactElement => {
           flexDirection: 'column',
           gap: '20px',
           overflow: 'hidden',
-          paddingBottom: '20px',
         }}
       >
         {watchOtps?.map((answ: string, indx: number) => (
