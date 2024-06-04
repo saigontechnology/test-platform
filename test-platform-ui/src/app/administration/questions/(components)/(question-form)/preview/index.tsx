@@ -69,10 +69,25 @@ const ContentBackground = styled(Box)(
   `,
 );
 
-function TitleWDivider({ title }: { title: string }): ReactElement {
+export function TitleWDivider({
+  title,
+  bgTextColor = 'gray',
+  lineColor = '#dfdfdf',
+  strokeWeight = 2,
+}: {
+  title: string;
+  bgTextColor?: string;
+  lineColor?: string;
+  strokeWeight?: number;
+}): ReactElement {
   return (
-    <TitleWLine variant="body1" className="py-4">
-      <span className="bg-gray-50">{title}</span>
+    <TitleWLine
+      variant="body1"
+      className="py-4"
+      dividerColor={lineColor}
+      weight={strokeWeight}
+    >
+      <span className={`bg-${bgTextColor}-50`}>{title}</span>
     </TitleWLine>
   );
 }

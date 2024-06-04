@@ -47,7 +47,7 @@ export default function Examination() {
 
   useEffect(() => {
     const _id = getClientSideCookie('examId');
-    setExamId(_id);
+    setExamId('31');
   }, []);
 
   const {
