@@ -39,6 +39,7 @@ export type GriSettingHandler = {
 const GridSettings = forwardRef<GriSettingHandler, IGriSetting>(
   ({ onFilter }, ref) => {
     const [item, setPreviewItem] = useState<IResponseQuestion | null>(null);
+    const [filtering, setFiltering] = useState<string[]>([]);
 
     useImperativeHandle(ref, () => ({
       onPreview: (previewItem: IResponseQuestion) => {
@@ -59,11 +60,28 @@ const GridSettings = forwardRef<GriSettingHandler, IGriSetting>(
             return {
               id: indx + 1,
               header: capitalizeFirstLetter(key),
+              isFiltering: filtering.includes(key),
               render: () => (
                 <FilterOpts
                   options={_filterOpts_}
                   formLabel={null}
-                  onCheck={(checked: IOption[]) => onFilter(key, checked)}
+                  onCheck={(checked: IOption[]) => {
+                    setFiltering((prevState: string[]) => {
+                      /** Case filter is checked */
+                      if (checked.length) {
+                        const addedKeys = !prevState.includes(key)
+                          ? [...prevState, key]
+                          : prevState;
+                        return addedKeys;
+                      } else {
+                        /** Case filter on removed */
+                        const removed = [...prevState];
+                        removed.splice(removed.indexOf(key), 1);
+                        return removed;
+                      }
+                    });
+                    onFilter(key, checked);
+                  }}
                 />
               ),
             };

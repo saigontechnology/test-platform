@@ -15,19 +15,20 @@ export interface IAccordion {
   id: number;
   header: string;
   content?: string;
+  isFiltering?: boolean;
   render?: () => React.ReactNode;
 }
 
 const AccordionItem = (props: any) => {
   const contentEl = useRef<any | null>(null);
   const { handleToggle, active, faq } = props;
-  const { header, id, content, render } = faq;
+  const { header, id, content, render, isFiltering } = faq;
 
   return (
     <div className="rc-accordion-card">
       <div className="rc-accordion-header">
         <div
-          className={`rc-accordion-toggle p-3 ${active === id ? 'active' : ''}`}
+          className={`rc-accordion-toggle p-3 ${active === id || isFiltering ? 'active' : ''}`}
           onClick={() => handleToggle(id)}
         >
           <h5 className="rc-accordion-title">{header}</h5>
