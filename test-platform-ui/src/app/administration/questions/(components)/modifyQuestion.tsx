@@ -7,6 +7,7 @@ import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { showNotification } from '@/libs/toast';
 import { createQuestionSchema } from '@/validations/questions';
+import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
@@ -82,9 +83,10 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   });
   const {
     setError,
+    control,
     getValues,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid },
   } = form;
 
   //#region : Handle interactive functions
@@ -93,6 +95,9 @@ export default function ModifyQuestion(props: ICreateQuestion) {
       router.push(route);
     },
     handleModifiedQuestion: async (modifiedQuestion: IAddQuestion) => {
+      if (!isValid) {
+        return;
+      }
       // Payload data:
       const formData = {
         question: modifiedQuestion.question,
@@ -148,7 +153,10 @@ export default function ModifyQuestion(props: ICreateQuestion) {
             startIcon={<LibraryAddIcon />}
             onClick={form.handleSubmit(
               HandleInteractions.handleModifiedQuestion,
-              (error) => console.log('submit error: ', error, getValues()),
+              (error) => {
+                console.log('isValid form: ', isValid);
+                console.log('submit error: ', error, getValues());
+              },
             )}
             disabled={false}
           >
@@ -282,6 +290,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
           </Box>
         </Stack>
       </FormProvider>
+      <DevTool control={control} />
     </Box>
   );
   //#endregion
