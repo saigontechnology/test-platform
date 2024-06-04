@@ -12,7 +12,8 @@ const RenderAnswer = ({
   questionType = QuestionType.SINGLE_CHOICE,
   customClass = '',
   readOnly = false,
-  updateAnswerContent,
+  modifyAnswerContent,
+  onDelete,
   selectAnswer,
 }: {
   answ: string;
@@ -21,21 +22,21 @@ const RenderAnswer = ({
   questionType?: QuestionType;
   customClass?: string;
   readOnly?: boolean;
-  updateAnswerContent?: (value: string, index: number) => void;
+  modifyAnswerContent?: (value: string, index: number) => void;
+  onDelete?: (indx: number) => void;
   selectAnswer?: (index: number) => void;
 }): ReactElement => {
   const [isEditable, toggleEditable] = useState<boolean>(false);
   const onEditQuillRef = useRef<ReactQuill | null>(null);
 
   const handleUpdateAnswer = () => {
-    if (onEditQuillRef.current?.value && updateAnswerContent) {
-      updateAnswerContent(onEditQuillRef.current?.value as string, index);
+    if (onEditQuillRef.current?.value && modifyAnswerContent) {
+      modifyAnswerContent(onEditQuillRef.current?.value as string, index);
       onEditQuillRef.current = null;
     }
   };
 
   const renderOptionType = (answSelected: boolean) => {
-    console.log(`${index} isSelected: `, answSelected);
     switch (questionType) {
       case QuestionType.SINGLE_CHOICE:
         return (
@@ -44,7 +45,6 @@ const RenderAnswer = ({
             disableRipple
             disabled={readOnly}
             onClick={() => {
-              console.log('Radio on click');
               selectAnswer && selectAnswer(index);
             }}
           />
@@ -53,15 +53,41 @@ const RenderAnswer = ({
         return (
           <Checkbox
             checked={answSelected}
-            disabled={!readOnly}
+            disabled={readOnly}
             disableRipple
             onClick={() => {
-              console.log('Checkbox on click');
               selectAnswer && selectAnswer(index);
             }}
           />
         );
     }
+  };
+
+  const renderAddAnswer = () => {
+    return (
+      <Box>
+        {isEditable ? (
+          <IconButton
+            color="success"
+            onClick={() => {
+              handleUpdateAnswer();
+              toggleEditable(false);
+            }}
+            type="button"
+          >
+            <Done />
+          </IconButton>
+        ) : (
+          <IconButton
+            color="primary"
+            onClick={() => toggleEditable(true)}
+            type="button"
+          >
+            <AddBox />
+          </IconButton>
+        )}
+      </Box>
+    );
   };
 
   return (
@@ -77,7 +103,7 @@ const RenderAnswer = ({
         width: 'calc(100% - 30px)',
       }}
     >
-      {renderOptionType(isSelected)}
+      {answ.length ? renderOptionType(isSelected) : null}
       {/** Notes:
        *    - Specific cases answer include code patterns, simply envision the answer contents.
        */}
@@ -103,42 +129,28 @@ const RenderAnswer = ({
               <IconButton
                 color={isEditable ? 'success' : 'default'}
                 onClick={() => {
-                  isEditable && handleUpdateAnswer();
+                  handleUpdateAnswer();
                   toggleEditable(!isEditable);
                 }}
                 type="button"
               >
                 {isEditable ? <Done /> : <ModeEditOutline />}
               </IconButton>
-              <IconButton color="error" type="button">
+              <IconButton
+                color="error"
+                type="button"
+                onClick={() => onDelete?.(index)}
+              >
                 <Delete />
               </IconButton>
             </div>
           ) : (
             // Add new answer
-            <Box>
-              {isEditable ? (
-                <IconButton
-                  color="success"
-                  onClick={() => {
-                    toggleEditable(false);
-                  }}
-                  type="button"
-                >
-                  <Done />
-                </IconButton>
-              ) : (
-                <IconButton
-                  color="primary"
-                  onClick={() => toggleEditable(true)}
-                  type="button"
-                >
-                  <AddBox />
-                </IconButton>
-              )}
-            </Box>
+            renderAddAnswer()
           )}
         </>
+      ) : !readOnly ? (
+        renderAddAnswer()
       ) : null}
     </FormControl>
   );
