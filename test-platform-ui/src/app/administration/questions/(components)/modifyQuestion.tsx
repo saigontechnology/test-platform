@@ -7,6 +7,7 @@ import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { showNotification } from '@/libs/toast';
 import { createQuestionSchema } from '@/validations/questions';
+// import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
@@ -82,9 +83,10 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   });
   const {
     setError,
+    // control,
     getValues,
     setValue,
-    formState: { errors },
+    formState: { errors, isValid },
   } = form;
 
   //#region : Handle interactive functions
@@ -93,6 +95,9 @@ export default function ModifyQuestion(props: ICreateQuestion) {
       router.push(route);
     },
     handleModifiedQuestion: async (modifiedQuestion: IAddQuestion) => {
+      if (!isValid) {
+        return;
+      }
       // Payload data:
       const formData = {
         question: modifiedQuestion.question,
@@ -138,24 +143,27 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   //#endregion
 
   //#region : Create question form
-
   return (
     <Box>
       <Box className="mb-4 flex items-center justify-between">
-        <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2">
+        <ButtonGroup className="footer action-buttons inline-flex w-full justify-end gap-2 pr-2">
           <Button
-            color="primary"
             variant="contained"
+            className="!bg-primary text-base"
             startIcon={<LibraryAddIcon />}
             onClick={form.handleSubmit(
               HandleInteractions.handleModifiedQuestion,
-              (error) => console.log('submit error: ', error, getValues()),
+              (error) => {
+                console.log('isValid form: ', isValid);
+                console.log('submit error: ', error, getValues());
+              },
             )}
             disabled={false}
           >
             Submit
           </Button>
           <Button
+            className="border-primary text-base"
             variant="outlined"
             startIcon={<ClearIcon />}
             onClick={() =>
@@ -282,6 +290,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
           </Box>
         </Stack>
       </FormProvider>
+      {/* <DevTool control={control} /> */}
     </Box>
   );
   //#endregion

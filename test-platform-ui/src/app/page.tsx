@@ -173,7 +173,7 @@ function Home() {
                 onClick={handleSubmit(onSubmit)}
               >
                 {isPending ? (
-                  <CircularProgress className="text-white" size={20} />
+                  <CircularProgress className="text-amber-500" size={20} />
                 ) : (
                   <span>Sign in</span>
                 )}

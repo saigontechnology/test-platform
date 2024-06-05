@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, ReactNode } from 'react';
-import CircularProgress from '@mui/material/CircularProgress'; // Import loading spinner component
+import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/navigation';
+import { ReactNode, useEffect, useState } from 'react';
 
 interface WithAuthenticationProps {
   children: ReactNode;
@@ -26,6 +26,7 @@ const WithAuthentication: React.FC<WithAuthenticationProps> = ({
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <CircularProgress color="inherit" />
+        {/* <Loader /> */}
       </div>
     );
   }

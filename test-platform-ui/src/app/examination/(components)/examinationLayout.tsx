@@ -2,6 +2,7 @@
 /* eslint-disable react/display-name */
 'use client';
 
+import { TitleWDivider } from '@/app/administration/questions/(components)/(question-form)/preview';
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { IQuestion } from '@/constants/assessments';
 import { useGetAssessmentById } from '@/hooks/assessment/hooks';
@@ -9,6 +10,7 @@ import { IExamAnswer } from '@/hooks/examination/types';
 import { QuestionType } from '@/libs/definitions';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import {
+  Alert,
   Checkbox,
   CircularProgress,
   Dialog,
@@ -16,6 +18,7 @@ import {
   FormGroup,
   Radio,
   RadioGroup,
+  styled,
 } from '@mui/material';
 import React, {
   ChangeEvent,
@@ -30,6 +33,12 @@ import React, {
 import 'react-quill/dist/quill.snow.css';
 import Countdown from './countdown';
 import { SkeletonAnswers, SkeletonQuestion } from './skeleton';
+
+const ExamContainer = styled('div')`
+  * {
+    font-size: 1.2rem !important;
+  }
+`;
 
 interface IExaminationLayoutProps {
   assessmentId: string;
@@ -228,9 +237,9 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
   };
 
   return (
-    <div className="flex">
+    <ExamContainer className="flex">
       <div className="sticky top-0 flex h-screen w-48 flex-col justify-between">
-        <div className="flex items-center justify-center bg-slate-900 p-4 [&_span]:text-2xl [&_span]:font-bold">
+        <div className="flex items-center justify-center bg-slate-900 px-4 py-5 [&_span]:text-2xl [&_span]:font-bold">
           {!assessment?.isLoading && !currentQuestion?.question.duration ? (
             <CircularProgress
               color="inherit"
@@ -273,14 +282,16 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
       </div>
       <div className="bg flex w-32 flex-1 flex-col justify-between  border-l-[1px] border-[#64748b]">
         <div>
-          <div className="flex h-14 items-center justify-between border-b-[1px] border-[#64748b] px-5">
-            {assessment?.isLoading ? (
-              <div className="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-            ) : (
-              <span className="font-bold">
-                {currentQuestion?.question?.question}
-              </span>
-            )}
+          <div className="flex w-full justify-between p-4">
+            <Alert
+              icon={false}
+              variant="filled"
+              severity="warning"
+              className="h-[38px] overflow-hidden text-sm [&_.MuiAlert-message]:overflow-hidden [&_.MuiAlert-message]:py-1"
+            >
+              *Warning: Don't close this page when not completed, because you
+              cannot retake this test.
+            </Alert>
             <button
               onClick={() => handleManualNextQuestion()}
               className="inline-flex items-center rounded-lg bg-[#7bbd1e] px-5 py-2.5 text-center text-[15px] font-medium text-white hover:bg-[#7bbd1e] focus:bg-[#7bbd1e] dark:bg-[#7bbd1e] dark:hover:bg-[#7bbd1e] dark:focus:bg-[#7bbd1e]"
@@ -303,9 +314,18 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
               </svg>
             </button>
           </div>
+          <div className="flex h-14 items-center justify-between border-b-[1px] border-[#64748b] px-5">
+            {assessment?.isLoading ? (
+              <div className="mb-4 h-2.5 w-48 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+            ) : (
+              <span className="font-bold">
+                {currentQuestion?.question?.question}
+              </span>
+            )}
+          </div>
           <div
             className="overflow-y-auto"
-            style={{ maxHeight: 'calc(100vh - 60px)' }}
+            style={{ maxHeight: 'calc(100vh - 150px)' }}
           >
             <div className="px-5 py-5">
               {assessment.isLoading ? (
@@ -320,25 +340,26 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
               )}
             </div>
             <div className="flex flex-col gap-3 px-5">
-              <div className="mt-6 flex items-center gap-2">
-                <span className="w-[140px] text-[15px] font-semibold">
+              <TitleWDivider
+                title="Answer Options"
+                bgTextColor="white"
+                lineColor="black"
+                strokeWeight={1}
+              />
+              {/* <div className="mt-6 flex items-center gap-2">
+                <span className="w-fit text-[15px] font-semibold">
                   Answer Options
                 </span>
-                <div className="h-[1px] w-full border-t-[1px] border-[#64748b]"></div>
-              </div>
+                <div className="h-[1px] w- border-t-[1px] border-[#64748b]"></div>
+              </div> */}
               <div>
-                <span className="w-[140px] text-[14px]">
+                <span className="w-fit pl-4 !text-sm">
                   Select any one option
                 </span>
                 {assessment.isLoading ? <SkeletonAnswers /> : renderOptions()}
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex w-full flex-row-reverse p-4">
-          <span className="text-[14px]">
-            {`*Warning: Don't close this page when not completed, because you cannot retake this test.`}
-          </span>
         </div>
       </div>
       <SimpleDialog
@@ -441,7 +462,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
           </div>
         }
       />
-    </div>
+    </ExamContainer>
   );
 };
 
