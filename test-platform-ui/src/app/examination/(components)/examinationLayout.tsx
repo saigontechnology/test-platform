@@ -325,7 +325,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
           </div>
           <div
             className="overflow-y-auto"
-            style={{ maxHeight: 'calc(100vh - 60px)' }}
+            style={{ maxHeight: 'calc(100vh - 150px)' }}
           >
             <div className="px-5 py-5">
               {assessment.isLoading ? (

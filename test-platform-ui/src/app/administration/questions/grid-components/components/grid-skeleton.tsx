@@ -2,7 +2,7 @@ import Skeleton from '@mui/material/Skeleton';
 
 export const GridItems = () => {
   return (
-    <div className="ml-6 mt-3 grid h-[calc(100%_-_70px)] w-[calc(100%_-_150px)] gap-2 overflow-hidden rounded-lg p-3">
+    <div className="ml-6 mt-3 grid h-[calc(100%_-_70px)] w-[calc(100%_-_60px)] gap-2 overflow-hidden rounded-lg p-3">
       {[1, 2].map((_, indx: number) => (
         <div
           key={`skeleton-question-${indx}`}
