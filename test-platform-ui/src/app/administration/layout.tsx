@@ -2,8 +2,6 @@
 
 import NavLinks, { SideNavHandler } from '@/components/atoms/NavLinks';
 import { DataProvider } from '@/libs/contextStore';
-// import FormatIndentDecreaseIcon from '@mui/icons-material/FormatIndentDecrease';
-// import FormatIndentIncreaseIcon from '@mui/icons-material/FormatIndentIncrease';
 import KeyboardTabIcon from '@mui/icons-material/KeyboardTab';
 import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -13,9 +11,6 @@ import Header from '../../components/organisms/Header';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const navRef = useRef<SideNavHandler | null>(null);
-
-  console.log();
-
   return (
     <DataProvider>
       <Box className="flex h-screen flex-col md:flex-row md:overflow-hidden">
@@ -38,15 +33,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 content:
                   'url("https://appraisal.saigontechnology.vn/assets/img/icon/general.svg") ',
               },
-
-              // '& > button.collapse-button > svg': {
-              //   '&:first-child': {
-              //     display: 'none !important',
-              //   },
-              //   '&:nth-child(2)': {
-              //     display: 'block !important',
-              //   },
-              // },
             },
           }}
         >
@@ -56,8 +42,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             onClick={() => navRef.current?.toggleCollapse()}
             type="button"
           >
-            {/* <FormatIndentDecreaseIcon className="collapse-icon block" />
-            <FormatIndentIncreaseIcon className="expand-icon hidden" /> */}
             <KeyboardTabIcon
               sx={{
                 transform: 'rotate(180deg)',
