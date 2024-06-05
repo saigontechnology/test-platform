@@ -239,7 +239,7 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
   return (
     <ExamContainer className="flex">
       <div className="sticky top-0 flex h-screen w-48 flex-col justify-between">
-        <div className="flex items-center justify-center bg-slate-900 p-4 [&_span]:text-2xl [&_span]:font-bold">
+        <div className="flex items-center justify-center bg-slate-900 px-4 py-5 [&_span]:text-2xl [&_span]:font-bold">
           {!assessment?.isLoading && !currentQuestion?.question.duration ? (
             <CircularProgress
               color="inherit"
