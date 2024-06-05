@@ -27,6 +27,14 @@ const ArraySkills: ISkill[] = [
     name: 'Typescript',
     value: 'TYPESCRIPT',
   },
+  {
+    name: 'Angular',
+    value: 'ANGULAR',
+  },
+  {
+    name: 'VueJS',
+    value: 'VUE',
+  },
 ];
 
 export default function AutocompleteSkill({

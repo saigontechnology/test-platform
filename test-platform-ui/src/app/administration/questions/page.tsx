@@ -66,7 +66,9 @@ const Page = () => {
   const [_questionList, setQuestionList] = useState<ICardData[]>([]);
   const [_loading, setLoading] = useState<boolean>(true);
   const [isImportLoading, setImportLoading] = useState<boolean>(false);
-  const [currentPageNum, setCurrentPageNum] = useState<number>(1);
+  const [currentPageNum, setCurrentPageNum] = useState<number>(
+    Number(localStorage.getItem('currentQuestionPage')) || 1,
+  );
   const [pageSize, setPageSize] = useState<number>(10);
   const [listInfo, setListInfo] = useState<any>(null);
   const [filters, setFilters] = useState<any>({});
@@ -195,9 +197,13 @@ const Page = () => {
             alignSelf: 'center',
           }}
           disableRipple
-          onClick={() =>
-            router.push(`${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${itemId}`)
-          }
+          onClick={() => {
+            localStorage.setItem(
+              'currentQuestionPage',
+              currentPageNum.toString(),
+            );
+            router.push(`${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${itemId}`);
+          }}
         >
           <ModeEditIcon />
         </IconButton>

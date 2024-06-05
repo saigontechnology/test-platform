@@ -7,7 +7,7 @@ import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { showNotification } from '@/libs/toast';
 import { createQuestionSchema } from '@/validations/questions';
-import { DevTool } from '@hookform/devtools';
+// import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
@@ -290,7 +290,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
           </Box>
         </Stack>
       </FormProvider>
-      <DevTool control={control} />
+      {/* <DevTool control={control} /> */}
     </Box>
   );
   //#endregion
