@@ -19,9 +19,9 @@ export const createQuestionSchema = Yup.object({
   answers: Yup.array()
     .of(
       Yup.number()
-        .required('Array must have at least one element')
+        .required('Array must have at least one answer')
         .typeError('All elements must be numbers'),
     )
-    .min(1, 'Array must have at least one element'),
+    .min(1, 'Array must have at least one selected answer'),
   duration: Yup.number().required(VALIDATE_MESSAGE.REQUIRE_MESSAGE),
 });
