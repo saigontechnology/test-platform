@@ -4,10 +4,10 @@ import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
+// import { DevTool } from '@hookform/devtools';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { showNotification } from '@/libs/toast';
 import { createQuestionSchema } from '@/validations/questions';
-// import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ClearIcon from '@mui/icons-material/Clear';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
@@ -95,10 +95,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
       router.push(route);
     },
     handleModifiedQuestion: async (modifiedQuestion: IAddQuestion) => {
-      if (!isValid) {
-        return;
-      }
-      // Payload data:
+      /** Payload data: */
       const formData = {
         question: modifiedQuestion.question,
         description: modifiedQuestion.description,
@@ -113,7 +110,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
         duration: modifiedQuestion.duration,
       };
 
-      // Executive handler data modified:
+      /** Executive handler data modified: */
       if (formData.answer.length) {
         setIsSubmitLoading(true);
         const { error } = await (questionData.id
@@ -158,7 +155,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                 console.log('submit error: ', error, getValues());
               },
             )}
-            disabled={false}
+            disabled={!isValid}
           >
             Submit
           </Button>
@@ -225,7 +222,11 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                 </FormControl>
                 <QuestionKind
                   label="Question Type"
-                  handleOnChange={() => setValue('answers', new Array())}
+                  handleOnChange={() =>
+                    setValue('answers', new Array(), {
+                      shouldValidate: true,
+                    })
+                  }
                 />
                 <Stack
                   gridTemplateColumns={'1fr 1fr 1fr'}
@@ -244,7 +245,11 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                 <RichTextArea
                   name="description"
                   data={getValues('description') || questionData?.description}
-                  onChange={(val: string) => setValue('description', val)}
+                  onChange={(val: string) =>
+                    setValue('description', val, {
+                      shouldValidate: true,
+                    })
+                  }
                 />
               </FormControl>
             </CustomTabPanel>
@@ -277,7 +282,9 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                     name="notes"
                     data={getValues('notes') || questionData?.notes}
                     onChange={(val: string) => {
-                      setValue('notes', val);
+                      setValue('notes', val, {
+                        shouldValidate: true,
+                      });
                     }}
                   />
                 </FormControl>

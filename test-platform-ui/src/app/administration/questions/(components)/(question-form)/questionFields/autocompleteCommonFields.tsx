@@ -43,14 +43,18 @@ export default function AutocompleteQFields({
   const handleAddItem = (item: IDifficulty) => {
     if (item) {
       setSelectedDifficult([item]);
-      setValue(controlName, item.value);
+      setValue(controlName, item.value, {
+        shouldValidate: true,
+      });
     }
   };
 
   const handleRemoveItem = (items: IDifficulty[]) => {
     const updatedDurations = items.map((_i: IDifficulty) => _i.value);
     setSelectedDifficult(items);
-    setValue(controlName, updatedDurations[0]);
+    setValue(controlName, updatedDurations[0], {
+      shouldValidate: true,
+    });
   };
 
   return (
