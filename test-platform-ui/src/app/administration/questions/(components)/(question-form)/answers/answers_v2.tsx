@@ -40,7 +40,9 @@ const RenderQuestionAnswers2 = (props: IQuestionAnswers): ReactElement => {
         }
         return _answ;
       });
-      setValue('options', updatedOptions);
+      setValue('options', updatedOptions, {
+        shouldValidate: true,
+      });
     },
     handleAddAnswer: (content: string) => {
       watchOtps.push(content);
@@ -74,7 +76,9 @@ const RenderQuestionAnswers2 = (props: IQuestionAnswers): ReactElement => {
         }
       }
       if (_selectedAnsw != null) {
-        setValue('answers', _selectedAnsw);
+        setValue('answers', _selectedAnsw, {
+          shouldValidate: true,
+        });
       }
     },
   };

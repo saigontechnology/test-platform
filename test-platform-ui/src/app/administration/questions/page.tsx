@@ -75,6 +75,7 @@ const Page = () => {
   const cachedQuestions = useRef<IResponseQuestion[]>([]);
   const tempQuestionOnSearch = useRef<ICardData[] | null>(null);
   const previewRef = useRef<GriSettingHandler | null>(null);
+  // const drawerRef = useRef<CustomDrawerHandler | null>(null);
 
   const getGridQuestion = async (searchVal?: string) => {
     setLoading(true);
@@ -198,6 +199,7 @@ const Page = () => {
           }}
           disableRipple
           onClick={() => {
+            // drawerRef.current.open();
             localStorage.setItem(
               'currentQuestionPage',
               currentPageNum.toString(),
@@ -296,6 +298,7 @@ const Page = () => {
         </Box>
         <GridSettings ref={previewRef} onFilter={handleFilter} />
       </Stack>
+      {/* <CustomDrawer ref={drawerRef}>Drawwer</CustomDrawer> */}
     </Stack>
   );
 };

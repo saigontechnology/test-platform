@@ -88,7 +88,9 @@ export default function AccordionExpandIcon() {
               );
               if (invit_emp) {
                 setInvitationEmail(invit_emp);
-                setValue('email', invit_emp.email);
+                setValue('email', invit_emp.email, {
+                  shouldValidate: true,
+                });
               }
             }}
             renderInput={(params) => (
