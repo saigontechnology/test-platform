@@ -30,7 +30,7 @@ export default function AssessmentList() {
     // Call the download function with your data and desired filename
     const { data, error } = await ApiHook(
       Methods.GET,
-      'admin/assessment/examAnswers/wrong',
+      'admin/assessment/answers/wrong',
     );
     if (error) {
       console.log('Retrieve question answer wrong failed: ', error);
