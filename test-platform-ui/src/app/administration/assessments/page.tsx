@@ -4,6 +4,7 @@ import DashboardCard from '@/components/molecules/DashboardCard';
 import { AssessmentLevels, IAssessment } from '@/constants/assessments';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
+import { downloadJson } from '@/libs/utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Dialog from '@mui/material/Dialog';
 import { useRouter } from 'next/navigation';
@@ -23,6 +24,19 @@ export default function AssessmentList() {
   const getAssessments = async () => {
     const response: any = await ApiHook(Methods.GET, '/admin/assessments');
     setAssessments(response.data);
+  };
+
+  const handleDownload = async () => {
+    // Call the download function with your data and desired filename
+    const { data, error } = await ApiHook(
+      Methods.GET,
+      'admin/assessment/examAnswers/wrong',
+    );
+    if (error) {
+      console.log('Retrieve question answer wrong failed: ', error);
+    } else {
+      downloadJson(data, 'question_answer_wrong.json');
+    }
   };
 
   useEffect(() => {
@@ -103,6 +117,12 @@ export default function AssessmentList() {
 
   return (
     <>
+      <p
+        className="p-3 text-sky-600 underline underline-offset-1 hover:cursor-pointer hover:text-sky-900"
+        onClick={handleDownload}
+      >
+        Retrieve question answer wrong and download
+      </p>
       <div className="bg-white p-4">
         <div className="flex justify-end">
           <button
