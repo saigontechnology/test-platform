@@ -4,7 +4,7 @@ import DashboardCard from '@/components/molecules/DashboardCard';
 import { AssessmentLevels, IAssessment } from '@/constants/assessments';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
-import { downloadJson } from '@/libs/utils';
+import { downloadCSV } from '@/libs/utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Dialog from '@mui/material/Dialog';
 import { useRouter } from 'next/navigation';
@@ -35,7 +35,7 @@ export default function AssessmentList() {
     if (error) {
       console.log('Retrieve question answer wrong failed: ', error);
     } else {
-      downloadJson(data, 'question_answer_wrong.json');
+      downloadCSV(data, 'IncorrectQA');
     }
   };
 
@@ -118,7 +118,7 @@ export default function AssessmentList() {
   return (
     <>
       <p
-        className="p-3 text-sky-600 underline underline-offset-1 hover:cursor-pointer hover:text-sky-900"
+        className="max-w-fit p-3 text-sky-600 underline underline-offset-1 hover:cursor-pointer hover:text-sky-900"
         onClick={handleDownload}
       >
         Retrieve question answer wrong and download

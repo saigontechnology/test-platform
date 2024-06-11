@@ -183,11 +183,58 @@ export function containsSubstring(mainString: string, subString: string) {
   return regex.test(mainString);
 }
 
+/** Handler download file: JSON and CSV =========================== */
+
+function arrayToCsv(data: any) {
+  // Extract headers from the first object
+  const headers = Object.keys(data[0]);
+
+  // Format the data into CSV
+  const csvContent = [
+    headers.join(','),
+    ...data.map((item: any) => headers.map((header) => item[header]).join(',')),
+  ].join('\n');
+
+  return csvContent;
+}
+
+function exportDateTime(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${year}${month}${day}_${hours}${minutes}`;
+}
+
+export function downloadCSV(data: any, filename: string) {
+  const fileContent = arrayToCsv(data);
+  // Create a Blob from the CSV content
+  const blob = new Blob([fileContent], { type: 'text/csv' });
+
+  // Create a download link
+  const exportTime = exportDateTime(new Date());
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename + '_' + exportTime + '.csv';
+
+  // Trigger the download
+  document.body.appendChild(a);
+  a.click();
+
+  // Cleanup
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export const downloadJson = (data: any, filename: string) => {
   const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
 
+  // Trigger download
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
