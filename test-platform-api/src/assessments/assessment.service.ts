@@ -171,15 +171,6 @@ export class AssessmentsService {
     });
   }
 
-  // Utility function to convert BigInt to string
-  serializeBigInt = (obj) => {
-    return JSON.parse(
-      JSON.stringify(obj, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value,
-      ),
-    );
-  };
-
   /** Raw query to retrieve question got answer wrong in all examination */
   async retrieveQuestionMostAnswerWrong() {
     const result = await this.prisma.$queryRaw`
@@ -202,7 +193,7 @@ export class AssessmentsService {
         INNER JOIN public."Question" AS questionAnswer ON exAns."questionId" = questionAnswer.id
       )
       SELECT "questionId", 
-            COUNT(DISTINCT "examinationId") AS incorrect_times,
+            CAST(COUNT(DISTINCT "examinationId") AS TEXT) AS incorrect_times,
             MAX(REPLACE("question", ',', ';')) AS question,
             MAX("level") AS level,
             MAX("category") AS category,
@@ -212,7 +203,6 @@ export class AssessmentsService {
       GROUP BY "questionId"
       ORDER BY incorrect_times DESC;
     `;
-    const serializedResults = this.serializeBigInt(result);
-    return serializedResults;
+    return result;
   }
 }

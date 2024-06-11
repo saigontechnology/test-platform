@@ -103,7 +103,9 @@ export class AssessmentsController {
   }
 
   // Retrieve question exam's answers failed
-  @Get("admin/assessment/examAnswers/wrong")
+  @Get("admin/assessment/answers/wrong")
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles("Admin")
   @ApiOkResponse({ type: AssessmentEntity })
   async getQuestionsExamAnswerFailed() {
     return await this.assessmentService.retrieveQuestionMostAnswerWrong();
