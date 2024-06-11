@@ -171,6 +171,15 @@ export class AssessmentsService {
     });
   }
 
+  // Utility function to convert BigInt to string
+  serializeBigInt = (obj) => {
+    return JSON.parse(
+      JSON.stringify(obj, (key, value) =>
+        typeof value === "bigint" ? value.toString() : value,
+      ),
+    );
+  };
+
   async retrieveQuestionMostAnswerWrong() {
     const result = await this.prisma.$queryRaw`
       WITH compared_answers AS (
@@ -205,6 +214,7 @@ export class AssessmentsService {
       GROUP BY "questionId"
       ORDER BY incorrect_times DESC;
     `;
-    return result;
+    const serializedResults = this.serializeBigInt(result);
+    return serializedResults;
   }
 }
