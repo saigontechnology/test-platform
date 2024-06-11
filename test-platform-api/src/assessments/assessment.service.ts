@@ -180,22 +180,22 @@ export class AssessmentsService {
     );
   };
 
+  /** Raw query to retrieve question got answer wrong in all examination */
   async retrieveQuestionMostAnswerWrong() {
     const result = await this.prisma.$queryRaw`
       WITH compared_answers AS (
         SELECT exAns.*, 
+              examIds.email AS emails,
               questionAnswer.question, 
               questionAnswer.level, 
-              questionAnswer.description,
-              questionAnswer.options,
-              questionAnswer.category,	
+              questionAnswer.category,  
               questionAnswer.answer AS correct_answer,
               CASE WHEN exAns."selections" && questionAnswer.answer THEN 'True'
                     ELSE 'False'
               END AS Compared
         FROM public."ExamAnswer" AS exAns
         INNER JOIN (
-          SELECT DISTINCT ON (id) id, score
+          SELECT DISTINCT ON (id) id, score, email
           FROM public."Examination"
           WHERE score < 100
         ) AS examIds ON exAns."examinationId" = examIds.id
@@ -203,12 +203,10 @@ export class AssessmentsService {
       )
       SELECT "questionId", 
             COUNT(DISTINCT "examinationId") AS incorrect_times,
-            MAX("question") AS question,
+            MAX(REPLACE("question", ',', ';')) AS question,
             MAX("level") AS level,
-            MAX("description") AS description,
-            MAX("options") AS options,
             MAX("category") AS category,
-            MAX("correct_answer") AS correct_answer
+            STRING_AGG(DISTINCT SUBSTRING(emails, 1, POSITION('@' IN emails) - 1), '; ') AS emails
       FROM compared_answers
       WHERE Compared = 'False'
       GROUP BY "questionId"
