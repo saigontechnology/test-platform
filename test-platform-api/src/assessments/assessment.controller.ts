@@ -93,12 +93,19 @@ export class AssessmentsController {
 
   // User Routes
   @Get("assessment/:id")
-  @ApiOkResponse({ type: AssessmentEntity })
+  @ApiOkResponse()
   async findQuestionAssessmentWithoutAnswers(
     @Param("id", ParseIntPipe) id: number,
   ) {
     return await this.assessmentService.findQuestionAssessmentWithoutAnswers(
       id,
     );
+  }
+
+  // Retrieve question exam's answers failed
+  @Get("admin/assessment/examAnswers/wrong")
+  @ApiOkResponse({ type: AssessmentEntity })
+  async getQuestionsExamAnswerFailed() {
+    return await this.assessmentService.retrieveQuestionMostAnswerWrong();
   }
 }

@@ -170,4 +170,41 @@ export class AssessmentsService {
       },
     });
   }
+
+  async retrieveQuestionMostAnswerWrong() {
+    const result = await this.prisma.$queryRaw`
+      WITH compared_answers AS (
+        SELECT exAns.*, 
+              questionAnswer.question, 
+              questionAnswer.level, 
+              questionAnswer.description,
+              questionAnswer.options,
+              questionAnswer.category,	
+              questionAnswer.answer AS correct_answer,
+              CASE WHEN exAns."selections" && questionAnswer.answer THEN 'True'
+                    ELSE 'False'
+              END AS Compared
+        FROM public."ExamAnswer" AS exAns
+        INNER JOIN (
+          SELECT DISTINCT ON (id) id, score
+          FROM public."Examination"
+          WHERE score < 100
+        ) AS examIds ON exAns."examinationId" = examIds.id
+        INNER JOIN public."Question" AS questionAnswer ON exAns."questionId" = questionAnswer.id
+      )
+      SELECT "questionId", 
+            COUNT(DISTINCT "examinationId") AS incorrect_times,
+            MAX("question") AS question,
+            MAX("level") AS level,
+            MAX("description") AS description,
+            MAX("options") AS options,
+            MAX("category") AS category,
+            MAX("correct_answer") AS correct_answer
+      FROM compared_answers
+      WHERE Compared = 'False'
+      GROUP BY "questionId"
+      ORDER BY incorrect_times DESC;
+    `;
+    return result;
+  }
 }
