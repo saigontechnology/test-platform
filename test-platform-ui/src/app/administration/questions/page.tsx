@@ -66,10 +66,8 @@ const Page = () => {
   const [_questionList, setQuestionList] = useState<ICardData[]>([]);
   const [_loading, setLoading] = useState<boolean>(true);
   const [isImportLoading, setImportLoading] = useState<boolean>(false);
-  const [currentPageNum, setCurrentPageNum] = useState<number>(
-    Number(localStorage.getItem('currentQuestionPage')) || 1,
-  );
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [currentPageNum, setCurrentPageNum] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(20);
   const [listInfo, setListInfo] = useState<any>(null);
   const [filters, setFilters] = useState<any>({});
   const cachedQuestions = useRef<IResponseQuestion[]>([]);
@@ -82,7 +80,7 @@ const Page = () => {
     const response: any = await ApiHook(Methods.GET, `/admin/questions`, {
       params: {
         page: currentPageNum,
-        limit: 10,
+        limit: pageSize,
         ...filters,
         search: searchVal || undefined,
       },
@@ -244,7 +242,7 @@ const Page = () => {
     >
       <TFGrid
         data={_questionList}
-        defaultPageSize={10}
+        defaultPageSize={20}
         isLoading={_loading}
         handlePageChange={pageChange}
         currPage={currentPageNum}

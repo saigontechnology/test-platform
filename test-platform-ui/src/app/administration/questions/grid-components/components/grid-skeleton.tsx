@@ -1,12 +1,12 @@
 import Skeleton from '@mui/material/Skeleton';
 
-export const GridItems = () => {
+export const GridItemsSkeleton = () => {
   return (
     <div className="ml-6 mt-3 grid h-[calc(100%_-_70px)] w-[calc(100%_-_60px)] gap-2 overflow-hidden rounded-lg p-3">
       {[1, 2].map((_, indx: number) => (
         <div
           key={`skeleton-question-${indx}`}
-          className="h-[350px] w-[calc(100%_-_40px)] rounded-lg border-2 border-solid border-zinc-200 p-3"
+          className="h-[350px] w-full rounded-lg border-2 border-solid border-zinc-200 p-3"
         >
           <Skeleton
             animation="wave"
@@ -78,7 +78,7 @@ export default function GridSkeleton() {
   return (
     <div className="question-list grid h-[inherit] gap-2">
       <GridTool />
-      <GridItems />
+      <GridItemsSkeleton />
     </div>
   );
 }
