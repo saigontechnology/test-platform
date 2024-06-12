@@ -1,9 +1,4 @@
-import {
-  ArgumentMetadata,
-  BadRequestException,
-  Injectable,
-  PipeTransform,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateAssessmentDto } from "./dto/create-assessment.dto";
@@ -217,20 +212,5 @@ export class AssessmentsService {
       ORDER BY incorrect_times DESC;
   `;
     return result;
-  }
-}
-
-export class ParseOptionalIntPipe implements PipeTransform {
-  transform(value: any, _metadata: ArgumentMetadata) {
-    if (value === undefined) {
-      return undefined;
-    }
-    const parsedValue = parseInt(value, 10);
-    if (isNaN(parsedValue)) {
-      throw new BadRequestException(
-        "Validation failed: Numeric string is expected.",
-      );
-    }
-    return parsedValue;
   }
 }
