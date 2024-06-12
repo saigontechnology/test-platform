@@ -178,49 +178,12 @@ export class AssessmentsService {
   }
 
   /** Raw query to retrieve question got answer wrong in all examination */
-  //#region : Old query
-  //   async getIncorrectQuestionByAssessmentId(assessmentId?: number) {
-  //     const result = await this.prisma.$queryRaw`
-  //       WITH compared_answers AS (
-  //         SELECT exAns.*,
-  //               examIds.email AS emails,
-  //               questionAnswer.question,
-  //               questionAnswer.level,
-  //               questionAnswer.category,
-  //               questionAnswer.answer AS correct_answer,
-  //               CASE WHEN exAns."selections" && questionAnswer.answer THEN 'True'
-  //                     ELSE 'False'
-  //               END AS Compared
-  //         FROM public."ExamAnswer" AS exAns
-  //         INNER JOIN (
-  //           SELECT DISTINCT ON (id) id, score, email
-  //           FROM public."Examination"
-  //           WHERE score < 100
-  //         ) AS examIds ON exAns."examinationId" = examIds.id
-  //         INNER JOIN public."Question" AS questionAnswer ON exAns."questionId" = questionAnswer.id
-  //       )
-  //       SELECT "questionId",
-  //             CAST(COUNT(DISTINCT "examinationId") AS TEXT) AS incorrect_times,
-  //             MAX(REPLACE("question", ',', ';')) AS question,
-  //             MAX("level") AS level,
-  //             MAX("category") AS category,
-  //             STRING_AGG(DISTINCT SUBSTRING(emails, 1, POSITION('@' IN emails) - 1), '; ') AS emails
-  //       FROM compared_answers
-  //       WHERE Compared = 'False'
-  //       GROUP BY "questionId"
-  //       ORDER BY incorrect_times DESC;
-  //     `;
-  //     return result;
-  //   }
-  // }
-  //#endregion
-
   async getIncorrectQuestionsByAssessmentId(assessmentId?: number) {
     const result = await this.prisma.$queryRaw`
       WITH compared_answers AS (
         SELECT exAns.*, 
               examination.email AS emails,
-        examination."assessmentId",
+              examination."assessmentId",
               questionAnswer.question, 
               questionAnswer.level, 
               questionAnswer.category,  
