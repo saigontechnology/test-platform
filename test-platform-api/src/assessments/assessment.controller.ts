@@ -114,7 +114,7 @@ export class AssessmentsController {
   async getQuestionsExamAnswerFailed(
     @Query("assessmentId") assessmentId?: number,
   ) {
-    return await this.assessmentService.getIncorrectQuestionByAssessmentId(
+    return await this.assessmentService.getIncorrectQuestionsByAssessmentId(
       assessmentId,
     );
   }
