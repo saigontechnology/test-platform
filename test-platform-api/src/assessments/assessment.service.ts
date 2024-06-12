@@ -215,7 +215,7 @@ export class AssessmentsService {
   // }
   //#endregion
 
-  async getIncorrectQuestionByAssessmentId(assessmentId?: number) {
+  async getIncorrectQuestionsByAssessmentId(assessmentId?: number) {
     const result = await this.prisma.$queryRaw`
       WITH compared_answers AS (
         SELECT exAns.*, 
