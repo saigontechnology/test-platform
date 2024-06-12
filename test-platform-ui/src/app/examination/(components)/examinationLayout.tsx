@@ -56,8 +56,6 @@ const ExaminationLayout: React.FC<IExaminationLayoutProps> = ({
     [],
   );
 
-  console.log('currentQuestionIndex', currentQuestionIndex);
-
   const dialogRef = useRef<any>(null);
   const dialogLeaveRef = useRef<any>(null);
   const countdownRef = useRef<{ stop: () => void }>(null);

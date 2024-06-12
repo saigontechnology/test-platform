@@ -142,7 +142,6 @@ export default function TFAccordion({ data }: { data: any }) {
   const [active, setActive] = useState<number | null>(1);
 
   const handleToggle = (index: number) => {
-    console.log('handleToggle: ', index);
     if (active === index) {
       setActive(null);
     } else {
