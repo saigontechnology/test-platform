@@ -80,7 +80,6 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   });
   const {
     setError,
-    // control,
     getValues,
     setValue,
     formState: { errors, isValid },

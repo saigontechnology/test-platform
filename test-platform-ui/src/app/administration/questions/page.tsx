@@ -27,10 +27,10 @@ import {
   getQuestionLevel,
   getQuestionType,
 } from './(components)/(question-form)/preview';
+import CreateQuestion from './(components)/create';
+import EditQuestion from './(components)/edit';
 import GridSettings, { GriSettingHandler } from './(components)/preview';
 import { IOption } from './(components)/preview/accordion/accordion';
-import EditQuestion from './(edit)/[question_id]/page';
-import CreateQuestion from './create/page';
 import TFGrid from './grid-components';
 import { ICardData } from './grid-components/listItem';
 
@@ -74,7 +74,7 @@ const Page = () => {
   const tempQuestionOnSearch = useRef<ICardData[] | null>(null);
   const [modifyInfo, setModifyInfo] = useState<{
     title: string;
-    editId?: number | null;
+    editId?: number;
   } | null>(null);
 
   const previewRef = useRef<GriSettingHandler | null>(null);
@@ -306,7 +306,7 @@ const Page = () => {
         title={modifyInfo?.title || ''}
         width={`calc(100% - ${isNavCollapsed ? '66' : '240'}px)`}
       >
-        {modifyInfo?.editId != null ? (
+        {modifyInfo?.editId !== undefined && modifyInfo?.editId !== null ? (
           <EditQuestion
             onClose={() => {
               setModifyInfo(null);

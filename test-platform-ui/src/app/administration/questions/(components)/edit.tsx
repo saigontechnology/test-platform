@@ -5,16 +5,18 @@ import { Suspense, useEffect, useState } from 'react';
 
 import { IResponseQuestion } from '@/constants/questions';
 import { Box } from '@mui/material';
-import { IQuestionInfo } from '../../(components)/models';
-import ModifyQuestion from '../../(components)/modifyQuestion';
+import dynamic from 'next/dynamic';
+import { IQuestionInfo } from '../(components)/models';
+const ModifyQuestion = dynamic(() => import('../(components)/modifyQuestion'), {
+  ssr: false,
+});
 
-const EditQuestion = ({
-  questionId,
-  onClose,
-}: {
+interface IEditQuestion {
   questionId: number;
   onClose: () => void;
-}) => {
+}
+
+const EditQuestion: React.FC<IEditQuestion> = ({ questionId, onClose }) => {
   const [data, setData] = useState<IQuestionInfo | null>(null);
 
   useEffect(() => {
