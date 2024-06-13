@@ -68,7 +68,7 @@ export const GridTool = () => {
     <Skeleton
       className="ml-3 rounded-lg"
       variant="rectangular"
-      width={920}
+      width={'calc(100% - 40px)'}
       height={50}
     />
   );

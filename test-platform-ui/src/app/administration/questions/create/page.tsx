@@ -8,7 +8,7 @@ const ModifyQuestion = dynamic(() => import('../(components)/modifyQuestion'), {
   ssr: false,
 });
 
-const CreateQuestion = () => {
+const CreateQuestion = ({ onClose }: { onClose: () => void }) => {
   return (
     <Box>
       <ModifyQuestion
@@ -26,6 +26,7 @@ const CreateQuestion = () => {
           isModified: true,
           duration: 0,
         }}
+        onClose={onClose}
       />
     </Box>
   );

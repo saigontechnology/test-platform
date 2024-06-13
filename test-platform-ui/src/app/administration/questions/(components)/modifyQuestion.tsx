@@ -4,7 +4,6 @@ import CustomTextField from '@/components/atoms/CustomModules/CustomTextField';
 import RichTextArea from '@/components/atoms/Editor/richtext';
 import { IAddQuestion } from '@/constants/questions';
 import { ROUTE_KEY } from '@/constants/routePaths';
-// import { DevTool } from '@hookform/devtools';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { showNotification } from '@/libs/toast';
 import { createQuestionSchema } from '@/validations/questions';
@@ -21,7 +20,6 @@ import {
   Tabs,
   Typography,
 } from '@mui/material';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import RenderQuestionAnswers2 from './(question-form)/answers/answers_v2';
@@ -41,11 +39,11 @@ function CustomTabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      className="h-[calc(100vh_-_250px)]"
+      className="h-[calc(100vh_-_200px)]"
       {...other}
     >
-      <Box sx={{ px: 1, py: 4 }}>
-        <Typography>{children}</Typography>
+      <Box className="h-full" sx={{ px: 1, py: 4 }}>
+        {children}
       </Box>
     </div>
   );
@@ -59,8 +57,7 @@ function a11yProps(index: number) {
 }
 
 export default function ModifyQuestion(props: ICreateQuestion) {
-  const { questionData } = props;
-  const router = useRouter();
+  const { questionData, onClose } = props;
   const [_isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
   const [_isValidAnswer, _setIsValidAnswer] = useState<boolean>(false);
   const [tab, setTabValue] = useState(0);
@@ -91,8 +88,9 @@ export default function ModifyQuestion(props: ICreateQuestion) {
 
   //#region : Handle interactive functions
   const HandleInteractions = {
-    handleRedirect: (route: string) => {
-      router.push(route);
+    handleRedirect: (_route?: string) => {
+      // router.push(route);
+      onClose && onClose();
     },
     handleModifiedQuestion: async (modifiedQuestion: IAddQuestion) => {
       /** Payload data: */
@@ -189,79 +187,83 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                 aria-label="basic tabs example"
               >
                 <Tab label="Details" {...a11yProps(0)} />
-                <Tab label="Description" {...a11yProps(1)} />
-                <Tab label="Answers" {...a11yProps(2)} />
-                <Tab label="Preview" {...a11yProps(3)} />
+                <Tab label="Answers" {...a11yProps(1)} />
+                <Tab label="Preview" {...a11yProps(2)} />
               </Tabs>
             </Box>
             {/* Details */}
             <CustomTabPanel value={tab} index={0}>
-              <Stack
-                gridTemplateColumns={'1fr'}
-                display={'grid'}
-                sx={{
-                  backgroundColor: 'white',
-                  padding: '20px',
-                  borderRadius: '10px',
-                  border: 'solid 1px lightgrey',
-                }}
-              >
-                <FormControl variant="standard" className="!w-9/12 pb-8">
-                  <Typography className="mb-4 font-semibold">Title</Typography>
-                  <CustomTextField
-                    name="question"
-                    customClass="ring-offset-0"
-                    multiline
-                    maxRows={3}
-                    onKeyDown={(event) => {
-                      if (event.keyCode === 13) {
-                        event.preventDefault();
-                      }
-                    }}
-                  />
-                </FormControl>
-                <QuestionKind
-                  label="Question Type"
-                  handleOnChange={() =>
-                    setValue('answers', new Array(), {
-                      shouldValidate: true,
-                    })
-                  }
-                />
-                <Stack
-                  gridTemplateColumns={'1fr 1fr 1fr'}
-                  display={'grid'}
-                  width={'60vw'}
-                >
-                  <AutocompleteDifficult controlName="level" />
-                  <AutocompleteDuration controlName="duration" />
-                  <AutocompleteSkill controlName="category" />
-                </Stack>
-              </Stack>
-            </CustomTabPanel>
-            {/* Description*/}
-            <CustomTabPanel value={tab} index={1}>
-              <FormControl variant="standard" className="!w-9/12 pb-8 ">
-                <RichTextArea
-                  name="description"
-                  data={getValues('description') || questionData?.description}
-                  onChange={(val: string) =>
-                    setValue('description', val, {
-                      shouldValidate: true,
-                    })
-                  }
-                />
-              </FormControl>
+              <div className="h-[inherit] overflow-auto rounded-xl border border-solid border-gray-300 bg-white p-5 pr-2">
+                <div className="tf-overflow-scroll h-[inherit] overflow-auto">
+                  <Stack
+                    gridTemplateColumns={'1fr 1fr'}
+                    display={'grid'}
+                    gap={6}
+                  >
+                    <div className="details-wrapper">
+                      <FormControl variant="standard" className="!w-9/12 pb-8">
+                        <Typography className="mb-4 font-semibold">
+                          Title
+                        </Typography>
+                        <CustomTextField
+                          name="question"
+                          customClass="ring-offset-0"
+                          multiline
+                          maxRows={3}
+                          onKeyDown={(event) => {
+                            if (event.keyCode === 13) {
+                              event.preventDefault();
+                            }
+                          }}
+                        />
+                      </FormControl>
+                      <QuestionKind
+                        label="Question Type"
+                        handleOnChange={() =>
+                          setValue('answers', new Array(), {
+                            shouldValidate: true,
+                          })
+                        }
+                      />
+                      <Stack
+                        gridTemplateColumns={'1fr 1fr 1fr'}
+                        display={'grid'}
+                        width={'43vw'}
+                      >
+                        <AutocompleteDifficult controlName="level" />
+                        <AutocompleteDuration controlName="duration" />
+                        <AutocompleteSkill controlName="category" />
+                      </Stack>
+                    </div>
+                    <div className="description-wrapper pr-6">
+                      <Typography className="mb-4 font-semibold">
+                        Description
+                      </Typography>
+                      <RichTextArea
+                        name="description"
+                        data={
+                          getValues('description') || questionData?.description
+                        }
+                        onChange={(val: string) =>
+                          setValue('description', val, {
+                            shouldValidate: true,
+                          })
+                        }
+                      />
+                    </div>
+                  </Stack>
+                </div>
+              </div>
             </CustomTabPanel>
             {/* Options / Explanation */}
-            <CustomTabPanel value={tab} index={2}>
+            <CustomTabPanel value={tab} index={1}>
               <Stack
                 className="gap-20"
                 gridTemplateColumns={'1fr 1fr'}
                 display={'grid'}
               >
                 <Stack
-                  className="basis-3/5 gap-2 md:overflow-y-auto "
+                  className="basis-3/5 gap-2 py-0 md:overflow-y-auto"
                   flexDirection="column"
                   sx={{
                     height: 'calc(100vh - 320px)',
@@ -291,13 +293,12 @@ export default function ModifyQuestion(props: ICreateQuestion) {
               </Stack>
             </CustomTabPanel>
             {/* Preview */}
-            <CustomTabPanel value={tab} index={3}>
-              {tab === 3 ? <QuestionPreview /> : null}
+            <CustomTabPanel value={tab} index={2}>
+              {tab === 2 ? <QuestionPreview /> : null}
             </CustomTabPanel>
           </Box>
         </Stack>
       </FormProvider>
-      {/* <DevTool control={control} /> */}
     </Box>
   );
   //#endregion

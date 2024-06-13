@@ -2,6 +2,7 @@ import { QuestionType } from '@/libs/definitions';
 
 export interface ICreateQuestion {
   questionData: IQuestionInfo;
+  onClose: () => void;
 }
 export interface TabPanelProps {
   children?: React.ReactNode;

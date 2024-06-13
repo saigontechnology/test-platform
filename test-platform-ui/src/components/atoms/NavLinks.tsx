@@ -2,6 +2,7 @@
 'use client';
 
 import { ROUTE_KEY } from '@/constants/routePaths';
+import { DataContext } from '@/libs/contextStore';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -12,7 +13,7 @@ import { OverridableComponent } from '@mui/material/OverridableComponent';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 
 interface ILink {
   name: string;
@@ -57,9 +58,13 @@ export type SideNavHandler = {
 const NavLinks = React.forwardRef<SideNavHandler, any>(({}, ref) => {
   const pathname = usePathname();
   const [collapse, toggleCollapse] = useState<boolean>(false);
+  const { toggleNavCollapse } = useContext(DataContext);
 
   React.useImperativeHandle(ref, () => ({
-    toggleCollapse: () => toggleCollapse(!collapse),
+    toggleCollapse: () => {
+      toggleNavCollapse();
+      toggleCollapse(!collapse);
+    },
     collapseStatus: collapse,
   }));
 
