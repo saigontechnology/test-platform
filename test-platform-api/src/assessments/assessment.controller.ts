@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
@@ -102,12 +103,19 @@ export class AssessmentsController {
     );
   }
 
-  // Retrieve question exam's answers failed
+  /** Retrieve question exam's answers failed
+   *  - The query parameter "assessmentId" is not required;
+   *    by default, retrieve all questions were answered incorrectly.
+   */
   @Get("admin/assessment/answers/wrong")
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles("Admin")
   @ApiOkResponse({ type: AssessmentEntity })
-  async getQuestionsExamAnswerFailed() {
-    return await this.assessmentService.retrieveQuestionMostAnswerWrong();
+  async getQuestionsExamAnswerFailed(
+    @Query("assessmentId") assessmentId?: number,
+  ) {
+    return await this.assessmentService.getIncorrectQuestionsByAssessmentId(
+      assessmentId,
+    );
   }
 }

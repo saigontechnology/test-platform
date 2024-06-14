@@ -100,6 +100,8 @@ export function QuestionPreview() {
       gridTemplateColumns={'1fr fit-content(20%) 1fr'}
       display={'grid'}
       gap={4}
+      sx={{ height: 'inherit', overflow: 'auto' }}
+      className="tf-overflow-scroll"
     >
       <Box>
         <ContentBackground

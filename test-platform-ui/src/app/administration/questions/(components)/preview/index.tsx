@@ -154,7 +154,10 @@ const GridSettings = forwardRef<GriSettingHandler, IGriSetting>(
             </div>
           </>
         ) : (
-          <Accordion data={faqs()} />
+          <div>
+            <span className="px-3">Filter Options</span>
+            <Accordion data={faqs()} />
+          </div>
         )}
       </SettingContent>
     );
