@@ -24,7 +24,7 @@ interface IQuestionCardProps {
   onSelect: (id: number) => void;
   onAdd?: (id: number) => void;
   onDelete: (id: number) => void;
-  onBlur?: (id: number, score: number) => void;
+  onBlur?: (id: number, score: string) => void;
 }
 
 export default function QuestionCard(props: IQuestionCardProps) {
@@ -111,7 +111,7 @@ export default function QuestionCard(props: IQuestionCardProps) {
                 className="ml-4 w-8 rounded border border-gray-200 p-1 text-center text-xs"
                 onChange={handleChange}
                 value={score}
-                onBlur={() => onBlur(id, score)}
+                onBlur={() => onBlur(id, score.toString())}
               />
             ) : null}
           </div>
