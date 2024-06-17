@@ -69,6 +69,7 @@ export interface IAssessment {
   error?: Error;
   duration: number;
   active?: boolean;
+  score: number;
 }
 
 export interface ICreateAssessment {

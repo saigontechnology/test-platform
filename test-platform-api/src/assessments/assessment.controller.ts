@@ -85,9 +85,25 @@ export class AssessmentsController {
     @Param("assessmentId", ParseIntPipe) assessmentId: number,
     @Param("questionId", ParseIntPipe) questionId: number,
   ) {
-    return await this.assessmentService.deleteQuestionToAssessment(
+    return await this.assessmentService.deleteAssessmentQuestion(
       assessmentId,
       questionId,
+    );
+  }
+
+  @Put("admin/assessments/:assessmentId/question/:questionId")
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles("Admin")
+  @ApiCreatedResponse({ type: AssessmentEntity })
+  async updateAssessmentQuestion(
+    @Param("assessmentId", ParseIntPipe) assessmentId: number,
+    @Param("questionId", ParseIntPipe) questionId: number,
+    @Body() data: any,
+  ) {
+    return await this.assessmentService.updateScoreAssessmentQuestion(
+      assessmentId,
+      questionId,
+      data,
     );
   }
 

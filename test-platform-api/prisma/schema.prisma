@@ -68,6 +68,7 @@ model Assessment {
   name      String
   level     String
   active    Boolean?
+  score     Int       @default(0)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
@@ -80,6 +81,7 @@ model AssessmentQuestionMapping {
   id           Int      @id @default(autoincrement())
   assessmentId Int
   questionId   Int
+  score        Int      @default(1)
   createdAt    DateTime @default(now())
   question     Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 

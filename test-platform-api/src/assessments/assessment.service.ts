@@ -22,6 +22,7 @@ export class AssessmentsService {
         name: true,
         createdAt: true,
         active: true,
+        score: true,
         assessmentQuestionMapping: {
           select: {
             createdAt: true,
@@ -69,9 +70,12 @@ export class AssessmentsService {
         name: true,
         createdAt: true,
         active: true,
+        score: true,
         assessmentQuestionMapping: {
           select: {
+            id: true,
             createdAt: true,
+            score: true,
             question: {
               select: {
                 id: true,
@@ -82,8 +86,12 @@ export class AssessmentsService {
                 answer: true,
                 category: true,
                 duration: true,
+                level: true,
               },
             },
+          },
+          orderBy: {
+            id: "asc",
           },
         },
       },
@@ -157,18 +165,54 @@ export class AssessmentsService {
   }
 
   async addQuestionToAssessment(assessmentId: number, questionId: number) {
-    return await this.prisma.assessmentQuestionMapping.create({
+    const question = await this.prisma.assessmentQuestionMapping.create({
       data: { assessmentId, questionId },
     });
+    await this.updateTotalScore(assessmentId);
+    return question;
   }
 
-  async deleteQuestionToAssessment(assessmentId: number, questionId: number) {
-    return await this.prisma.assessmentQuestionMapping.deleteMany({
-      where: {
-        assessmentId,
-        questionId,
+  async deleteAssessmentQuestion(assessmentId: number, questionId: number) {
+    const deletedQuestion =
+      await this.prisma.assessmentQuestionMapping.deleteMany({
+        where: {
+          assessmentId,
+          questionId,
+        },
+      });
+    await this.updateTotalScore(assessmentId);
+    return deletedQuestion;
+  }
+
+  async updateScoreAssessmentQuestion(
+    assessmentId: number,
+    questionId: number,
+    data: any,
+  ) {
+    const updatedScore = await this.prisma.assessmentQuestionMapping.updateMany(
+      {
+        where: {
+          assessmentId,
+          questionId,
+        },
+        data,
       },
-    });
+    );
+
+    await this.updateTotalScore(assessmentId);
+
+    return updatedScore;
+  }
+
+  async updateTotalScore(assessmentId: number) {
+    const assessment = await this.findOne(assessmentId);
+    const score = assessment.assessmentQuestionMapping.reduce(
+      (accumulator, currentValue) => {
+        return accumulator + currentValue.score;
+      },
+      0,
+    );
+    return await this.update(assessmentId, { score });
   }
 
   /** Raw query to retrieve question got answer wrong in all examination */

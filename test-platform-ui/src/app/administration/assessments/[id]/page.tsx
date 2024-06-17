@@ -29,6 +29,7 @@ interface IAssessment {
   level: string;
   name: string;
   questions: number;
+  score: number | undefined;
 }
 
 interface IQuestion {
@@ -100,7 +101,12 @@ export default function AssessmentDetail() {
     );
     setAssessment(response.data);
     setAssessmentQuestions(
-      response.data.assessmentQuestionMapping.map((item: any) => item.question),
+      response.data.assessmentQuestionMapping.map((item: any) => {
+        return {
+          ...item.question,
+          score: item.score,
+        };
+      }),
     );
   };
 
@@ -145,6 +151,7 @@ export default function AssessmentDetail() {
     );
     setAssessmentQuestions(_questions);
     setSelectedQuestion(_questions.length ? _questions[0] : undefined);
+    getAsssessment();
   };
 
   const handleChange = (e: any, key: string) => {
@@ -167,11 +174,10 @@ export default function AssessmentDetail() {
   };
 
   const updateAsssessment = async () => {
-    const data = {
+    const data: any = {
       name: assessment?.name,
       level: assessment?.level,
     };
-
     await ApiHook(Methods.PUT, `admin/assessments/${assessmentId}`, { data });
   };
 
@@ -184,6 +190,19 @@ export default function AssessmentDetail() {
       data,
     });
     setValue('empCode', '', { shouldValidate: true });
+  };
+
+  const handleUpdateScore = async (questionId: number, score: string) => {
+    await ApiHook(
+      Methods.PUT,
+      `admin/assessments/${assessmentId}/question/${questionId}`,
+      {
+        data: {
+          score: parseInt(score),
+        },
+      },
+    );
+    getAsssessment();
   };
 
   const questionType: any = {
@@ -287,6 +306,10 @@ export default function AssessmentDetail() {
                 </span>
               </div>
             </div>
+            <div className="mt-2 flex items-center gap-2">
+              <span className="text-sm text-gray-400">Score</span>
+              <span className="text-sm font-medium">{assessment?.score}</span>
+            </div>
           </div>
           <div className="h-[calc(100vh_-_201px)] overflow-y-scroll pt-4">
             <div className="text-sm text-gray-400">Questions</div>
@@ -306,6 +329,9 @@ export default function AssessmentDetail() {
                       onSelect={handleSelectQuestion}
                       hasDeleted={true}
                       onDelete={handleDelete}
+                      showMark={true}
+                      questionScore={question.score}
+                      onBlur={handleUpdateScore}
                     />
                   );
                 })
