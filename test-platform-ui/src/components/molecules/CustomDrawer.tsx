@@ -1,20 +1,21 @@
 'use client';
 
-import CloseIcon from '@mui/icons-material/Close';
-import { Drawer, IconButton } from '@mui/material';
 import React from 'react';
 
-interface ICustomDrawer {
+interface ITFDrawer {
   children: React.ReactNode;
+  title: string;
+  showCloseIcon?: boolean;
+  width?: string;
 }
 
-export type CustomDrawerHandler = {
+export type TFDrawerHandler = {
   open: () => void;
   close: () => void;
 };
 
-const CustomDrawer = React.forwardRef<CustomDrawerHandler, ICustomDrawer>(
-  ({ children }, ref) => {
+const TFDrawer = React.forwardRef<TFDrawerHandler, ITFDrawer>(
+  ({ children, title, showCloseIcon, width }, ref) => {
     const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
     React.useImperativeHandle(ref, () => ({
@@ -22,29 +23,33 @@ const CustomDrawer = React.forwardRef<CustomDrawerHandler, ICustomDrawer>(
       close: () => setIsOpen(false),
     }));
 
-    const toggleDrawer =
-      (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-        if (
-          event.type === 'keydown' &&
-          ((event as React.KeyboardEvent).key === 'Tab' ||
-            (event as React.KeyboardEvent).key === 'Shift')
-        ) {
-          return;
-        }
-        setIsOpen(open);
-      };
-
     return (
-      <Drawer anchor={'right'} open={isOpen} onClose={toggleDrawer(false)}>
-        <IconButton onClick={() => toggleDrawer(false)}>
-          <CloseIcon />
-        </IconButton>
-        {children}
-      </Drawer>
+      <div className="relative h-screen w-full">
+        <div
+          className={`fixed right-0 top-0 z-30 h-full bg-white shadow-lg transition-transform duration-500 ease-in-out`}
+          style={{
+            width: width || '100%',
+            transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+          }}
+        >
+          <div className="flex items-center justify-between border-b p-4">
+            <p className="text-lg">{title}</p>
+            {showCloseIcon ? (
+              <button
+                className="text-xl font-bold"
+                onClick={() => setIsOpen(false)}
+              >
+                &times;
+              </button>
+            ) : null}
+          </div>
+          <p className="p-4">{children}</p>
+        </div>
+      </div>
     );
   },
 );
 
-CustomDrawer.displayName = 'CustomDrawer';
+TFDrawer.displayName = 'TFDrawer';
 
-export default CustomDrawer;
+export default TFDrawer;

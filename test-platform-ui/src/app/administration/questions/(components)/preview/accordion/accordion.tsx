@@ -46,7 +46,7 @@ const AccordionItem = (props: any) => {
         className={`rc-collapse ${active === id ? 'show' : ''}`}
         style={
           active === id
-            ? { height: contentEl.current.scrollHeight }
+            ? { height: contentEl.current?.scrollHeight }
             : { height: '0px' }
         }
       >
@@ -139,7 +139,7 @@ export const FilterOpts = ({
 };
 
 export default function TFAccordion({ data }: { data: any }) {
-  const [active, setActive] = useState<number | null>(null);
+  const [active, setActive] = useState<number | null>(1);
 
   const handleToggle = (index: number) => {
     if (active === index) {
@@ -150,7 +150,7 @@ export default function TFAccordion({ data }: { data: any }) {
   };
 
   return (
-    <div className="card-body pt-[26px]">
+    <div className="card-body pt-[20px]">
       {data.map((_d: any, index: number) => {
         return (
           <AccordionItem

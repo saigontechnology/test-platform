@@ -1,7 +1,7 @@
 'use client';
 
+import TFDrawer, { TFDrawerHandler } from '@/components/molecules/CustomDrawer';
 import { IResponseQuestion } from '@/constants/questions';
-import { ROUTE_KEY } from '@/constants/routePaths';
 import useDebounce from '@/hooks/common/useDebounce';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
 import { DataContext } from '@/libs/contextStore';
@@ -16,7 +16,6 @@ import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Box, Button, IconButton, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useRouter } from 'next/navigation';
 import React, {
   useCallback,
   useContext,
@@ -28,6 +27,8 @@ import {
   getQuestionLevel,
   getQuestionType,
 } from './(components)/(question-form)/preview';
+import CreateQuestion from './(components)/create';
+import EditQuestion from './(components)/edit';
 import GridSettings, { GriSettingHandler } from './(components)/preview';
 import { IOption } from './(components)/preview/accordion/accordion';
 import TFGrid from './grid-components';
@@ -60,29 +61,31 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 const Page = () => {
-  const router = useRouter();
-  const { data, updateData } = useContext(DataContext);
+  const { data, updateData, isNavCollapsed } = useContext(DataContext);
 
   const [_questionList, setQuestionList] = useState<ICardData[]>([]);
   const [_loading, setLoading] = useState<boolean>(true);
   const [isImportLoading, setImportLoading] = useState<boolean>(false);
-  const [currentPageNum, setCurrentPageNum] = useState<number>(
-    Number(localStorage.getItem('currentQuestionPage')) || 1,
-  );
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [currentPageNum, setCurrentPageNum] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(20);
   const [listInfo, setListInfo] = useState<any>(null);
   const [filters, setFilters] = useState<any>({});
   const cachedQuestions = useRef<IResponseQuestion[]>([]);
   const tempQuestionOnSearch = useRef<ICardData[] | null>(null);
+  const [modifyInfo, setModifyInfo] = useState<{
+    title: string;
+    editId?: number;
+  } | null>(null);
+
   const previewRef = useRef<GriSettingHandler | null>(null);
-  // const drawerRef = useRef<CustomDrawerHandler | null>(null);
+  const drawerRef = useRef<TFDrawerHandler | null>(null);
 
   const getGridQuestion = async (searchVal?: string) => {
     setLoading(true);
     const response: any = await ApiHook(Methods.GET, `/admin/questions`, {
       params: {
         page: currentPageNum,
-        limit: 10,
+        limit: pageSize,
         ...filters,
         search: searchVal || undefined,
       },
@@ -199,12 +202,11 @@ const Page = () => {
           }}
           disableRipple
           onClick={() => {
-            // drawerRef.current.open();
-            localStorage.setItem(
-              'currentQuestionPage',
-              currentPageNum.toString(),
-            );
-            router.push(`${ROUTE_KEY.ADMINISTRATION_QUESTIONS}/${itemId}`);
+            drawerRef.current?.open();
+            setModifyInfo({
+              title: `Edit Question  #${itemId}`,
+              editId: itemId,
+            });
           }}
         >
           <ModeEditIcon />
@@ -244,7 +246,7 @@ const Page = () => {
     >
       <TFGrid
         data={_questionList}
-        defaultPageSize={10}
+        defaultPageSize={20}
         isLoading={_loading}
         handlePageChange={pageChange}
         currPage={currentPageNum}
@@ -288,7 +290,8 @@ const Page = () => {
                     pageNum: 1,
                   },
                 });
-                router.push(ROUTE_KEY.ADMINISTRATION_QUESTIONS_CREATE);
+                drawerRef.current?.open();
+                setModifyInfo({ title: 'Create a Question' });
               }}
               startIcon={<AddBox />}
             >
@@ -298,7 +301,28 @@ const Page = () => {
         </Box>
         <GridSettings ref={previewRef} onFilter={handleFilter} />
       </Stack>
-      {/* <CustomDrawer ref={drawerRef}>Drawwer</CustomDrawer> */}
+      <TFDrawer
+        ref={drawerRef}
+        title={modifyInfo?.title || ''}
+        width={`calc(100% - ${isNavCollapsed ? '66' : '240'}px)`}
+      >
+        {modifyInfo?.editId !== undefined && modifyInfo?.editId !== null ? (
+          <EditQuestion
+            onClose={() => {
+              setModifyInfo(null);
+              drawerRef.current?.close();
+            }}
+            questionId={modifyInfo?.editId}
+          />
+        ) : (
+          <CreateQuestion
+            onClose={() => {
+              setModifyInfo(null);
+              drawerRef.current?.close();
+            }}
+          />
+        )}
+      </TFDrawer>
     </Stack>
   );
 };

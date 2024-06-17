@@ -26,16 +26,19 @@ export default function AssessmentList() {
     setAssessments(response.data);
   };
 
-  const handleDownload = async () => {
-    // Call the download function with your data and desired filename
+  const handleDownload = async (assessmentId?: number) => {
     const { data, error } = await ApiHook(
       Methods.GET,
-      'admin/assessment/answers/wrong',
+      `/admin/assessment/answers/wrong${assessmentId ? `?assessmentId=${assessmentId}` : ''}`,
     );
     if (error) {
       console.log('Retrieve question answer wrong failed: ', error);
     } else {
-      downloadCSV(data, 'IncorrectQA');
+      // Call the download function with your data and desired filename
+      downloadCSV(
+        data,
+        `IncorrectQA${assessmentId ? '_assessment_' + assessmentId : ''}`,
+      );
     }
   };
 
@@ -119,7 +122,7 @@ export default function AssessmentList() {
     <>
       <p
         className="max-w-fit p-3 text-sky-600 underline underline-offset-1 hover:cursor-pointer hover:text-sky-900"
-        onClick={handleDownload}
+        onClick={() => handleDownload()}
       >
         Retrieve question answer wrong and download
       </p>

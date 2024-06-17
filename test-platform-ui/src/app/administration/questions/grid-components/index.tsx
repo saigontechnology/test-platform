@@ -2,7 +2,7 @@
 import { styled } from '@mui/material';
 import { useState } from 'react';
 import Image from '../../../../../node_modules/next/image';
-import { GridItems, GridTool } from './components/grid-skeleton';
+import { GridItemsSkeleton, GridTool } from './components/grid-skeleton';
 import PageSizeDropdown from './components/page-size';
 import TFPagination from './components/pagination';
 import SearchBar from './components/searchBar';
@@ -130,7 +130,7 @@ export default function TFGrid({
           <EmptyPlaceholder />
         )
       ) : (
-        <GridItems />
+        <GridItemsSkeleton />
       )}
     </div>
   );
