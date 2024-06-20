@@ -34,7 +34,7 @@ export default function Page() {
               active={assessment.active || false}
               id={assessment.id}
               key={assessment.id}
-              href={`${ROUTE_KEY.ADMINISTRATION_DASHBOARD_ASSESSMENT}/${assessment.id}`}
+              href={`${ROUTE_KEY.ADMINISTRATION_DASHBOARD}/${assessment.id}`}
             />
           );
         })}

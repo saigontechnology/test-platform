@@ -3,11 +3,12 @@
 import { useSignIn } from '@/hooks/auth/hooks';
 import { ISignInPayload } from '@/hooks/auth/types';
 import useEnterKey from '@/hooks/common/useEnterKey';
+import { AuthContext } from '@/libs/contextStore';
 import { encrypt } from '@/utils/securities';
 import { CircularProgress } from '@mui/material';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 interface ISignInForm {
@@ -18,6 +19,7 @@ interface ISignInForm {
 }
 
 function Home() {
+  const { updateData } = useContext(AuthContext);
   const { mutate, isPending } = useSignIn();
   const navigate = useRouter();
   const {
@@ -39,7 +41,11 @@ function Home() {
     mutate(
       { ...data, password: passwordEncrypt },
       {
-        onSuccess: () => {
+        onSuccess: (data: any) => {
+          updateData({
+            userInfo: null,
+            userRole: data.userRoles,
+          });
           navigate.push('/administration/dashboard');
         },
         onError: (error: any) => {

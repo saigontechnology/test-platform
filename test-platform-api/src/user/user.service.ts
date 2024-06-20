@@ -32,13 +32,20 @@ export class UserService {
   }
 
   async getUserRolesAssignment(userId: number) {
-    const roles = await this.prisma.userRoleAssignment.findMany({
-      where: { userId },
-      include: { role: true },
+    const role = await this.prisma.userRoleAssignment.findFirst({
+      where: {
+        userId,
+      },
+      include: {
+        role: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
-
     // Return an array of role names
-    return roles.map((roleAssignment) => roleAssignment.role.name);
+    return role.role;
   }
 
   async findAllCandidates() {

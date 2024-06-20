@@ -24,12 +24,16 @@ export class AuthService {
       userResult &&
       (await bcrypt.compare(passwordDecrypt, userResult.password))
     ) {
+      const assignedRole = await this.userService.getUserRolesAssignment(
+        userResult.id,
+      );
       if (userResult.active === UserStatus.INACTIVE) {
         throw new InactiveUserException();
       }
 
       return {
         accessToken: this.jwtService.sign({ email: userResult.email }),
+        userRoles: assignedRole,
       };
     }
     throw new UnauthorizedException();

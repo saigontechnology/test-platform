@@ -43,20 +43,20 @@ enum QuestionCategory {
 }
 
 model Question {
-  id          Int           @id @default(autoincrement())
+  id          Int              @id @default(autoincrement())
   question    String
   category    QuestionCategory @default(JAVASCRIPT)
-  type        QuestionType  @default(SINGLE_CHOICE)
-  level       QuestionLevel @default(JUNIOR)
+  type        QuestionType     @default(SINGLE_CHOICE)
+  level       QuestionLevel    @default(JUNIOR)
   categories  String[]
   description String
   answer      Int[]
   options     String[]
   notes       String?
   isModified  Boolean?
-  duration    Int           @default(30)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime?     @updatedAt
+  duration    Int              @default(30)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime?        @updatedAt
 
   // Relation
   assessmentQuestionMapping AssessmentQuestionMapping[]
@@ -115,18 +115,16 @@ model ExamAnswer {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  password  String
-  empCode   String?    @unique
-  firstName String?
-  lastName  String?
-  active    UserStatus @default(ACTIVE)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  // Relation
-  userRoleAssignment UserRoleAssignment[]
+  id                 Int                  @id @default(autoincrement())
+  email              String               @unique
+  password           String
+  empCode            String?              @unique
+  firstName          String?
+  lastName           String?
+  active             UserStatus           @default(ACTIVE)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  UserRoleAssignment UserRoleAssignment[]
 }
 
 model UserRole {
@@ -137,7 +135,8 @@ model UserRole {
   updatedAt   DateTime @updatedAt
 
   // Relation
-  userRoleAssignment UserRoleAssignment[]
+  userRoleAssignment  UserRoleAssignment[]
+  userRolePermissions UserRolePermission[]
 }
 
 model UserRoleAssignment {
@@ -150,4 +149,25 @@ model UserRoleAssignment {
   role UserRole @relation(fields: [roleId], references: [id])
 
   @@id([userId, roleId])
+}
+
+model UserPermission {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userRolePermissions UserRolePermission[]
+}
+
+model UserRolePermission {
+  roleId       Int
+  permissionId Int
+  assignedAt   DateTime       @default(now())
+  permission   UserPermission @relation(fields: [permissionId], references: [id])
+  role         UserRole       @relation(fields: [roleId], references: [id])
+
+  @@id([roleId, permissionId])
 }

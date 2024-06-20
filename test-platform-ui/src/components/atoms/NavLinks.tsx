@@ -2,12 +2,13 @@
 'use client';
 
 import { ROUTE_KEY } from '@/constants/routePaths';
-import { DataContext } from '@/libs/contextStore';
+import { AuthContext, DataContext } from '@/libs/contextStore';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import QuizIcon from '@mui/icons-material/Quiz';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import { SvgIconTypeMap } from '@mui/material';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
 import clsx from 'clsx';
@@ -25,6 +26,7 @@ interface ILink {
 
 interface IMainLink extends ILink {
   sublinks?: ILink[];
+  byRole?: string;
 }
 
 /**
@@ -42,11 +44,18 @@ const links: IMainLink[] = [
     name: 'Questions',
     href: ROUTE_KEY.ADMINISTRATION_QUESTIONS,
     icon: QuizIcon,
+    byRole: 'Admin',
   },
   {
     name: 'Assessments',
     href: ROUTE_KEY.ADMINISTRATION_ASSESSMENTS,
     icon: PendingActionsIcon,
+  },
+  {
+    name: 'Settings',
+    href: ROUTE_KEY.ADMINISTRATION_CONFIGURATION,
+    icon: SettingsSuggestIcon,
+    byRole: 'Admin',
   },
 ];
 
@@ -59,6 +68,9 @@ const NavLinks = React.forwardRef<SideNavHandler, any>(({}, ref) => {
   const pathname = usePathname();
   const [collapse, toggleCollapse] = useState<boolean>(false);
   const { toggleNavCollapse } = useContext(DataContext);
+  const { authData } = useContext(AuthContext);
+
+  console.log('authData: ', authData);
 
   React.useImperativeHandle(ref, () => ({
     toggleCollapse: () => {
