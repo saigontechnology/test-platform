@@ -19,21 +19,32 @@ export class AuthService {
   async login(user: { email: string; password: string }) {
     const passwordDecrypt = decrypt(user.password, process.env.SECRET_KEY);
     const userResult = await this.userService.findOneByEmail(user.email);
+    const userPermissions = async () => {
+      const userRole = await this.userService.getUserRolesAssignment(
+        userResult.id,
+      );
+      const permissions = await this.userService.getPermissionsByRoleId(
+        userRole.id,
+      );
+      return {
+        role: userRole.name,
+        permissions: permissions,
+      };
+    };
 
     if (
       userResult &&
       (await bcrypt.compare(passwordDecrypt, userResult.password))
     ) {
-      const assignedRole = await this.userService.getUserRolesAssignment(
-        userResult.id,
-      );
       if (userResult.active === UserStatus.INACTIVE) {
         throw new InactiveUserException();
       }
 
       return {
-        accessToken: this.jwtService.sign({ email: userResult.email }),
-        userRoles: assignedRole,
+        accessToken: this.jwtService.sign({
+          email: userResult.email,
+          information: await userPermissions(),
+        }),
       };
     }
     throw new UnauthorizedException();

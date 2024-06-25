@@ -1,10 +1,12 @@
 'use client';
 
+import TFButton from '@/components/atoms/TFButton';
 import TFDrawer, { TFDrawerHandler } from '@/components/molecules/CustomDrawer';
 import { IResponseQuestion } from '@/constants/questions';
+import { TFPermissions } from '@/constants/role-by-permissions';
 import useDebounce from '@/hooks/common/useDebounce';
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
-import { DataContext } from '@/libs/contextStore';
+import { AuthContext, DataContext } from '@/libs/contextStore';
 import { showNotification } from '@/libs/toast';
 import { formatTimeString, handleMappingImportData } from '@/libs/utils';
 import { AddBox } from '@mui/icons-material';
@@ -62,6 +64,7 @@ const VisuallyHiddenInput = styled('input')({
 
 const Page = () => {
   const { data, updateData, isNavCollapsed } = useContext(DataContext);
+  const { authData } = useContext(AuthContext);
 
   const [_questionList, setQuestionList] = useState<ICardData[]>([]);
   const [_loading, setLoading] = useState<boolean>(true);
@@ -279,7 +282,9 @@ const Page = () => {
                 onChange={handleImport}
               />
             </Button>
-            <Button
+            <TFButton
+              requiredPermissions={[TFPermissions.CREATE_QUESTION]}
+              userPermissions={authData?.userPermissions || []}
               variant="contained"
               className="!bg-primary text-base"
               onClick={(evt: React.MouseEvent) => {
@@ -296,7 +301,7 @@ const Page = () => {
               startIcon={<AddBox />}
             >
               New Question
-            </Button>
+            </TFButton>
           </Box>
         </Box>
         <GridSettings ref={previewRef} onFilter={handleFilter} />

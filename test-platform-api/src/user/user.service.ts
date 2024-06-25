@@ -39,6 +39,7 @@ export class UserService {
       include: {
         role: {
           select: {
+            id: true,
             name: true,
           },
         },
@@ -46,6 +47,38 @@ export class UserService {
     });
     // Return an array of role names
     return role.role;
+  }
+
+  async getPermissionsByRoleId(roleId: number) {
+    try {
+      const rolePermissions = await this.prisma.userRole.findUnique({
+        where: {
+          id: roleId,
+        },
+        select: {
+          userRolePermissions: {
+            select: {
+              permission: {
+                select: {
+                  key: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (rolePermissions) {
+        return rolePermissions.userRolePermissions.map(
+          (rp) => rp.permission.key,
+        );
+      } else {
+        return []; // Return an empty array if rolePermissions is null or undefined
+      }
+    } catch (error) {
+      console.error(`Error fetching permissions for roleId ${roleId}:`, error);
+      throw error; // Optionally re-throw the error or handle it as per your application's needs
+    }
   }
 
   async findAllCandidates() {

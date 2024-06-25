@@ -1,6 +1,10 @@
 /* eslint-disable react/display-name */
 'use client';
 
+import {
+  TFPermissions,
+  roleByPermissions,
+} from '@/constants/role-by-permissions';
 import { ROUTE_KEY } from '@/constants/routePaths';
 import { AuthContext, DataContext } from '@/libs/contextStore';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -26,7 +30,7 @@ interface ILink {
 
 interface IMainLink extends ILink {
   sublinks?: ILink[];
-  byRole?: string;
+  byRole?: string[];
 }
 
 /**
@@ -44,18 +48,18 @@ const links: IMainLink[] = [
     name: 'Questions',
     href: ROUTE_KEY.ADMINISTRATION_QUESTIONS,
     icon: QuizIcon,
-    byRole: 'Admin',
+    byRole: roleByPermissions.QuestionEditor,
   },
   {
     name: 'Assessments',
     href: ROUTE_KEY.ADMINISTRATION_ASSESSMENTS,
     icon: PendingActionsIcon,
+    byRole: roleByPermissions.AssessmentEditor,
   },
   {
     name: 'Settings',
     href: ROUTE_KEY.ADMINISTRATION_CONFIGURATION,
     icon: SettingsSuggestIcon,
-    byRole: 'Admin',
   },
 ];
 
@@ -69,8 +73,6 @@ const NavLinks = React.forwardRef<SideNavHandler, any>(({}, ref) => {
   const [collapse, toggleCollapse] = useState<boolean>(false);
   const { toggleNavCollapse } = useContext(DataContext);
   const { authData } = useContext(AuthContext);
-
-  console.log('authData: ', authData);
 
   React.useImperativeHandle(ref, () => ({
     toggleCollapse: () => {
@@ -140,14 +142,23 @@ const NavLinks = React.forwardRef<SideNavHandler, any>(({}, ref) => {
       {links.map((link: IMainLink) => {
         const isShowSubs = pathname.includes(link.href);
         const mainLink = handleRenderLink(link, isShowSubs);
-        return (
-          <Fragment key={link.name}>
-            {mainLink}
-            {link.sublinks?.length && isShowSubs
-              ? handleRenderSublinks(link.sublinks)
-              : null}
-          </Fragment>
-        );
+        if (
+          (authData?.userPermissions?.length &&
+            authData?.userPermissions?.every((permission: string) =>
+              link.byRole?.includes(permission),
+            )) ||
+          authData?.userPermissions?.length ===
+            Object.keys(TFPermissions).length
+        ) {
+          return (
+            <Fragment key={link.name}>
+              {mainLink}
+              {link.sublinks?.length && isShowSubs
+                ? handleRenderSublinks(link.sublinks)
+                : null}
+            </Fragment>
+          );
+        } else return null;
       })}
     </div>
   );

@@ -1,15 +1,25 @@
 'use client';
 
+import { COOKIE } from '@/constants/common';
 import { useSignIn } from '@/hooks/auth/hooks';
 import { ISignInPayload } from '@/hooks/auth/types';
 import useEnterKey from '@/hooks/common/useEnterKey';
 import { AuthContext } from '@/libs/contextStore';
 import { encrypt } from '@/utils/securities';
 import { CircularProgress } from '@mui/material';
+import Cookies from 'js-cookie';
+import { JwtPayload, jwtDecode } from 'jwt-decode';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+
+interface CustomJwtPayload extends JwtPayload {
+  information?: {
+    role: string;
+    permissions: string[];
+  }; // Define the type of 'information' appropriately
+}
 
 interface ISignInForm {
   email: string;
@@ -35,19 +45,27 @@ function Home() {
     setValue('errorMessage', '');
   }, [watch('email'), watch('password')]);
 
+  const handleSuccess = (_data: any) => {
+    const token = Cookies.get(COOKIE.TOKEN);
+    if (token) {
+      const { information } = jwtDecode<CustomJwtPayload>(token);
+      information?.role &&
+        information?.permissions &&
+        updateData({
+          userRole: information.role,
+          userPermissions: information.permissions,
+        });
+      navigate.push('/administration/dashboard');
+    }
+  };
+
   const onSubmit = (data: ISignInPayload) => {
     const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY;
     const passwordEncrypt = encrypt(data?.password, secretKey!);
     mutate(
       { ...data, password: passwordEncrypt },
       {
-        onSuccess: (data: any) => {
-          updateData({
-            userInfo: null,
-            userRole: data.userRoles,
-          });
-          navigate.push('/administration/dashboard');
-        },
+        onSuccess: handleSuccess,
         onError: (error: any) => {
           setValue('errorMessage', error.data.message);
         },

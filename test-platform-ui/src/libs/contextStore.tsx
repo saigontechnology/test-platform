@@ -50,10 +50,8 @@ const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
 /** Authenticate ========================== */
 interface IAuth {
-  userInfo: any;
-  userRole: {
-    name: string;
-  } | null;
+  userRole: string | null;
+  userPermissions: string[] | null;
 }
 
 interface AuthContextProps {
@@ -68,11 +66,9 @@ const AuthContext = createContext<AuthContextProps>({
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [authData, setData] = useState<IAuth>({
-    userInfo: null,
     userRole: null,
+    userPermissions: null,
   });
-
-  console.log('AuthProvider data: ', authData);
 
   const updateData = (newData: IAuth) => setData(newData);
 
@@ -84,4 +80,3 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 };
 
 export { AuthContext, AuthProvider, DataContext, DataProvider };
-
