@@ -32,13 +32,53 @@ export class UserService {
   }
 
   async getUserRolesAssignment(userId: number) {
-    const roles = await this.prisma.userRoleAssignment.findMany({
-      where: { userId },
-      include: { role: true },
+    const role = await this.prisma.userRoleAssignment.findFirst({
+      where: {
+        userId,
+      },
+      include: {
+        role: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
-
     // Return an array of role names
-    return roles.map((roleAssignment) => roleAssignment.role.name);
+    return role.role;
+  }
+
+  async getPermissionsByRoleId(roleId: number) {
+    try {
+      const rolePermissions = await this.prisma.userRole.findUnique({
+        where: {
+          id: roleId,
+        },
+        select: {
+          userRolePermissions: {
+            select: {
+              permission: {
+                select: {
+                  key: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (rolePermissions) {
+        return rolePermissions.userRolePermissions.map(
+          (rp) => rp.permission.key,
+        );
+      } else {
+        return []; // Return an empty array if rolePermissions is null or undefined
+      }
+    } catch (error) {
+      console.error(`Error fetching permissions for roleId ${roleId}:`, error);
+      throw error; // Optionally re-throw the error or handle it as per your application's needs
+    }
   }
 
   async findAllCandidates() {

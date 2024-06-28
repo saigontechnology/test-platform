@@ -2,7 +2,7 @@
 
 import React, { ReactNode, createContext, useState } from 'react';
 
-// Define interface for the context data
+/** Data store ========================== */
 interface IData {
   examId: number;
   pagination?: {
@@ -48,4 +48,35 @@ const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-export { DataContext, DataProvider };
+/** Authenticate ========================== */
+interface IAuth {
+  userRole: string | null;
+  userPermissions: string[] | null;
+}
+
+interface AuthContextProps {
+  authData: IAuth | null;
+  updateData: (newData: IAuth) => void;
+}
+
+const AuthContext = createContext<AuthContextProps>({
+  authData: null,
+  updateData: () => null,
+});
+
+const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [authData, setData] = useState<IAuth>({
+    userRole: null,
+    userPermissions: null,
+  });
+
+  const updateData = (newData: IAuth) => setData(newData);
+
+  return (
+    <AuthContext.Provider value={{ authData, updateData }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export { AuthContext, AuthProvider, DataContext, DataProvider };

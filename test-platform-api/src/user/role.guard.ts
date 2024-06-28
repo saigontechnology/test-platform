@@ -1,10 +1,10 @@
 // src/user/role.guard.ts
 
-import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { UserService } from "./user.service";
 import { JwtService } from "@nestjs/jwt";
 import { ForbiddenRoleException } from "src/common/excepptions/forbidden-role.exception";
+import { UserService } from "./user.service";
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -34,7 +34,7 @@ export class RoleGuard implements CanActivate {
       userResult.id,
     );
 
-    const hasRole = requiredRoles.some((role) => userRoles.includes(role));
+    const hasRole = requiredRoles.some((role) => userRoles.name === role);
 
     if (!hasRole) {
       throw new ForbiddenRoleException();

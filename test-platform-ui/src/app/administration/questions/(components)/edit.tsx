@@ -6,8 +6,8 @@ import { Suspense, useEffect, useState } from 'react';
 import { IResponseQuestion } from '@/constants/questions';
 import { Box } from '@mui/material';
 import dynamic from 'next/dynamic';
-import { IQuestionInfo } from '../(components)/models';
-const ModifyQuestion = dynamic(() => import('../(components)/modifyQuestion'), {
+import { IQuestionInfo } from './models';
+const ModifyQuestion = dynamic(() => import('./modifyQuestion'), {
   ssr: false,
 });
 
