@@ -31,6 +31,9 @@ export default function AssessmentList() {
       Methods.GET,
       `/admin/assessment/answers/wrong${assessmentId ? `?assessmentId=${assessmentId}` : ''}`,
     );
+    if (!(data as any[])?.length) {
+      console.log('Data retrieved is empty to export file');
+    }
     if (error) {
       console.log('Retrieve question answer wrong failed: ', error);
     } else {
@@ -40,6 +43,7 @@ export default function AssessmentList() {
         `IncorrectQA${assessmentId ? '_assessment_' + assessmentId : ''}`,
       );
     }
+    return;
   };
 
   useEffect(() => {

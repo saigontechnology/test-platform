@@ -1,4 +1,5 @@
 export enum TFPermissions {
+  ADMIN = 'administrator',
   READ = 'read',
   EDIT = 'edit',
   CREATE = 'create',
