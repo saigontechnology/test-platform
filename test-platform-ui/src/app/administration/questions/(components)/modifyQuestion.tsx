@@ -16,11 +16,13 @@ import {
   Button,
   ButtonGroup,
   FormControl,
+  Skeleton,
   Stack,
   Tab,
   Tabs,
   Typography,
 } from '@mui/material';
+import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -63,6 +65,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
   const router = useRouter();
   const [_isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
   const [_isValidAnswer, _setIsValidAnswer] = useState<boolean>(false);
+  const [isGenerating, toggleGenerateExplan] = useState<boolean>(false);
   const [tab, setTabValue] = useState(0);
 
   const form = useForm<any>({
@@ -137,6 +140,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
       setTabValue(newValue);
     },
     handleGenerate: async () => {
+      toggleGenerateExplan(true);
       const payload: any = {
         question: getValues('question'),
         options: getValues('options'),
@@ -155,6 +159,7 @@ export default function ModifyQuestion(props: ICreateQuestion) {
           shouldValidate: true,
         });
       } else console.log('generate explanation: ', data, error);
+      toggleGenerateExplan(false);
     },
   };
   //#endregion
@@ -300,21 +305,28 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                       Notes / Explanation:
                     </Typography>
                     <button
-                      className="rounded-lg border bg-primary p-2 text-white"
+                      className={clsx(
+                        'rounded-lg border bg-primary p-2 text-white',
+                        { '!bg-gray-300 hover:cursor-default': isGenerating },
+                      )}
                       onClick={HandleInteractions.handleGenerate}
                     >
                       Generate Explanation
                     </button>
                   </div>
-                  <RichTextArea
-                    name="notes"
-                    data={getValues('notes') || questionData?.notes}
-                    onChange={(val: string) => {
-                      setValue('notes', val, {
-                        shouldValidate: true,
-                      });
-                    }}
-                  />
+                  {isGenerating ? (
+                    <Skeleton />
+                  ) : (
+                    <RichTextArea
+                      name="notes"
+                      data={getValues('notes') || questionData?.notes}
+                      onChange={(val: string) => {
+                        setValue('notes', val, {
+                          shouldValidate: true,
+                        });
+                      }}
+                    />
+                  )}
                 </FormControl>
               </Stack>
             </CustomTabPanel>
