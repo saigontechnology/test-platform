@@ -33,12 +33,28 @@ export class QuestionsService {
     }
 
     if (search) {
-      filters.push({
-        description: {
-          contains: search,
-          mode: "insensitive",
-        },
-      });
+      if (!isNaN(search)) {
+        filters.push({
+          id: +search,
+        });
+      } else {
+        filters.push({
+          OR: [
+            {
+              description: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              question: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        });
+      }
     }
 
     const conditions = {

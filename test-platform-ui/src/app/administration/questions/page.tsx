@@ -83,14 +83,30 @@ const Page = () => {
   const previewRef = useRef<GriSettingHandler | null>(null);
   const drawerRef = useRef<TFDrawerHandler | null>(null);
 
+  const validateIsSearchById = (_search: string) => {
+    const isValidSearchById = _search && _search.replace(/#/, '')?.length;
+    const isSearchById =
+      _search && /#/.test(_search) && !Number.isNaN(_search?.replace(/#/, ''));
+    return (() => {
+      if (isSearchById && isValidSearchById) {
+        return +_search.replace(/#/, '');
+      }
+      return _search;
+    })();
+  };
+
   const getGridQuestion = async (searchVal?: string) => {
+    if (searchVal && searchVal.length < 3) return;
     setLoading(true);
+    const value2Search = searchVal
+      ? validateIsSearchById(searchVal)
+      : undefined;
     const response: any = await ApiHook(Methods.GET, `/admin/questions`, {
       params: {
         page: currentPageNum,
         limit: pageSize,
         ...filters,
-        search: searchVal || undefined,
+        search: value2Search,
       },
     });
     const { data: questions, ...rest } = response.data;
