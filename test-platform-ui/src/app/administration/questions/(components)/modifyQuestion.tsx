@@ -133,6 +133,26 @@ export default function ModifyQuestion(props: ICreateQuestion) {
     handleChange: (_event: React.SyntheticEvent, newValue: number) => {
       setTabValue(newValue);
     },
+    handleGenerate: async () => {
+      const payload: any = {
+        question: getValues('question'),
+        options: getValues('options'),
+        description: getValues('description'),
+      };
+      const { data, error } = await ApiHook(
+        Methods.POST,
+        '/admin/questions/generate/explanation',
+        {
+          data: payload,
+        },
+      );
+
+      if (data) {
+        setValue('notes', data, {
+          shouldValidate: true,
+        });
+      } else console.log('generate explanation: ', data, error);
+    },
   };
   //#endregion
 
@@ -276,9 +296,17 @@ export default function ModifyQuestion(props: ICreateQuestion) {
                   />
                 </Stack>
                 <FormControl variant="standard" className="!w-11/12 pb-7">
-                  <Typography className="pb-4 font-semibold">
-                    Notes / Explanation:
-                  </Typography>
+                  <div className="flex items-center justify-between pb-2">
+                    <Typography className="font-semibold">
+                      Notes / Explanation:
+                    </Typography>
+                    <button
+                      className="rounded-lg border bg-primary p-2 text-white"
+                      onClick={HandleInteractions.handleGenerate}
+                    >
+                      Generate Explanation
+                    </button>
+                  </div>
                   <RichTextArea
                     name="notes"
                     data={getValues('notes') || questionData?.notes}

@@ -1,7 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { QuestionCategory, QuestionLevel, QuestionType } from "@prisma/client";
+import axios from "axios";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateQuestionDto } from "./dto/create-question.dto";
+import { GenerateExplanationDto } from "./dto/generate-explanation.dto";
 import { ImportQuestionsDto, OptionItem } from "./dto/import-questions.dto";
 import { UpdateQuestionDto } from "./dto/update-question.dto";
 
@@ -106,5 +108,40 @@ export class QuestionsService {
       level: Object.entries(QuestionLevel).map(([key, value]) => value),
       type: Object.entries(QuestionType).map(([key, value]) => value),
     };
+  }
+
+  async generateExplanation(payloadData: GenerateExplanationDto) {
+    const apiKey = "AIzaSyBr1v4dsuhIgbj3vyc7pzi7DsElDbvf5js"; // Replace with your actual Google API key
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+
+    const requestInput = {
+      contents: [
+        {
+          parts: [
+            { text: payloadData.question },
+            {
+              text: payloadData.description,
+            },
+          ],
+          role: "user",
+        },
+      ],
+    };
+
+    for (const [index, opt] of payloadData.options.entries()) {
+      requestInput.contents[0].parts.push({
+        text: `Option ${index + 1}: ${opt}`,
+      });
+    }
+    requestInput.contents[0].parts.push({
+      text: "Choose the correct answer and explanation why it's correct one ? Please reply in HTML format, not markdown",
+    });
+
+    try {
+      const response = await axios.post(apiUrl, requestInput);
+      return response.data?.candidates?.[0]?.content?.parts?.[0]?.text || ""; // Return the response data
+    } catch (error) {
+      return "";
+    }
   }
 }
