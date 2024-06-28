@@ -16,6 +16,7 @@ import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { Roles } from "src/user/role.decorator";
 import { RoleGuard } from "src/user/role.guard";
 import { CreateQuestionDto } from "./dto/create-question.dto";
+import { GenerateExplanationDto } from "./dto/generate-explanation.dto";
 import { ImportQuestionsDto } from "./dto/import-questions.dto";
 import { UpdateQuestionDto } from "./dto/update-question.dto";
 import { QuestionEntity } from "./entities/question.entity";
@@ -79,5 +80,15 @@ export class QuestionsController {
   @ApiCreatedResponse()
   async import(@Body(new ValidationPipe()) importData: ImportQuestionsDto) {
     return await this.questionService.import(importData);
+  }
+
+  @Post("generate/explanation")
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles("Admin")
+  @ApiOkResponse()
+  async generateExplanation(
+    @Body(new ValidationPipe()) payloadData: GenerateExplanationDto,
+  ) {
+    return await this.questionService.generateExplanation(payloadData);
   }
 }

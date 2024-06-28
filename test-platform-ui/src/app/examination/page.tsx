@@ -212,9 +212,10 @@ export default function Examination() {
                       - Correct questions:
                       {` ${examinationResult?.correctQuestions}/${examination.data?.questionNumbers}`}
                     </span>
-                    {/* <span className="text-[16px]">
-                      - Score: {examinationResult?.scored}
-                    </span> */}
+                    <span className="text-[16px]">
+                      - Score:{' '}
+                      {`${examinationResult?.scored}/${examination.data?.assessment?.score}`}
+                    </span>
                   </div>
                 )}
               </div>

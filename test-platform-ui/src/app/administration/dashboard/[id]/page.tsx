@@ -44,6 +44,7 @@ interface IAssessment {
   duration: number;
   level: string;
   questions: number;
+  score: number;
 }
 
 export default function Page() {
@@ -84,6 +85,7 @@ export default function Page() {
         level: ex.assessment.level,
         candidate: ex.email,
         empCode: ex.empCode,
+        score: ex.score,
         result: {
           score: ex.score || 0,
           status: _status,
@@ -129,7 +131,7 @@ export default function Page() {
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      renderCell: (params) => multipleLinesTypo(params.row.empCode),
+      renderCell: (params: any) => multipleLinesTypo(params.row.empCode),
     },
     {
       field: 'levelQuestions',
@@ -138,9 +140,9 @@ export default function Page() {
       headerAlign: 'center',
       align: 'center',
       sortable: false,
-      renderCell: (params) => {
+      renderCell: (params: any) => {
         return (
-          <div className="flex w-full justify-between">
+          <div className="flex w-full justify-center gap-4">
             {params.row.correctByLevel.map((summary: any) => {
               return (
                 <div className="flex items-center">
@@ -164,14 +166,28 @@ export default function Page() {
     },
     {
       field: 'corrects',
-      minWidth: 150,
+      minWidth: 100,
       headerName: 'Corrects',
       headerAlign: 'center',
       align: 'center',
-      renderCell: (params) => {
+      renderCell: (params: any) => {
         return (
           <div>
             {params.row.totalCorrect}/{assessment?.questions}
+          </div>
+        );
+      },
+    },
+    {
+      field: 'scores',
+      minWidth: 100,
+      headerName: 'Scores',
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params: any) => {
+        return (
+          <div>
+            {params.row.score}/{assessment?.score}
           </div>
         );
       },
@@ -182,7 +198,7 @@ export default function Page() {
       headerName: 'Due date',
       headerAlign: 'center',
       align: 'center',
-      renderCell: (params) => {
+      renderCell: (params: any) => {
         const lang = navigator.language,
           expiredDate = new Date(params.row.expireUtil).toLocaleDateString(
             lang,
@@ -218,7 +234,7 @@ export default function Page() {
           rows={examsInfo}
           loading={isLoading}
           height="h-[calc(100vh_-_96px)]"
-          getRowClassName={(params) =>
+          getRowClassName={(params: any) =>
             params?.indexRelativeToCurrentPage % 2 === 0
               ? 'bg-gray-100'
               : 'bg-white'

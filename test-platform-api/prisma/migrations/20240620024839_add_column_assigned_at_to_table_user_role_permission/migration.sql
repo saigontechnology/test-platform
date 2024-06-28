@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "UserRolePermission" ADD COLUMN     "assignedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

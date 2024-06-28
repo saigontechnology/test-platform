@@ -137,7 +137,7 @@ export default function AssessmentList() {
         </div>
 
         <div className="col-span-2 mt-4 grid grid-cols-1 gap-4 rounded md:grid-cols-2 lg:grid-cols-3">
-          {assessments.length
+          {assessments
             ? assessments.map((assessment) => {
                 return (
                   <DashboardCard
@@ -145,7 +145,7 @@ export default function AssessmentList() {
                     level={assessment.level}
                     questions={assessment.assessmentQuestionMapping.length}
                     duration={assessment.duration}
-                    active={assessment.active || false}
+                    score={assessment.score}
                     id={assessment.id}
                     key={assessment.id}
                     href={`${ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_DETAIL}/${assessment.id}`}

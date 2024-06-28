@@ -2,6 +2,7 @@
 
 import RedirectAuthentication from '@/components/auth/RedirectAuthentication';
 import WithAuthentication from '@/components/auth/WithAuthentication';
+import { AuthProvider } from '@/libs/contextStore';
 import { openSans } from '@/styles/fonts';
 import '@/styles/global.css';
 import { ThemeProvider } from '@mui/material';
@@ -26,10 +27,12 @@ export default function RootLayout({
         <QueryClientProvider client={queryClient}>
           <RedirectAuthentication>
             <WithAuthentication>
-              <StyledEngineProvider injectFirst>
-                <ThemeProvider theme={themeCustom}>{children}</ThemeProvider>
-                <ToastContainer />
-              </StyledEngineProvider>
+              <AuthProvider>
+                <StyledEngineProvider injectFirst>
+                  <ThemeProvider theme={themeCustom}>{children}</ThemeProvider>
+                  <ToastContainer />
+                </StyledEngineProvider>
+              </AuthProvider>
             </WithAuthentication>
           </RedirectAuthentication>
         </QueryClientProvider>

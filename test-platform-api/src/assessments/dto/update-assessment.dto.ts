@@ -6,4 +6,7 @@ export class UpdateAssessmentDto {
 
   @ApiProperty()
   level?: string;
+
+  @ApiProperty()
+  score?: number;
 }
