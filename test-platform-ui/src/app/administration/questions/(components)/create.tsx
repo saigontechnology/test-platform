@@ -4,11 +4,15 @@ import { QuestionType } from '@/libs/definitions';
 import { Box } from '@mui/material';
 import dynamic from 'next/dynamic';
 
-const ModifyQuestion = dynamic(() => import('../(components)/modifyQuestion'), {
+const ModifyQuestion = dynamic(() => import('./modifyQuestion'), {
   ssr: false,
 });
 
-const CreateQuestion = () => {
+interface ICreateQuestion {
+  onClose: () => void;
+}
+
+const CreateQuestion: React.FC<ICreateQuestion> = ({ onClose }) => {
   return (
     <Box>
       <ModifyQuestion
@@ -26,6 +30,7 @@ const CreateQuestion = () => {
           isModified: true,
           duration: 0,
         }}
+        onClose={onClose}
       />
     </Box>
   );

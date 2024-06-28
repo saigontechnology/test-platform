@@ -26,17 +26,24 @@ export default function AssessmentList() {
     setAssessments(response.data);
   };
 
-  const handleDownload = async () => {
-    // Call the download function with your data and desired filename
+  const handleDownload = async (assessmentId?: number) => {
     const { data, error } = await ApiHook(
       Methods.GET,
-      'admin/assessment/answers/wrong',
+      `/admin/assessment/answers/wrong${assessmentId ? `?assessmentId=${assessmentId}` : ''}`,
     );
+    if (!(data as any[])?.length) {
+      console.log('Data retrieved is empty to export file');
+    }
     if (error) {
       console.log('Retrieve question answer wrong failed: ', error);
     } else {
-      downloadCSV(data, 'IncorrectQA');
+      // Call the download function with your data and desired filename
+      downloadCSV(
+        data,
+        `IncorrectQA${assessmentId ? '_assessment_' + assessmentId : ''}`,
+      );
     }
+    return;
   };
 
   useEffect(() => {
@@ -119,7 +126,7 @@ export default function AssessmentList() {
     <>
       <p
         className="max-w-fit p-3 text-sky-600 underline underline-offset-1 hover:cursor-pointer hover:text-sky-900"
-        onClick={handleDownload}
+        onClick={() => handleDownload()}
       >
         Retrieve question answer wrong and download
       </p>
@@ -134,7 +141,7 @@ export default function AssessmentList() {
         </div>
 
         <div className="col-span-2 mt-4 grid grid-cols-1 gap-4 rounded md:grid-cols-2 lg:grid-cols-3">
-          {assessments.length
+          {assessments
             ? assessments.map((assessment) => {
                 return (
                   <DashboardCard
@@ -142,7 +149,7 @@ export default function AssessmentList() {
                     level={assessment.level}
                     questions={assessment.assessmentQuestionMapping.length}
                     duration={assessment.duration}
-                    active={assessment.active || false}
+                    score={assessment.score}
                     id={assessment.id}
                     key={assessment.id}
                     href={`${ROUTE_KEY.ADMINISTRATION_ASSESSMENTS_DETAIL}/${assessment.id}`}

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
@@ -85,9 +86,25 @@ export class AssessmentsController {
     @Param("assessmentId", ParseIntPipe) assessmentId: number,
     @Param("questionId", ParseIntPipe) questionId: number,
   ) {
-    return await this.assessmentService.deleteQuestionToAssessment(
+    return await this.assessmentService.deleteAssessmentQuestion(
       assessmentId,
       questionId,
+    );
+  }
+
+  @Put("admin/assessments/:assessmentId/question/:questionId")
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles("Admin")
+  @ApiCreatedResponse({ type: AssessmentEntity })
+  async updateAssessmentQuestion(
+    @Param("assessmentId", ParseIntPipe) assessmentId: number,
+    @Param("questionId", ParseIntPipe) questionId: number,
+    @Body() data: any,
+  ) {
+    return await this.assessmentService.updateScoreAssessmentQuestion(
+      assessmentId,
+      questionId,
+      data,
     );
   }
 
@@ -102,12 +119,19 @@ export class AssessmentsController {
     );
   }
 
-  // Retrieve question exam's answers failed
+  /** Retrieve question exam's answers failed
+   *  - The query parameter "assessmentId" is not required;
+   *    by default, retrieve all questions were answered incorrectly.
+   */
   @Get("admin/assessment/answers/wrong")
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles("Admin")
   @ApiOkResponse({ type: AssessmentEntity })
-  async getQuestionsExamAnswerFailed() {
-    return await this.assessmentService.retrieveQuestionMostAnswerWrong();
+  async getQuestionsExamAnswerFailed(
+    @Query("assessmentId") assessmentId?: number,
+  ) {
+    return await this.assessmentService.getIncorrectQuestionsByAssessmentId(
+      assessmentId,
+    );
   }
 }

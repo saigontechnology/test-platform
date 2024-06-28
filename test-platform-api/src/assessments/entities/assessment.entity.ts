@@ -15,6 +15,9 @@ export class AssessmentEntity implements Assessment {
   active: boolean;
 
   @ApiProperty()
+  score: number;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

@@ -19,6 +19,18 @@ export class AuthService {
   async login(user: { email: string; password: string }) {
     const passwordDecrypt = decrypt(user.password, process.env.SECRET_KEY);
     const userResult = await this.userService.findOneByEmail(user.email);
+    const userPermissions = async () => {
+      const userRole = await this.userService.getUserRolesAssignment(
+        userResult.id,
+      );
+      const permissions = await this.userService.getPermissionsByRoleId(
+        userRole.id,
+      );
+      return {
+        role: userRole.name,
+        permissions: permissions,
+      };
+    };
 
     if (
       userResult &&
@@ -29,7 +41,10 @@ export class AuthService {
       }
 
       return {
-        accessToken: this.jwtService.sign({ email: userResult.email }),
+        accessToken: this.jwtService.sign({
+          email: userResult.email,
+          information: await userPermissions(),
+        }),
       };
     }
     throw new UnauthorizedException();

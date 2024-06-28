@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ExaminationStatus } from "@prisma/client";
 import { AssessmentsService } from "src/assessments/assessment.service";
 import { PrismaService } from "src/prisma/prisma.service";
-import { inviteExamination } from "src/utils/mailer";
+import { inviteExamination, sendResult } from "src/utils/mailer";
 import { regexEmailPattern } from "src/utils/regex";
 import { calculateExamScored } from "src/utils/scoring";
 import {
@@ -139,23 +139,25 @@ export class ExaminationsService {
     const assessmentInfo = await this.assessment.findOne(
       updateExaminationDto.assessmentId,
     );
+
     const { email, scored, correctQuestions } = calculateExamScored(
       assessmentInfo,
       updateExaminationDto.selections,
       updateExaminationDto.email,
     );
-    const examStatus =
-      scored > 65 ? ExaminationStatus.COMPLETED : ExaminationStatus.EVALUATED;
+    // const examStatus =
+    //   scored > 65 ? ExaminationStatus.COMPLETED : ExaminationStatus.EVALUATED;
+
     await this.prisma.examination.updateMany({
       where: {
         id: id,
       },
       data: {
         score: scored,
-        status: examStatus,
+        // status: examStatus,
       },
     });
-    // await sendResult(email, assessmentInfo.name, scored);
+    await sendResult(email, assessmentInfo.name, scored);
     return { email, scored, correctQuestions };
   }
 
@@ -227,6 +229,7 @@ export class ExaminationsService {
               active: true,
               assessmentQuestionMapping: {
                 select: {
+                  score: true,
                   questionId: true,
                   question: {
                     select: {
@@ -274,7 +277,6 @@ export class ExaminationsService {
 
     const examination = examinations.map((exam) => {
       const empCode = exam.email.split("@")[0];
-
       const submittedAnswers = exam.submittedAnswers;
       const summary = submittedAnswers.reduce((acc: any, curr) => {
         const level = curr.question?.level;
@@ -319,6 +321,7 @@ export class ExaminationsService {
         duration: assessment.duration,
         active: assessment.active,
         level: assessment.level,
+        score: assessment.score,
       },
     };
   }
@@ -337,6 +340,7 @@ export class ExaminationsService {
           select: {
             name: true,
             level: true,
+            score: true,
             assessmentQuestionMapping: {
               select: {
                 question: true,

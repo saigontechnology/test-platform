@@ -1,23 +1,29 @@
 'use client';
 
 import ApiHook, { Methods } from '@/libs/apis/ApiHook';
-import { usePathname } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
 import { IResponseQuestion } from '@/constants/questions';
 import { Box } from '@mui/material';
-import { IQuestionInfo } from '../../(components)/models';
-import ModifyQuestion from '../../(components)/modifyQuestion';
+import dynamic from 'next/dynamic';
+import { IQuestionInfo } from './models';
+const ModifyQuestion = dynamic(() => import('./modifyQuestion'), {
+  ssr: false,
+});
 
-const EditQuestion = () => {
+interface IEditQuestion {
+  questionId: number;
+  onClose: () => void;
+}
+
+const EditQuestion: React.FC<IEditQuestion> = ({ questionId, onClose }) => {
   const [data, setData] = useState<IQuestionInfo | null>(null);
-  const pathname = usePathname().split('/');
 
   useEffect(() => {
     (async () => {
       const { data } = await ApiHook<IResponseQuestion>(
         Methods.GET,
-        `/admin/questions/${pathname[pathname.length - 1]}`,
+        `/admin/questions/${questionId}`,
       );
       const editQuestion: IQuestionInfo = {
         id: data?.id,
@@ -39,7 +45,9 @@ const EditQuestion = () => {
 
   return (
     <Suspense fallback={<p>Loading ....</p>}>
-      <Box>{data ? <ModifyQuestion questionData={data} /> : null}</Box>
+      <Box>
+        {data ? <ModifyQuestion questionData={data} onClose={onClose} /> : null}
+      </Box>
     </Suspense>
   );
 };
