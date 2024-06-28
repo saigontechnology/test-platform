@@ -1,9 +1,9 @@
 import { AssessmentLevels } from '@/constants/assessments';
 import { formatTimeString } from '@/libs/utils';
 import AlarmOnIcon from '@mui/icons-material/AlarmOn';
-import Brightness1Icon from '@mui/icons-material/Brightness1';
 import CloseIcon from '@mui/icons-material/Close';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import NoteAltIcon from '@mui/icons-material/NoteAlt';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import Link from 'next/link';
 
@@ -13,7 +13,7 @@ interface IDashboardCardProps {
   level: string;
   questions: number;
   duration: number;
-  active: boolean;
+  score: number;
   href: string;
   hasDelete?: boolean;
   onDelete?: (id: number) => void;
@@ -26,7 +26,7 @@ export default function DashboardCard(props: IDashboardCardProps) {
     level,
     questions,
     duration,
-    active,
+    score,
     href,
     hasDelete = false,
     onDelete = () => {},
@@ -76,17 +76,6 @@ export default function DashboardCard(props: IDashboardCardProps) {
 
       <div className="mt-4 grid grid-cols-2 gap-4">
         <div className="text-sm leading-6">
-          <Brightness1Icon
-            sx={{
-              color: active ? '#7bbd1e' : '#d1d5db',
-              fontSize: 20,
-            }}
-          />
-          <span className="ml-2 font-medium capitalize">
-            {active ? 'Active' : 'Inactive'}
-          </span>
-        </div>
-        <div className="text-sm leading-6">
           <KeyboardDoubleArrowUpIcon sx={{ fontSize: 20 }} />
           <span className="ml-2 text-gray-500">Level: </span>
           <span className={`font-medium ${levelColor[level]}`}>
@@ -102,6 +91,11 @@ export default function DashboardCard(props: IDashboardCardProps) {
           <AlarmOnIcon sx={{ fontSize: 20 }} />
           <span className="ml-2 text-gray-500">Duration: </span>
           <span className="font-medium">{formatTimeString(duration)}</span>
+        </div>
+        <div className="text-sm leading-6">
+          <NoteAltIcon sx={{ fontSize: 20 }} />
+          <span className="ml-2 text-gray-500">Score: </span>
+          <span className="font-medium">{score}</span>
         </div>
       </div>
     </Link>

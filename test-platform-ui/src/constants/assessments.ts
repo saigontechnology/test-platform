@@ -69,6 +69,7 @@ export interface IAssessment {
   error?: Error;
   duration: number;
   active?: boolean;
+  score: number;
 }
 
 export interface ICreateAssessment {
@@ -96,6 +97,7 @@ export interface IExamAnswer {
 export interface IExamInfo {
   name: string;
   level: string;
+  score: string;
 }
 export interface IExamination {
   id: number;
